@@ -1,3 +1,17 @@
+---
+title: GridOps
+emoji: ⚡
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 8000
+tags:
+  - openenv
+  - reinforcement-learning
+  - microgrid
+  - energy
+---
+
 # GridOps — Community Microgrid Bridge Operator
 
 An OpenEnv reinforcement learning environment where an AI agent operates a **100-home community microgrid** in an Indian city during summer. The agent must balance solar generation, battery storage, diesel backup, and grid trade to keep the lights on while minimizing cost and emissions.
