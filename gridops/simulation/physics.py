@@ -59,6 +59,30 @@ class MicrogridState:
 
 
 @dataclass
+class StepFlows:
+    """Detailed energy flows for one step (all in kW)."""
+
+    # Supply side (positive = providing power to the bus)
+    solar_kw: float = 0.0
+    grid_import_kw: float = 0.0       # grid importing INTO community
+    battery_discharge_kw: float = 0.0  # power delivered from battery (after efficiency loss)
+    diesel_kw: float = 0.0
+
+    # Demand side (positive = consuming power from the bus)
+    effective_demand_kw: float = 0.0   # demand after shedding + rebound
+    grid_export_kw: float = 0.0       # surplus exported to grid
+    battery_charge_kw: float = 0.0    # power consumed to charge battery (before efficiency)
+    blackout_kw: float = 0.0          # unmet demand
+    curtailed_kw: float = 0.0         # excess supply that goes nowhere
+
+    # Derived
+    total_supply_kw: float = 0.0
+    total_consumption_kw: float = 0.0
+    shed_kw: float = 0.0              # how much was shed
+    rebound_kw: float = 0.0           # how much rebounded from last step
+
+
+@dataclass
 class StepResult:
     """What physics.step() returns to the environment."""
 
@@ -66,6 +90,7 @@ class StepResult:
     reward: float
     done: bool
     narration: str
+    flows: StepFlows = None
 
 
 def step(
@@ -125,16 +150,40 @@ def step(
     state.cumulative_battery_throughput_kwh += battery_throughput
 
     # ── Grid as slack variable ───────────────────────────────────────
-    # grid_kw > 0 = import, < 0 = export
-    # grid_kw = what the community still needs after solar + battery + diesel
+    # residual = what the community still needs after solar + battery + diesel
+    # positive → grid must import; negative → surplus exported
     residual = effective_demand - solar_kw - delivered_kw - diesel_kw
     grid_kw = float(np.clip(residual, -GRID_MAX_KW, GRID_MAX_KW))
 
-    # ── Blackout detection ───────────────────────────────────────────
-    # If residual exceeds grid capacity, we have unmet demand
+    # ── Blackout / curtailment detection ─────────────────────────────
     blackout_kwh = 0.0
+    curtailed_kw = 0.0
     if residual > GRID_MAX_KW:
         blackout_kwh = (residual - GRID_MAX_KW) * DT
+    elif residual < -GRID_MAX_KW:
+        curtailed_kw = abs(residual) - GRID_MAX_KW  # excess that can't be exported
+
+    # ── Build flow snapshot ──────────────────────────────────────────
+    grid_import = max(0.0, grid_kw)
+    grid_export = max(0.0, -grid_kw)
+    batt_discharge = max(0.0, delivered_kw)
+    batt_charge = max(0.0, -delivered_kw)  # power drawn from bus to charge
+
+    flows = StepFlows(
+        solar_kw=solar_kw,
+        grid_import_kw=grid_import,
+        battery_discharge_kw=batt_discharge,
+        diesel_kw=diesel_kw,
+        effective_demand_kw=effective_demand,
+        grid_export_kw=grid_export,
+        battery_charge_kw=batt_charge,
+        blackout_kw=blackout_kwh / DT,
+        curtailed_kw=curtailed_kw,
+        total_supply_kw=solar_kw + grid_import + batt_discharge + diesel_kw,
+        total_consumption_kw=effective_demand + grid_export + batt_charge,
+        shed_kw=actual_demand * shed_frac,
+        rebound_kw=state.shed_rebound_kwh / SHED_REBOUND_FRAC if shed_frac == 0 else 0,
+    )
 
     # ── Cost accounting ──────────────────────────────────────────────
     step_cost = 0.0
@@ -188,7 +237,7 @@ def step(
     narration = _narrate(state, solar_kw, actual_demand, grid_price, blackout_kwh,
                          diesel_kw, shed_frac, grid_kw, delivered_kw)
 
-    return StepResult(state=state, reward=reward, done=done, narration=narration)
+    return StepResult(state=state, reward=reward, done=done, narration=narration, flows=flows)
 
 
 def _narrate(
@@ -203,8 +252,10 @@ def _narrate(
     battery_kw: float,
 ) -> str:
     """Generate a short human-readable situation summary."""
-    hour_of_day = (s.hour - 1) % 24
-    day = (s.hour - 1) // 24 + 1
+    START_HOUR = 6
+    clock = (s.hour - 1) + START_HOUR  # absolute hour since midnight Day 1
+    hour_of_day = clock % 24
+    day = clock // 24 + 1
     soc_pct = s.battery_soc_kwh / BATTERY_CAPACITY_KWH * 100
 
     parts = [f"Day {day}, {hour_of_day:02d}:00."]

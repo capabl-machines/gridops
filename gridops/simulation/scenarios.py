@@ -10,6 +10,9 @@ from dataclasses import dataclass
 import numpy as np
 
 
+START_HOUR = 6  # Episodes begin at 6 AM
+
+
 @dataclass
 class ScenarioConfig:
     """Knobs that define a task's difficulty."""
@@ -44,9 +47,14 @@ def _base_demand_curve() -> np.ndarray:
     return hourly
 
 
+def _rotate(curve_24h: np.ndarray) -> np.ndarray:
+    """Rotate a 24-hour curve so index 0 = START_HOUR (6 AM)."""
+    return np.roll(curve_24h, -START_HOUR)
+
+
 def generate_demand(cfg: ScenarioConfig, rng: np.random.Generator) -> np.ndarray:
     """72-hour demand with heatwave multiplier and stochastic noise."""
-    base = np.tile(_base_demand_curve(), 3)  # 3 days
+    base = np.tile(_rotate(_base_demand_curve()), 3)  # 3 days starting at 6 AM
     demand = base.copy()
 
     # Apply heatwave multiplier after start hour
@@ -73,7 +81,7 @@ def _base_solar_curve() -> np.ndarray:
 
 def generate_solar(cfg: ScenarioConfig, rng: np.random.Generator) -> np.ndarray:
     """72-hour solar with optional haze reduction and cloud dips."""
-    base = np.tile(_base_solar_curve(), 3)
+    base = np.tile(_rotate(_base_solar_curve()), 3)
     solar = base * cfg.solar_multiplier
 
     # Cloud cover — 50 % drop during listed hours
@@ -113,7 +121,7 @@ def _base_price_curve(floor: float, ceiling: float) -> np.ndarray:
 
 def generate_price(cfg: ScenarioConfig, rng: np.random.Generator) -> np.ndarray:
     """72-hour grid price with optional spikes."""
-    base = np.tile(_base_price_curve(cfg.price_floor, cfg.price_ceiling), 3)
+    base = np.tile(_rotate(_base_price_curve(cfg.price_floor, cfg.price_ceiling)), 3)
     price = base.copy()
 
     # Evening spike

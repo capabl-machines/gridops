@@ -26,7 +26,7 @@ def oracle_policy(obs: dict) -> GridOpsAction:
       - Use diesel only when grid is at capacity AND battery is depleted
       - Shed demand only as last resort during extreme peaks
     """
-    hour_of_day = int(obs["hour"]) % 24
+    hour_of_day = (int(obs["hour"]) + 6) % 24  # episode starts at 6 AM
     soc = obs["battery_soc"]
     price = obs["grid_price"]
     demand = obs["demand_kw"]

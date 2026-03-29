@@ -18,6 +18,7 @@ from gridops.simulation.physics import (
     BATTERY_CAPACITY_KWH,
     DIESEL_TANK_KWH,
     MicrogridState,
+    StepFlows,
 )
 from gridops.simulation.scenarios import ScenarioConfig, make_forecast
 from gridops.tasks.definitions import TASKS
@@ -79,7 +80,19 @@ class GridOpsEnvironment(Environment):
         self._history = []
         self._grade = None
 
-        return self._make_observation(reward=0.0, done=False, narration="Episode started. Day 1 begins.")
+        # Compute initial flows so dashboard shows real data on reset
+        h0_demand = float(self._demand[0])
+        h0_solar = float(self._solar[0])
+        h0_grid = max(0.0, h0_demand - h0_solar)
+        self._last_flows = StepFlows(
+            solar_kw=h0_solar,
+            grid_import_kw=h0_grid,
+            effective_demand_kw=h0_demand,
+            total_supply_kw=h0_solar + h0_grid,
+            total_consumption_kw=h0_demand,
+        )
+
+        return self._make_observation(reward=0.0, done=False, narration="Episode started. Day 1, 06:00. Make your first decision.")
 
     def step(
         self,
@@ -104,6 +117,8 @@ class GridOpsEnvironment(Environment):
             grid_price=float(self._price[h]),
             diesel_fuel_cap=self._cfg.diesel_fuel_capacity * DIESEL_TANK_KWH,
         )
+
+        self._last_flows = result.flows
 
         self._history.append({
             "hour": h,
@@ -175,6 +190,17 @@ class GridOpsEnvironment(Environment):
             cost_this_step=self._micro.last_cost,
             grid_kw_this_step=self._micro.last_grid_kw,
             narration=narration,
+            flow_solar=self._last_flows.solar_kw,
+            flow_grid_import=self._last_flows.grid_import_kw,
+            flow_grid_export=self._last_flows.grid_export_kw,
+            flow_battery_discharge=self._last_flows.battery_discharge_kw,
+            flow_battery_charge=self._last_flows.battery_charge_kw,
+            flow_diesel=self._last_flows.diesel_kw,
+            flow_demand=self._last_flows.effective_demand_kw,
+            flow_blackout=self._last_flows.blackout_kw,
+            flow_shed=self._last_flows.shed_kw,
+            flow_total_supply=self._last_flows.total_supply_kw,
+            flow_total_consumption=self._last_flows.total_consumption_kw,
             done=done,
             reward=reward,
         )
