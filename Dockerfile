@@ -2,12 +2,15 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY pyproject.toml README.md openenv.yaml ./
+# Install deps first (cached layer)
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir numpy pydantic fastapi "uvicorn[standard]" websockets openai requests openenv-core
+
+# Copy app code
 COPY gridops/ gridops/
 COPY server/ server/
-COPY inference.py scripts/ ./
-
-RUN pip install --no-cache-dir .
+COPY inference.py openenv.yaml README.md ./
+COPY scripts/ scripts/
 
 EXPOSE 8000
 
