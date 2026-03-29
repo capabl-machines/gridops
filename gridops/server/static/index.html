@@ -863,20 +863,20 @@ function updateUI() {
   solEl.textContent = solKw.toFixed(0) + ' kW';
   solEl.style.color = solKw > 100 ? 'var(--yellow)' : 'var(--text-dim)';
 
-  // Grid gap: what grid would need to cover if you do nothing (demand - solar)
-  const gridGap = Math.max(0, demKw - solKw);
+  // Grid: demand - solar = what grid needs to cover (before your battery/diesel decisions)
+  const gridGap = demKw - solKw;  // positive = importing, negative = exporting
   const gridNeedEl = document.getElementById('gridNeedInfo');
   if (gridGap > 200) {
-    gridNeedEl.textContent = gridGap.toFixed(0) + ' kW needed — OVER 200 kW LIMIT!';
+    gridNeedEl.textContent = gridGap.toFixed(0) + ' kW — OVER 200 kW LIMIT! Use battery/diesel.';
     gridNeedEl.style.color = 'var(--red)';
   } else if (gridGap > 150) {
-    gridNeedEl.textContent = gridGap.toFixed(0) + ' kW needed — near limit';
+    gridNeedEl.textContent = gridGap.toFixed(0) + ' kW — near limit, consider battery';
     gridNeedEl.style.color = 'var(--yellow)';
-  } else if (demKw < solKw) {
-    gridNeedEl.textContent = 'surplus ' + (solKw - demKw).toFixed(0) + ' kW — will export';
+  } else if (gridGap < 0) {
+    gridNeedEl.textContent = gridGap.toFixed(0) + ' kW (exporting surplus)';
     gridNeedEl.style.color = 'var(--green)';
   } else {
-    gridNeedEl.textContent = gridGap.toFixed(0) + ' kW needed';
+    gridNeedEl.textContent = gridGap.toFixed(0) + ' kW';
     gridNeedEl.style.color = 'var(--text)';
   }
 
