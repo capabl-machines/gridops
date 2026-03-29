@@ -30,7 +30,7 @@ DIESEL_MAX_KW = 100.0
 DIESEL_COST_PER_KWH = 25.0
 DIESEL_STARTUP_COST = 100.0        # Rs, one-time when turning on from off
 DEMAND_SHED_MAX_FRAC = 0.20
-SHED_REBOUND_FRAC = 0.50           # 50% of shed energy rebounds next hour
+SHED_REBOUND_FRAC = 1.00           # 100% of shed energy rebounds next hour (deferred, not destroyed)
 DIESEL_TANK_KWH = 2400.0           # total fuel capacity
 VOLL = 150.0                       # Value of Lost Load (Rs/kWh)
 DT = 1.0                           # 1 hour per step
@@ -102,6 +102,7 @@ def step(
     demand_kw: float,
     grid_price: float,
     diesel_fuel_cap: float = DIESEL_TANK_KWH,
+    grid_available: bool = True,
 ) -> StepResult:
     """
     Advance the microgrid by one hour.
@@ -119,7 +120,7 @@ def step(
     shed_frac = float(np.clip(shed_norm, 0, 1)) * DEMAND_SHED_MAX_FRAC
 
     # ── Demand (with shedding rebound from last step) ────────────────
-    actual_demand = demand_kw + state.shed_rebound_kwh
+    actual_demand = demand_kw + state.shed_rebound_kwh / DT  # rebound is kWh, convert to kW
     effective_demand = actual_demand * (1.0 - shed_frac)
     shed_kwh = actual_demand * shed_frac * DT
     state.shed_rebound_kwh = shed_kwh * SHED_REBOUND_FRAC  # 50% rebounds next hour
@@ -152,16 +153,17 @@ def step(
     # ── Grid as slack variable ───────────────────────────────────────
     # residual = what the community still needs after solar + battery + diesel
     # positive → grid must import; negative → surplus exported
+    grid_cap = GRID_MAX_KW if grid_available else 0.0
     residual = effective_demand - solar_kw - delivered_kw - diesel_kw
-    grid_kw = float(np.clip(residual, -GRID_MAX_KW, GRID_MAX_KW))
+    grid_kw = float(np.clip(residual, -grid_cap, grid_cap))
 
     # ── Blackout / curtailment detection ─────────────────────────────
     blackout_kwh = 0.0
     curtailed_kw = 0.0
-    if residual > GRID_MAX_KW:
-        blackout_kwh = (residual - GRID_MAX_KW) * DT
-    elif residual < -GRID_MAX_KW:
-        curtailed_kw = abs(residual) - GRID_MAX_KW  # excess that can't be exported
+    if residual > grid_cap:
+        blackout_kwh = (residual - grid_cap) * DT
+    elif residual < -grid_cap:
+        curtailed_kw = abs(residual) - grid_cap  # excess that can't be exported
 
     # ── Build flow snapshot ──────────────────────────────────────────
     grid_import = max(0.0, grid_kw)
@@ -208,8 +210,9 @@ def step(
     # VoLL penalty (replaces hard reliability gate)
     step_cost += VOLL * blackout_kwh
 
-    # Shedding penalty (small comfort cost — Rs 5/kWh shed)
-    step_cost += 5.0 * shed_kwh
+    # Shedding penalty (comfort + political cost — Rs 40/kWh shed)
+    # More expensive than diesel (Rs 25), so only used as true emergency
+    step_cost += 40.0 * shed_kwh
 
     # ── Fuel accounting ──────────────────────────────────────────────
     state.diesel_fuel_kwh -= diesel_kw * DT
@@ -235,7 +238,7 @@ def step(
 
     # ── Narration ────────────────────────────────────────────────────
     narration = _narrate(state, solar_kw, actual_demand, grid_price, blackout_kwh,
-                         diesel_kw, shed_frac, grid_kw, delivered_kw)
+                         diesel_kw, shed_frac, grid_kw, delivered_kw, grid_available)
 
     return StepResult(state=state, reward=reward, done=done, narration=narration, flows=flows)
 
@@ -250,6 +253,7 @@ def _narrate(
     shed: float,
     grid_kw: float,
     battery_kw: float,
+    grid_available: bool = True,
 ) -> str:
     """Generate a short human-readable situation summary."""
     START_HOUR = 6
@@ -259,6 +263,9 @@ def _narrate(
     soc_pct = s.battery_soc_kwh / BATTERY_CAPACITY_KWH * 100
 
     parts = [f"Day {day}, {hour_of_day:02d}:00."]
+
+    if not grid_available:
+        parts.append("GRID OUTAGE — islanding mode! No grid import/export.")
 
     if blackout > 0:
         parts.append(f"BLACKOUT: {blackout:.0f} kWh unmet!")

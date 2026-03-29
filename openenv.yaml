@@ -36,4 +36,4 @@ metadata:
   observation_space: "12 fields: hour, demand, solar, battery_soc, price, fuel, 3×4h forecasts, cumulative metrics"
   episode_length: 72
   step_duration: "1 hour"
-  grading: "Reliability-gated composite: 60% cost savings + 20% reliability + 20% green score"
+  grading: "Composite: 50% cost efficiency + 25% reliability + 25% green score. VoLL Rs 150/kWh blackout penalty."

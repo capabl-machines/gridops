@@ -28,26 +28,27 @@ def compute_dumb_baseline_cost(
     demand_curve: np.ndarray,
     solar_curve: np.ndarray,
     price_curve: np.ndarray,
+    grid_outage_hours: list[int] | None = None,
 ) -> float:
     """Cost of a dumb baseline: import max grid, no battery/diesel/shedding.
 
     Where demand > grid + solar, apply VoLL for the blackout.
-    This is a realistic "no-intelligence" baseline.
+    During grid outages, all non-solar demand is blackout.
     """
+    outages = set(grid_outage_hours or [])
     total_cost = 0.0
     for h in range(len(demand_curve)):
         demand = demand_curve[h]
         solar = solar_curve[h]
         price = price_curve[h]
+        grid_cap = 0.0 if h in outages else GRID_MAX_KW
 
-        # Grid covers what it can (up to 200 kW)
         needed_from_grid = max(0.0, demand - solar)
-        grid_import = min(needed_from_grid, GRID_MAX_KW)
-        total_cost += price * grid_import  # grid cost
+        grid_import = min(needed_from_grid, grid_cap)
+        total_cost += price * grid_import
 
-        # Any excess demand is a blackout
-        unmet = max(0.0, needed_from_grid - GRID_MAX_KW)
-        total_cost += VOLL * unmet  # VoLL penalty
+        unmet = max(0.0, needed_from_grid - grid_cap)
+        total_cost += VOLL * unmet
 
     return float(total_cost)
 
@@ -57,6 +58,7 @@ def grade_episode(
     demand_curve: np.ndarray,
     solar_curve: np.ndarray,
     price_curve: np.ndarray,
+    grid_outage_hours: list[int] | None = None,
 ) -> dict:
     """
     Grade a completed episode. Returns dict with score 0.0-1.0.
@@ -71,7 +73,7 @@ def grade_episode(
     reliability = float(np.clip(reliability, 0, 1))
 
     # Cost efficiency: how much better than dumb baseline
-    baseline_cost = compute_dumb_baseline_cost(demand_curve, solar_curve, price_curve)
+    baseline_cost = compute_dumb_baseline_cost(demand_curve, solar_curve, price_curve, grid_outage_hours)
     actual_cost = state.cumulative_cost
     if baseline_cost > 0:
         cost_efficiency = 1.0 - (actual_cost / baseline_cost)

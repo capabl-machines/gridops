@@ -27,6 +27,7 @@ class ScenarioConfig:
     cloud_hours: list[int] | None = None  # hours with intermittent clouds
     diesel_fuel_capacity: float = 1.0   # 1.0 = full tank (800 kWh worth)
     forecast_noise: float = 0.15        # ±15 % Gaussian noise on forecasts
+    grid_outage_hours: list[int] | None = None  # hours where grid cap drops to 0 (islanding)
 
 
 # ── Demand ───────────────────────────────────────────────────────────────

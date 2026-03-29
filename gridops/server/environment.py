@@ -107,6 +107,10 @@ class GridOpsEnvironment(Environment):
             )
 
         h = self._micro.hour
+        # Check if grid is available this hour (outage = islanding mode)
+        outage_hours = self._cfg.grid_outage_hours or []
+        grid_up = h not in outage_hours
+
         result = physics.step(
             self._micro,
             battery_dispatch_norm=action.battery_dispatch,
@@ -116,6 +120,7 @@ class GridOpsEnvironment(Environment):
             demand_kw=float(self._demand[h]),
             grid_price=float(self._price[h]),
             diesel_fuel_cap=self._cfg.diesel_fuel_capacity * DIESEL_TANK_KWH,
+            grid_available=grid_up,
         )
 
         self._last_flows = result.flows
@@ -137,7 +142,8 @@ class GridOpsEnvironment(Environment):
 
         if result.done:
             self._grade = grade_episode(
-                self._micro, self._demand, self._solar, self._price
+                self._micro, self._demand, self._solar, self._price,
+                grid_outage_hours=self._cfg.grid_outage_hours,
             )
 
         obs = self._make_observation(
