@@ -511,6 +511,7 @@
       <div class="info-row"><span class="label">&#128336; Time</span><span id="timeInfo" style="font-weight:700;color:var(--cyan)">06:00 · Day 1</span></div>
       <div class="info-row"><span class="label">&#127968; Homes Will Need</span><span id="demandInfo">—</span></div>
       <div class="info-row"><span class="label">&#9728;&#65039; Solar Expected</span><span id="solarInfo">—</span></div>
+      <div class="info-row"><span class="label">&#9889; Grid Will Cover</span><span id="gridNeedInfo">—</span></div>
       <div class="info-row"><span class="label">&#128176; Grid Price</span><span id="priceInfo" style="font-weight:700">—</span></div>
       <div class="info-row"><span class="label">&#128267; Battery Charge</span><span id="socInfo">—</span></div>
       <div class="info-row"><span class="label">&#9981; Diesel Fuel Left</span><span id="fuelInfo">—</span></div>
@@ -861,6 +862,23 @@ function updateUI() {
   const solEl = document.getElementById('solarInfo');
   solEl.textContent = solKw.toFixed(0) + ' kW';
   solEl.style.color = solKw > 100 ? 'var(--yellow)' : 'var(--text-dim)';
+
+  // Grid gap: what grid would need to cover if you do nothing (demand - solar)
+  const gridGap = Math.max(0, demKw - solKw);
+  const gridNeedEl = document.getElementById('gridNeedInfo');
+  if (gridGap > 200) {
+    gridNeedEl.textContent = gridGap.toFixed(0) + ' kW needed — OVER 200 kW LIMIT!';
+    gridNeedEl.style.color = 'var(--red)';
+  } else if (gridGap > 150) {
+    gridNeedEl.textContent = gridGap.toFixed(0) + ' kW needed — near limit';
+    gridNeedEl.style.color = 'var(--yellow)';
+  } else if (demKw < solKw) {
+    gridNeedEl.textContent = 'surplus ' + (solKw - demKw).toFixed(0) + ' kW — will export';
+    gridNeedEl.style.color = 'var(--green)';
+  } else {
+    gridNeedEl.textContent = gridGap.toFixed(0) + ' kW needed';
+    gridNeedEl.style.color = 'var(--text)';
+  }
 
   const socPctRaw = ((obs.battery_soc || 0) * 100);
   const socInfoEl = document.getElementById('socInfo');
