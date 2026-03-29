@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GridOps — Microgrid Operator</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  /* ── Reset & Base ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:       #0a0e17;
+    --panel:    #111827;
+    --border:   #1e293b;
+    --cyan:     #06b6d4;
+    --cyan-dim: #0891b2;
+    --red:      #ef4444;
+    --yellow:   #eab308;
+    --green:    #22c55e;
+    --blue:     #3b82f6;
+    --orange:   #f97316;
+    --text:     #e2e8f0;
+    --text-dim: #94a3b8;
+    --grid-bg:  rgba(6,182,212,0.03);
+  }
+  body {
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    background-image:
+      linear-gradient(rgba(6,182,212,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(6,182,212,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* ── Header ───────────────────────────────────────────────── */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(17,24,39,0.9);
+    backdrop-filter: blur(8px);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo svg { width: 28px; height: 28px; }
+  .logo h1 { font-size: 18px; font-weight: 600; letter-spacing: 1px; }
+  .logo h1 span { color: var(--cyan); }
+  .header-info { display: flex; gap: 20px; font-size: 12px; color: var(--text-dim); }
+  .header-info .tag {
+    padding: 3px 10px; border-radius: 4px;
+    border: 1px solid var(--border);
+    background: rgba(6,182,212,0.08);
+  }
+  .tag.easy { border-color: var(--green); color: var(--green); }
+  .tag.medium { border-color: var(--yellow); color: var(--yellow); }
+  .tag.hard { border-color: var(--red); color: var(--red); }
+
+  /* ── Layout ───────────────────────────────────────────────── */
+  .app { display: grid; grid-template-columns: 280px 1fr 260px; gap: 0; height: calc(100vh - 52px); }
+
+  /* ── Left Panel (Controls) ────────────────────────────────── */
+  .panel-left {
+    padding: 16px;
+    border-right: 1px solid var(--border);
+    background: var(--panel);
+    display: flex; flex-direction: column; gap: 14px;
+    overflow-y: auto;
+  }
+  .section-title {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--cyan); margin-bottom: 4px;
+  }
+  .control-group { display: flex; flex-direction: column; gap: 6px; }
+  .control-group label {
+    font-size: 11px; color: var(--text-dim);
+    display: flex; justify-content: space-between;
+  }
+  .control-group label .val { color: var(--cyan); font-weight: 600; }
+  input[type="range"] {
+    -webkit-appearance: none; width: 100%; height: 6px;
+    background: var(--border); border-radius: 3px; outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--cyan); cursor: pointer;
+    box-shadow: 0 0 8px rgba(6,182,212,0.5);
+  }
+  .btn-step {
+    width: 100%; padding: 12px; margin-top: 8px;
+    background: linear-gradient(135deg, var(--cyan-dim), var(--cyan));
+    color: #000; border: none; border-radius: 6px;
+    font-family: inherit; font-size: 13px; font-weight: 700;
+    cursor: pointer; letter-spacing: 1px;
+    transition: all 0.15s;
+  }
+  .btn-step:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(6,182,212,0.4); }
+  .btn-step:active { transform: translateY(0); }
+  .btn-step:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-reset {
+    width: 100%; padding: 8px;
+    background: transparent; color: var(--text-dim);
+    border: 1px solid var(--border); border-radius: 6px;
+    font-family: inherit; font-size: 11px; cursor: pointer;
+  }
+  .btn-reset:hover { border-color: var(--cyan); color: var(--cyan); }
+  select {
+    width: 100%; padding: 8px; background: var(--bg); color: var(--text);
+    border: 1px solid var(--border); border-radius: 4px;
+    font-family: inherit; font-size: 12px;
+  }
+  .info-row {
+    display: flex; justify-content: space-between;
+    font-size: 11px; padding: 4px 0;
+    border-bottom: 1px solid rgba(30,41,59,0.5);
+  }
+  .info-row .label { color: var(--text-dim); }
+
+  /* ── Center Panel (Visualization) ─────────────────────────── */
+  .panel-center {
+    display: flex; flex-direction: column; gap: 0;
+    overflow: hidden;
+  }
+  .chart-container {
+    flex: 1; padding: 12px; min-height: 0;
+    position: relative;
+  }
+  .chart-container canvas { width: 100% !important; height: 100% !important; }
+
+  /* Energy flow diagram */
+  .flow-section {
+    height: 180px; padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .flow-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 8px; width: 100%; max-width: 600px;
+    text-align: center; font-size: 11px;
+  }
+  .flow-node {
+    padding: 10px 6px; border-radius: 6px;
+    border: 1px solid var(--border);
+    background: rgba(17,24,39,0.8);
+    position: relative;
+  }
+  .flow-node .node-icon { font-size: 20px; display: block; margin-bottom: 2px; }
+  .flow-node .node-val { color: var(--cyan); font-weight: 600; font-size: 13px; }
+  .flow-node .node-label { color: var(--text-dim); font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
+  .flow-node.solar { border-color: var(--yellow); }
+  .flow-node.battery { border-color: var(--blue); }
+  .flow-node.grid { border-color: var(--green); }
+  .flow-node.diesel { border-color: var(--orange); }
+  .flow-node.community { border-color: var(--cyan); background: rgba(6,182,212,0.08); grid-column: 2; }
+  .flow-node.blackout { border-color: var(--red); animation: pulse-red 1s infinite; }
+  @keyframes pulse-red { 0%,100% { box-shadow: 0 0 0 rgba(239,68,68,0); } 50% { box-shadow: 0 0 16px rgba(239,68,68,0.4); } }
+  .flow-arrow { color: var(--text-dim); font-size: 14px; display: flex; align-items: center; justify-content: center; }
+
+  /* Narration bar */
+  .narration {
+    padding: 10px 20px; font-size: 12px;
+    border-top: 1px solid var(--border);
+    background: rgba(6,182,212,0.04);
+    color: var(--text-dim);
+    min-height: 36px;
+  }
+  .narration strong { color: var(--cyan); }
+
+  /* ── Right Panel (Scores) ─────────────────────────────────── */
+  .panel-right {
+    padding: 16px;
+    border-left: 1px solid var(--border);
+    background: var(--panel);
+    display: flex; flex-direction: column; gap: 12px;
+    overflow-y: auto;
+  }
+  .score-card {
+    padding: 12px; border-radius: 6px;
+    border: 1px solid var(--border);
+    background: rgba(10,14,23,0.6);
+  }
+  .score-card .sc-label {
+    font-size: 9px; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--text-dim); margin-bottom: 4px;
+  }
+  .score-card .sc-value {
+    font-size: 24px; font-weight: 700;
+  }
+  .score-card .sc-bar {
+    height: 4px; border-radius: 2px; margin-top: 6px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .score-card .sc-bar-fill {
+    height: 100%; border-radius: 2px;
+    transition: width 0.3s;
+  }
+  .sc-value.good { color: var(--green); }
+  .sc-value.warn { color: var(--yellow); }
+  .sc-value.bad  { color: var(--red); }
+  .sc-value.cyan { color: var(--cyan); }
+
+  .grade-box {
+    padding: 16px; border-radius: 8px;
+    border: 2px solid var(--cyan);
+    background: rgba(6,182,212,0.06);
+    text-align: center;
+  }
+  .grade-box .grade-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); }
+  .grade-box .grade-value { font-size: 42px; font-weight: 800; color: var(--cyan); margin: 4px 0; }
+  .grade-box .grade-sub { font-size: 11px; color: var(--text-dim); }
+  .grade-box.hidden { display: none; }
+
+  /* ── Intro Modal ───────────────────────────────────────────── */
+  .intro-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(10,14,23,0.92);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .intro-overlay.hidden { display: none; }
+
+  .intro-card {
+    max-width: 720px; width: 90%; max-height: 90vh;
+    overflow-y: auto;
+    padding: 40px 44px;
+    border-radius: 16px;
+    border: 1px solid var(--cyan);
+    background: linear-gradient(160deg, rgba(17,24,39,0.98), rgba(10,14,23,0.99));
+    box-shadow: 0 0 60px rgba(6,182,212,0.15), 0 0 120px rgba(6,182,212,0.05);
+    animation: cardIn 0.5s ease;
+  }
+  @keyframes cardIn { from { transform: scale(0.95) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+  .intro-card .intro-bolt {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px;
+  }
+  .intro-card .intro-bolt svg { width: 42px; height: 42px; filter: drop-shadow(0 0 12px rgba(6,182,212,0.6)); }
+  .intro-card .intro-bolt h1 { font-size: 32px; font-weight: 800; letter-spacing: 2px; }
+  .intro-card .intro-bolt h1 span { color: var(--cyan); }
+
+  .intro-card .tagline {
+    font-size: 15px; color: var(--cyan); font-weight: 600;
+    margin-bottom: 20px; letter-spacing: 0.5px;
+  }
+
+  .intro-card .story {
+    font-size: 14px; line-height: 1.75; color: var(--text);
+    margin-bottom: 20px;
+  }
+  .intro-card .story p { margin-bottom: 12px; }
+  .intro-card .story strong { color: var(--cyan); font-weight: 600; }
+  .intro-card .story .highlight {
+    color: var(--yellow);
+  }
+  .intro-card .story .danger {
+    color: var(--red);
+  }
+
+  .intro-card .the-catch {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 13px; line-height: 1.7;
+    color: var(--text);
+  }
+  .intro-card .the-catch .catch-title {
+    color: var(--red); font-weight: 700; font-size: 12px;
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .intro-card .controls-preview {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+    margin-bottom: 22px;
+  }
+  .intro-card .cp-item {
+    background: rgba(6,182,212,0.06);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  .cp-item .cp-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+  .cp-item .cp-name { font-size: 11px; font-weight: 700; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; }
+  .cp-item .cp-desc { font-size: 10px; color: var(--text-dim); margin-top: 3px; }
+
+  .intro-card .scoring {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    margin-bottom: 24px;
+  }
+  .intro-card .sc-item {
+    text-align: center; padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .sc-item .sc-pct { font-size: 22px; font-weight: 800; }
+  .sc-item .sc-what { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+
+  .intro-card .tasks-preview {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    margin-bottom: 24px;
+  }
+  .intro-card .tp-item {
+    padding: 10px 12px; border-radius: 6px;
+    border: 1px solid var(--border);
+    font-size: 11px;
+  }
+  .tp-item .tp-name { font-weight: 700; margin-bottom: 3px; }
+  .tp-item .tp-desc { color: var(--text-dim); font-size: 10px; line-height: 1.5; }
+  .tp-easy .tp-name { color: var(--green); }
+  .tp-med .tp-name { color: var(--yellow); }
+  .tp-hard .tp-name { color: var(--red); }
+
+  .intro-card .btn-start {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--cyan-dim), var(--cyan));
+    color: #000; border: none; border-radius: 8px;
+    font-family: inherit; font-size: 15px; font-weight: 800;
+    cursor: pointer; letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(6,182,212,0.4); }
+
+  .intro-card .shortcut-hint {
+    text-align: center; margin-top: 10px;
+    font-size: 10px; color: var(--text-dim);
+  }
+
+  /* ── Responsive ───────────────────────────────────────────── */
+  @media (max-width: 960px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto; }
+    .panel-left, .panel-right { flex-direction: row; flex-wrap: wrap; border: none; border-bottom: 1px solid var(--border); }
+    .intro-card { padding: 24px; }
+    .controls-preview, .scoring, .tasks-preview { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Intro Overlay ───────────────────────────────────────────── -->
+<div class="intro-overlay" id="introOverlay">
+  <div class="intro-card">
+    <div class="intro-bolt">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2.5">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+      </svg>
+      <h1>GRID<span>OPS</span></h1>
+    </div>
+
+    <div class="tagline">Community Microgrid Bridge Operator</div>
+
+    <div class="story">
+      <p>
+        Imagine you're in charge of keeping the lights on for <strong>100 homes</strong> in an Indian city during a brutal summer.
+      </p>
+      <p>
+        You have <span class="highlight">rooftop solar panels</span> (free energy from the sun!),
+        a big <strong>community battery</strong> (stores energy for later),
+        an expensive <span class="danger">diesel backup generator</span> (costs a fortune),
+        and a connection to the <strong>national power grid</strong> (prices change every hour).
+      </p>
+      <p>
+        Every hour, you make 3 decisions: How much power to <strong>buy or sell</strong> from the grid.
+        Whether to turn on the <span class="danger">diesel generator</span>.
+        And whether to ask residents to <strong>use less power</strong> for a bit.
+      </p>
+      <p>
+        The battery? You don't control it directly. It <strong>automatically absorbs</strong> whatever energy is left over (or fills the gap when there's not enough).
+      </p>
+    </div>
+
+    <div class="the-catch">
+      <div class="catch-title">The catch</div>
+      At <strong>8 PM every evening</strong>, everyone turns on their AC. Demand hits <strong>250 kW</strong>.
+      But the grid connection maxes out at <strong>200 kW</strong>. That's a <strong>50 kW gap</strong>.
+      Your battery can cover it &mdash; <em>if you charged it during the day</em>.
+      If it's empty because you discharged it for profit?
+      <span style="color:var(--red);font-weight:700">Blackout. Rs 150/kWh penalty.</span>
+      On a heatwave day, demand spikes to <strong>375 kW</strong> and you'll need <em>everything</em>
+      &mdash; battery, diesel, shedding &mdash; just to survive.
+    </div>
+
+    <div class="controls-preview">
+      <div class="cp-item">
+        <span class="cp-icon">&#128267;</span>
+        <div class="cp-name">Battery</div>
+        <div class="cp-desc">Charge or discharge. -100 to +100 kW. Rs 2.5/kWh degradation.</div>
+      </div>
+      <div class="cp-item">
+        <span class="cp-icon">&#9981;</span>
+        <div class="cp-name">Diesel</div>
+        <div class="cp-desc">Emergency backup. Rs 25/kWh + Rs 100 startup cost.</div>
+      </div>
+      <div class="cp-item">
+        <span class="cp-icon">&#127968;</span>
+        <div class="cp-name">Demand Shed</div>
+        <div class="cp-desc">Ask residents to cut usage. Up to 20%. 50% rebounds next hour.</div>
+      </div>
+    </div>
+
+    <div class="the-catch" style="border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.05); margin-bottom: 20px;">
+      <div class="catch-title" style="color: var(--cyan);">The grid is your safety net</div>
+      The national grid <strong>automatically</strong> absorbs whatever is left over &mdash;
+      importing when you're short, exporting when you have surplus. But it's capped at
+      <strong>200 kW</strong>. If your community needs more than that, you'd better have
+      battery charge, diesel, or demand shedding ready.
+    </div>
+
+    <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">Your score is graded on</div>
+    <div class="scoring">
+      <div class="sc-item">
+        <div class="sc-pct" style="color:var(--cyan)">60%</div>
+        <div class="sc-what">Cost Savings</div>
+      </div>
+      <div class="sc-item">
+        <div class="sc-pct" style="color:var(--green)">20%</div>
+        <div class="sc-what">Reliability</div>
+      </div>
+      <div class="sc-item">
+        <div class="sc-pct" style="color:#22d3ee">20%</div>
+        <div class="sc-what">Green Score</div>
+      </div>
+    </div>
+
+    <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">3 escalating tasks</div>
+    <div class="tasks-preview">
+      <div class="tp-item tp-easy">
+        <div class="tp-name">Task 1: Normal Summer</div>
+        <div class="tp-desc">Clear skies. Smooth prices. Learn the daily cycle.</div>
+      </div>
+      <div class="tp-item tp-med">
+        <div class="tp-name">Task 2: Heatwave</div>
+        <div class="tp-desc">Day 2 heatwave. +30% demand. Price spikes. Battery decisions from Day 1 matter.</div>
+      </div>
+      <div class="tp-item tp-hard">
+        <div class="tp-name">Task 3: Crisis</div>
+        <div class="tp-desc">3-day heatwave. Solar drops 30%. Limited diesel. Survival mode.</div>
+      </div>
+    </div>
+
+    <button class="btn-start" id="btnStart">Start Operating</button>
+    <div class="shortcut-hint">Press <strong>Space</strong> or <strong>Enter</strong> to advance each hour &middot; <strong>R</strong> to reset</div>
+  </div>
+</div>
+
+<!-- ── Header ──────────────────────────────────────────────────── -->
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2">
+      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+    </svg>
+    <h1>GRID<span>OPS</span></h1>
+  </div>
+  <div class="header-info">
+    <span id="taskTag" class="tag easy">Task 1: Normal</span>
+    <span>Hour <strong id="hourDisp">0</strong>/72</span>
+    <span>Day <strong id="dayDisp">1</strong></span>
+  </div>
+</header>
+
+<div class="app">
+  <!-- ── Left Panel ──────────────────────────────────────────── -->
+  <div class="panel-left">
+    <div>
+      <div class="section-title">Task Selection</div>
+      <select id="taskSelect">
+        <option value="task_1_normal">Task 1 — Normal Summer (Easy)</option>
+        <option value="task_2_heatwave">Task 2 — Heatwave + Clouds (Medium)</option>
+        <option value="task_3_crisis">Task 3 — Extreme Crisis (Hard)</option>
+      </select>
+    </div>
+
+    <div>
+      <div class="section-title">Agent Controls</div>
+      <div class="control-group">
+        <label>Battery <span class="val" id="batteryVal">0 kW</span></label>
+        <input type="range" id="batterySlider" min="-100" max="100" value="0" step="1">
+        <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-dim)">
+          <span>Charge 100kW</span><span>Discharge 100kW</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>Diesel Output <span class="val" id="dieselVal">0 kW</span></label>
+        <input type="range" id="dieselSlider" min="0" max="100" value="0" step="1">
+        <div style="font-size:9px;color:var(--text-dim)">Rs 25/kWh + Rs 100 startup</div>
+      </div>
+      <div class="control-group">
+        <label>Demand Shedding <span class="val" id="shedVal">0%</span></label>
+        <input type="range" id="shedSlider" min="0" max="100" value="0" step="1">
+        <div style="font-size:9px;color:var(--text-dim)">50% rebounds next hour</div>
+      </div>
+    </div>
+
+    <button class="btn-step" id="stepBtn">NEXT HOUR →</button>
+    <button class="btn-reset" id="resetBtn">Reset Episode</button>
+
+    <div>
+      <div class="section-title">Current Conditions</div>
+      <div class="info-row"><span class="label">Grid Price</span><span id="priceInfo">—</span></div>
+      <div class="info-row"><span class="label">Demand</span><span id="demandInfo">—</span></div>
+      <div class="info-row"><span class="label">Solar</span><span id="solarInfo">—</span></div>
+      <div class="info-row"><span class="label">Battery SOC</span><span id="socInfo">—</span></div>
+      <div class="info-row"><span class="label">Diesel Fuel</span><span id="fuelInfo">—</span></div>
+    </div>
+
+    <div>
+      <div class="section-title">4-Hour Forecast</div>
+      <div class="info-row"><span class="label">Demand</span><span id="fcDemand">—</span></div>
+      <div class="info-row"><span class="label">Solar</span><span id="fcSolar">—</span></div>
+      <div class="info-row"><span class="label">Price</span><span id="fcPrice">—</span></div>
+    </div>
+  </div>
+
+  <!-- ── Center Panel ────────────────────────────────────────── -->
+  <div class="panel-center">
+    <div class="chart-container">
+      <canvas id="mainChart"></canvas>
+    </div>
+    <div class="flow-section">
+      <div class="flow-grid">
+        <div class="flow-node solar">
+          <span class="node-icon">☀️</span>
+          <span class="node-val" id="flowSolar">0</span>
+          <span class="node-label">Solar kW</span>
+        </div>
+        <div class="flow-node community" id="flowCommunity">
+          <span class="node-icon">🏘️</span>
+          <span class="node-val" id="flowDemand">0</span>
+          <span class="node-label">Demand kW</span>
+        </div>
+        <div class="flow-node grid">
+          <span class="node-icon">⚡</span>
+          <span class="node-val" id="flowGrid">0</span>
+          <span class="node-label">Grid kW</span>
+        </div>
+        <div class="flow-node battery">
+          <span class="node-icon">🔋</span>
+          <span class="node-val" id="flowBattery">50%</span>
+          <span class="node-label">Battery</span>
+        </div>
+        <div class="flow-node diesel">
+          <span class="node-icon">⛽</span>
+          <span class="node-val" id="flowDiesel">0</span>
+          <span class="node-label">Diesel kW</span>
+        </div>
+        <div class="flow-node" id="flowStatus" style="border-color:var(--green)">
+          <span class="node-icon" id="statusIcon">✅</span>
+          <span class="node-val" id="statusText" style="color:var(--green)">OK</span>
+          <span class="node-label">Status</span>
+        </div>
+      </div>
+    </div>
+    <div class="narration" id="narration">
+      <strong>Ready.</strong> Select a task and click "Next Hour" to begin.
+    </div>
+  </div>
+
+  <!-- ── Right Panel ─────────────────────────────────────────── -->
+  <div class="panel-right">
+    <div class="grade-box hidden" id="gradeBox">
+      <div class="grade-label">Episode Score</div>
+      <div class="grade-value" id="gradeValue">—</div>
+      <div class="grade-sub" id="gradeSub"></div>
+    </div>
+
+    <div class="score-card">
+      <div class="sc-label">Reliability</div>
+      <div class="sc-value good" id="relValue">100%</div>
+      <div class="sc-bar"><div class="sc-bar-fill" id="relBar" style="width:100%;background:var(--green)"></div></div>
+    </div>
+
+    <div class="score-card">
+      <div class="sc-label">Net Cost</div>
+      <div class="sc-value cyan" id="costValue">Rs 0</div>
+    </div>
+
+    <div class="score-card">
+      <div class="sc-label">Diesel Used</div>
+      <div class="sc-value" id="dieselUsed" style="color:var(--orange)">0 kWh</div>
+    </div>
+
+    <div class="score-card">
+      <div class="sc-label">Battery SOC</div>
+      <div class="sc-value cyan" id="socValue">50%</div>
+      <div class="sc-bar"><div class="sc-bar-fill" id="socBar" style="width:50%;background:var(--blue)"></div></div>
+    </div>
+
+    <div class="score-card">
+      <div class="sc-label">Total Blackout</div>
+      <div class="sc-value good" id="blackoutValue">0 kWh</div>
+    </div>
+
+    <div class="score-card">
+      <div class="sc-label">Step Reward</div>
+      <div class="sc-value cyan" id="rewardValue">—</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────
+const API = window.location.origin + '/api';
+let obs = null;
+let running = false;
+
+// ── Chart setup ─────────────────────────────────────────────────
+const chartData = {
+  demand: [], solar: [], price: [], soc: [], hours: [], blackout: []
+};
+
+const ctx = document.getElementById('mainChart').getContext('2d');
+const chart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: chartData.hours,
+    datasets: [
+      { label: 'Demand (kW)', data: chartData.demand, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', borderWidth: 1.5, pointRadius: 0, tension: 0.3, yAxisID: 'y' },
+      { label: 'Solar (kW)', data: chartData.solar, borderColor: '#eab308', backgroundColor: 'rgba(234,179,8,0.1)', borderWidth: 1.5, pointRadius: 0, tension: 0.3, yAxisID: 'y' },
+      { label: 'Price (Rs/kWh)', data: chartData.price, borderColor: '#22c55e', borderDash: [4,2], borderWidth: 1.5, pointRadius: 0, tension: 0.3, yAxisID: 'y1' },
+      { label: 'Battery SOC', data: chartData.soc, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.15)', borderWidth: 1.5, pointRadius: 0, tension: 0.3, fill: true, yAxisID: 'y2' },
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    animation: { duration: 150 },
+    interaction: { intersect: false, mode: 'index' },
+    plugins: {
+      legend: { position: 'top', labels: { color: '#94a3b8', font: { size: 10, family: 'monospace' }, boxWidth: 12, padding: 8 } }
+    },
+    scales: {
+      x: { grid: { color: 'rgba(30,41,59,0.5)' }, ticks: { color: '#64748b', font: { size: 9 }, maxTicksLimit: 24 } },
+      y:  { position: 'left', grid: { color: 'rgba(30,41,59,0.3)' }, ticks: { color: '#94a3b8', font: { size: 9 } }, title: { display: true, text: 'kW', color: '#64748b' }, min: 0 },
+      y1: { position: 'right', grid: { display: false }, ticks: { color: '#22c55e', font: { size: 9 } }, title: { display: true, text: 'Rs/kWh', color: '#22c55e' }, min: 0, max: 25 },
+      y2: { display: false, min: 0, max: 1 },
+    }
+  }
+});
+
+// ── Slider labels ───────────────────────────────────────────────
+const batterySlider = document.getElementById('batterySlider');
+const dieselSlider = document.getElementById('dieselSlider');
+const shedSlider = document.getElementById('shedSlider');
+
+batterySlider.oninput = () => {
+  const v = batterySlider.value;
+  const kw = (v / 100 * 100).toFixed(0);
+  const label = v < 0 ? `Charge ${Math.abs(kw)} kW` : v > 0 ? `Discharge ${kw} kW` : '0 kW';
+  document.getElementById('batteryVal').textContent = label;
+};
+dieselSlider.oninput = () => {
+  document.getElementById('dieselVal').textContent = (dieselSlider.value / 100 * 100).toFixed(0) + ' kW';
+};
+shedSlider.oninput = () => {
+  document.getElementById('shedVal').textContent = (shedSlider.value / 100 * 20).toFixed(0) + '%';
+};
+
+// ── API calls ───────────────────────────────────────────────────
+async function apiPost(path, body) {
+  const res = await fetch(API + path, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+async function resetEnv() {
+  const taskId = document.getElementById('taskSelect').value;
+  const body = { seed: 42, task_id: taskId };
+  const resp = await apiPost('/reset', body);
+  obs = resp.observation || resp;
+  chartData.demand.length = 0;
+  chartData.solar.length = 0;
+  chartData.price.length = 0;
+  chartData.soc.length = 0;
+  chartData.hours.length = 0;
+  chartData.blackout.length = 0;
+  chart.update();
+  updateUI();
+  document.getElementById('gradeBox').classList.add('hidden');
+  document.getElementById('stepBtn').disabled = false;
+  running = true;
+  updateTaskTag();
+}
+
+async function stepEnv() {
+  if (!running) return;
+  const action = {
+    battery_dispatch: batterySlider.value / 100,
+    diesel_dispatch: dieselSlider.value / 100,
+    demand_shedding: shedSlider.value / 100,
+  };
+  const resp = await apiPost('/step', { action });
+  obs = resp.observation || resp;
+
+  // Update chart
+  chartData.hours.push(obs.hour);
+  chartData.demand.push(obs.demand_kw);
+  chartData.solar.push(obs.solar_kw);
+  chartData.price.push(obs.grid_price);
+  chartData.soc.push(obs.battery_soc);
+  chartData.blackout.push(obs.blackout_this_step || 0);
+  chart.update();
+
+  updateUI();
+
+  if (obs.done) {
+    running = false;
+    document.getElementById('stepBtn').disabled = true;
+    // Fetch final state for grade
+    try {
+      const stateResp = await fetch(API + '/state');
+      const stateData = await stateResp.json();
+      if (stateData.grade) showGrade(stateData.grade);
+      else if (obs.metadata && obs.metadata.grade) showGrade(obs.metadata.grade);
+    } catch(e) {
+      if (obs.metadata && obs.metadata.grade) showGrade(obs.metadata.grade);
+    }
+  }
+}
+
+// ── UI update ───────────────────────────────────────────────────
+function updateUI() {
+  if (!obs) return;
+  document.getElementById('hourDisp').textContent = Math.floor(obs.hour);
+  document.getElementById('dayDisp').textContent = obs.day_of_episode || Math.floor(obs.hour / 24) + 1;
+
+  // Info panel
+  document.getElementById('priceInfo').textContent = 'Rs ' + (obs.grid_price || 0).toFixed(1) + '/kWh';
+  document.getElementById('demandInfo').textContent = (obs.demand_kw || 0).toFixed(0) + ' kW';
+  document.getElementById('solarInfo').textContent = (obs.solar_kw || 0).toFixed(0) + ' kW';
+  document.getElementById('socInfo').textContent = ((obs.battery_soc || 0) * 100).toFixed(0) + '%';
+  document.getElementById('fuelInfo').textContent = ((obs.diesel_fuel_remaining || 0) * 100).toFixed(0) + '%';
+
+  // Forecasts
+  const fmt = arr => arr ? arr.map(v => v.toFixed(0)).join(' → ') : '—';
+  document.getElementById('fcDemand').textContent = fmt(obs.demand_forecast_4h);
+  document.getElementById('fcSolar').textContent = fmt(obs.solar_forecast_4h);
+  document.getElementById('fcPrice').textContent = obs.price_forecast_4h ? obs.price_forecast_4h.map(v => v.toFixed(1)).join(' → ') : '—';
+
+  // Flow diagram
+  document.getElementById('flowSolar').textContent = (obs.solar_kw || 0).toFixed(0);
+  document.getElementById('flowDemand').textContent = (obs.demand_kw || 0).toFixed(0);
+  const gridKw = obs.grid_kw_this_step || 0;
+  document.getElementById('flowGrid').textContent = (gridKw >= 0 ? '+' : '') + gridKw.toFixed(0) + ' (slack)';
+  document.getElementById('flowBattery').textContent = ((obs.battery_soc || 0) * 100).toFixed(0) + '%';
+  document.getElementById('flowDiesel').textContent = (dieselSlider.value / 100 * 100).toFixed(0);
+
+  // Status
+  const blackout = obs.blackout_this_step || 0;
+  const statusNode = document.getElementById('flowStatus');
+  const statusIcon = document.getElementById('statusIcon');
+  const statusText = document.getElementById('statusText');
+  if (blackout > 0) {
+    statusNode.className = 'flow-node blackout';
+    statusIcon.textContent = '🚨';
+    statusText.textContent = 'BLACKOUT';
+    statusText.style.color = 'var(--red)';
+  } else {
+    statusNode.className = 'flow-node';
+    statusNode.style.borderColor = 'var(--green)';
+    statusIcon.textContent = '✅';
+    statusText.textContent = 'OK';
+    statusText.style.color = 'var(--green)';
+  }
+
+  // Narration
+  document.getElementById('narration').innerHTML = '<strong>System:</strong> ' + (obs.narration || '');
+
+  // Right panel scores
+  const totalDemandApprox = Math.max(obs.hour * 300, 1);
+  const reliability = totalDemandApprox > 0 ? Math.max(0, 1 - (obs.cumulative_blackout_kwh || 0) / totalDemandApprox) : 1;
+  const relPct = (reliability * 100).toFixed(1);
+  const relEl = document.getElementById('relValue');
+  relEl.textContent = relPct + '%';
+  relEl.className = 'sc-value ' + (reliability > 0.95 ? 'good' : reliability > 0.9 ? 'warn' : 'bad');
+  document.getElementById('relBar').style.width = relPct + '%';
+  document.getElementById('relBar').style.background = reliability > 0.95 ? 'var(--green)' : reliability > 0.9 ? 'var(--yellow)' : 'var(--red)';
+
+  document.getElementById('costValue').textContent = 'Rs ' + (obs.cumulative_cost || 0).toFixed(0);
+  document.getElementById('blackoutValue').textContent = (obs.cumulative_blackout_kwh || 0).toFixed(1) + ' kWh';
+  const bvEl = document.getElementById('blackoutValue');
+  bvEl.className = 'sc-value ' + ((obs.cumulative_blackout_kwh || 0) < 1 ? 'good' : 'bad');
+
+  const socPct = ((obs.battery_soc || 0) * 100).toFixed(0);
+  document.getElementById('socValue').textContent = socPct + '%';
+  document.getElementById('socBar').style.width = socPct + '%';
+
+  document.getElementById('rewardValue').textContent = (obs.reward != null ? obs.reward.toFixed(3) : '—');
+}
+
+function showGrade(g) {
+  const box = document.getElementById('gradeBox');
+  box.classList.remove('hidden');
+  document.getElementById('gradeValue').textContent = g.score.toFixed(3);
+  document.getElementById('gradeSub').innerHTML =
+    `Reliability: ${(g.reliability*100).toFixed(1)}% · Cost savings: ${(g.cost_savings*100).toFixed(1)}% · Green: ${(g.green_score*100).toFixed(1)}%`;
+}
+
+function updateTaskTag() {
+  const sel = document.getElementById('taskSelect');
+  const tag = document.getElementById('taskTag');
+  const i = sel.selectedIndex;
+  const labels = ['Task 1: Normal', 'Task 2: Heatwave', 'Task 3: Crisis'];
+  const classes = ['easy', 'medium', 'hard'];
+  tag.textContent = labels[i];
+  tag.className = 'tag ' + classes[i];
+}
+
+// ── Event handlers ──────────────────────────────────────────────
+document.getElementById('stepBtn').addEventListener('click', stepEnv);
+document.getElementById('resetBtn').addEventListener('click', resetEnv);
+document.getElementById('taskSelect').addEventListener('change', () => { updateTaskTag(); resetEnv(); });
+
+// Keyboard shortcuts (only when intro is dismissed)
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('introOverlay').classList.contains('hidden')) return;
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); stepEnv(); }
+  if (e.key === 'r' && !e.metaKey && !e.ctrlKey) resetEnv();
+});
+
+// ── Intro dismiss ───────────────────────────────────────────────
+document.getElementById('btnStart').addEventListener('click', () => {
+  document.getElementById('introOverlay').classList.add('hidden');
+  resetEnv();
+});
+// Also dismiss on Enter/Space while intro is visible
+document.getElementById('introOverlay').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    document.getElementById('introOverlay').classList.add('hidden');
+    resetEnv();
+  }
+});
+document.getElementById('btnStart').focus();
+</script>
+</body>
+</html>

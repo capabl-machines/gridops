@@ -1,0 +1,39 @@
+name: gridops
+description: "Community microgrid bridge operator — balance solar, battery, diesel, and grid trade across 3-day summer episodes in India."
+version: "0.1.0"
+
+environment:
+  module: gridops.server.app
+  class: GridOpsEnvironment
+  action: GridOpsAction
+  observation: GridOpsObservation
+
+server:
+  module: gridops.server.app
+  app: app
+  host: "0.0.0.0"
+  port: 8000
+  workers: 1
+
+tasks:
+  - id: task_1_normal
+    name: "Normal Summer"
+    difficulty: easy
+    description: "Clear skies, standard demand curve, smooth IEX prices Rs 4-8."
+
+  - id: task_2_heatwave
+    name: "Heatwave + Clouds"
+    difficulty: medium
+    description: "Day 2-3 heatwave (+30% demand), intermittent clouds, price spikes to Rs 18."
+
+  - id: task_3_crisis
+    name: "Extreme Crisis"
+    difficulty: hard
+    description: "Full 3-day heatwave, -30% solar, Rs 8-20 prices, limited diesel fuel."
+
+metadata:
+  action_space: "3D continuous: grid_trade [-1,1], diesel_dispatch [0,1], demand_shedding [0,1]"
+  observation_space: "12 fields: hour, demand, solar, battery_soc, price, fuel, 3×4h forecasts, cumulative metrics"
+  episode_length: 72
+  step_duration: "1 hour"
+  grading: "Reliability-gated composite: 60% cost savings + 20% reliability + 20% green score"

@@ -1,0 +1,27 @@
+[project]
+name = "gridops"
+version = "0.1.0"
+description = "Community Microgrid RL Environment — OpenEnv Hackathon"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "openenv-core>=0.2.0",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.0",
+    "numpy>=1.24.0",
+    "websockets>=12.0",
+    "openai>=1.0.0",
+    "requests>=2.28.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "httpx"]
+inference = ["openai"]
+
+[project.scripts]
+server = "server.app:main"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
