@@ -38,7 +38,7 @@ You are an expert microgrid operator managing a 100-home community in India duri
 You control three actions each hour:
 - battery_dispatch: -1 (charge 100 kW from grid) to +1 (discharge 100 kW to community)
 - diesel_dispatch: 0 (off) to 1 (100 kW). Costs Rs 25/kWh + Rs 100 startup if was off.
-- demand_shedding: 0 (none) to 1 (shed 20% of demand). WARNING: 50% rebounds next hour.
+- demand_shedding: 0 (none) to 1 (shed 20% of demand). WARNING: 100% rebounds next hour! Rs 40/kWh penalty.
 
 The GRID automatically absorbs the residual (capped at ±200 kW).
 If demand exceeds grid + solar + battery + diesel → BLACKOUT (Rs 150/kWh penalty!).

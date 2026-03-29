@@ -7,7 +7,7 @@ KEY DESIGN (per Gemini review):
   - VoLL penalty (Rs 150/kWh) replaces hard reliability gate
   - Battery degradation cost (Rs 2.5/kWh throughput)
   - Diesel startup cost (Rs 100 if was off last step)
-  - Demand shedding rebound (50% of shed kWh added to next hour)
+  - Demand shedding rebound (100% of shed kWh deferred to next hour)
 """
 
 from __future__ import annotations
@@ -123,7 +123,7 @@ def step(
     actual_demand = demand_kw + state.shed_rebound_kwh / DT  # rebound is kWh, convert to kW
     effective_demand = actual_demand * (1.0 - shed_frac)
     shed_kwh = actual_demand * shed_frac * DT
-    state.shed_rebound_kwh = shed_kwh * SHED_REBOUND_FRAC  # 50% rebounds next hour
+    state.shed_rebound_kwh = shed_kwh * SHED_REBOUND_FRAC  # 100% rebounds next hour
 
     # ── Diesel fuel constraint ───────────────────────────────────────
     available_diesel_kwh = state.diesel_fuel_kwh
@@ -227,9 +227,13 @@ def step(
     state.last_cost = step_cost
     state.last_grid_kw = grid_kw
 
-    # ── Per-step reward (negative cost, normalized) ──────────────────
-    # Simple: reward = -cost / normalization. Agent minimizes total cost.
-    reward = -step_cost / 500.0  # normalize to roughly [-2, 0] range
+    # ── Per-step reward (aligned with episode grader weights) ────────
+    # Grader = 50% cost_efficiency + 25% reliability + 25% green_score
+    # Step reward mirrors these proportions for consistent learning signal.
+    cost_signal = -step_cost / 500.0
+    reliability_signal = -2.0 * (blackout_kwh / max(effective_demand * DT, 1.0))
+    green_signal = -0.5 * (diesel_kw / DIESEL_MAX_KW) if diesel_kw > 0 else 0.0
+    reward = 0.50 * cost_signal + 0.25 * reliability_signal + 0.25 * green_signal
     state.last_reward = reward
 
     # ── Advance clock ────────────────────────────────────────────────

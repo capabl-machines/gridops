@@ -37,7 +37,7 @@ class GridOpsAction(Action):
         default=0.0,
         ge=0.0,
         le=1.0,
-        description="Demand response: 0 (none) to 1 (shed 20%). 50% rebounds next hour.",
+        description="Demand response: 0 (none) to 1 (shed 20%). 100% rebounds next hour. Rs 40/kWh penalty.",
     )
 
 

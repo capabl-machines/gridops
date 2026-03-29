@@ -32,7 +32,7 @@ tasks:
     description: "Full 3-day heatwave, -30% solar, Rs 8-20 prices, limited diesel fuel."
 
 metadata:
-  action_space: "3D continuous: grid_trade [-1,1], diesel_dispatch [0,1], demand_shedding [0,1]"
+  action_space: "3D continuous: battery_dispatch [-1,1], diesel_dispatch [0,1], demand_shedding [0,1]"
   observation_space: "12 fields: hour, demand, solar, battery_soc, price, fuel, 3×4h forecasts, cumulative metrics"
   episode_length: 72
   step_duration: "1 hour"
