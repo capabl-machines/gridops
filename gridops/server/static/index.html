@@ -356,11 +356,52 @@
   .tp-med .tp-name { color: var(--yellow); }
   .tp-hard .tp-name { color: var(--red); }
 
+  /* Slide cards */
+  .slide-track {
+    display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory;
+    padding: 8px 0 16px; -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin; scrollbar-color: var(--cyan-dim) transparent;
+  }
+  .slide-track::-webkit-scrollbar { height: 5px; }
+  .slide-track::-webkit-scrollbar-thumb { background: var(--cyan-dim); border-radius: 3px; }
+  .slide-card {
+    flex: 0 0 100%; scroll-snap-align: center;
+    padding: 28px 32px; border-radius: 14px;
+    border: 1px solid var(--border);
+    background: rgba(17,24,39,0.85);
+    display: flex; gap: 24px; align-items: center;
+    min-height: 160px;
+  }
+  .slide-card .sc-visual {
+    flex: 0 0 140px; height: 120px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+    position: relative; overflow: hidden;
+  }
+  .slide-card .sc-content { flex: 1; min-width: 0; }
+  .slide-card .sc-step {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--cyan); margin-bottom: 6px;
+  }
+  .slide-card .sc-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; line-height: 1.3; }
+  .slide-card .sc-body { font-size: 13px; color: var(--text-dim); line-height: 1.7; }
+  .slide-card .sc-body strong { color: var(--cyan); font-weight: 600; }
+  .slide-card .sc-body .warn { color: var(--red); font-weight: 600; }
+  .slide-dots {
+    display: flex; justify-content: center; gap: 8px; margin-bottom: 16px;
+  }
+  .slide-dots .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border); transition: background 0.2s;
+  }
+  .slide-dots .dot.active { background: var(--cyan); }
+
   .intro-card .btn-start {
-    width: 100%; padding: 16px;
+    width: 100%; padding: 14px;
     background: linear-gradient(135deg, var(--cyan-dim), var(--cyan));
     color: #000; border: none; border-radius: 8px;
-    font-family: inherit; font-size: 15px; font-weight: 800;
+    font-family: inherit; font-size: 14px; font-weight: 800;
     cursor: pointer; letter-spacing: 2px;
     text-transform: uppercase;
     transition: all 0.2s;
@@ -368,7 +409,7 @@
   .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(6,182,212,0.4); }
 
   .intro-card .shortcut-hint {
-    text-align: center; margin-top: 10px;
+    text-align: center; margin-top: 8px;
     font-size: 10px; color: var(--text-dim);
   }
 
@@ -393,93 +434,70 @@
       <h1>GRID<span>OPS</span></h1>
     </div>
 
-    <div class="tagline">Community Microgrid Bridge Operator</div>
+    <div class="tagline">An OpenEnv RL environment for Indian community microgrid operation</div>
 
-    <div class="story">
-      <p>
-        Imagine you're in charge of keeping the lights on for <strong>100 homes</strong> in an Indian city during a brutal summer. You have four energy sources:
-      </p>
-      <p style="margin-left:8px; line-height: 2.0;">
-        <span class="highlight">&#9728;&#65039; Rooftop solar</span> &mdash; free energy, but only when the sun is up<br>
-        <strong>&#128267; Community battery</strong> &mdash; 500 kWh storage, you decide when to charge or discharge<br>
-        <span class="danger">&#9981; Diesel generator</span> &mdash; Rs 25/kWh + Rs 100 startup. Last resort.<br>
-        <strong>&#9889; National grid</strong> &mdash; auto-imports/exports what's left over (capped at 200 kW)
-      </p>
-      <p>Every hour you make <strong>3 decisions</strong>:</p>
-      <p style="margin-left:8px; line-height: 2.0;">
-        &#128267; <strong>Battery</strong> &mdash; charge it (store cheap energy) or discharge it (cover peaks)<br>
-        &#9981; <strong>Diesel</strong> &mdash; turn it on for emergency power (expensive!)<br>
-        &#127968; <strong>Demand shed</strong> &mdash; ask residents to use less (but 100% rebounds next hour)
-      </p>
+    <!-- Sliding cards -->
+    <div class="slide-track" id="slideTrack">
+
+      <!-- Card 1: The Scenario -->
+      <div class="slide-card">
+        <div class="sc-visual" style="background:linear-gradient(135deg, rgba(6,182,212,0.15), rgba(59,130,246,0.1)); border:1px solid rgba(6,182,212,0.2);">
+          <div style="text-align:center;">
+            <div style="font-size:36px;">&#127968;</div>
+            <div style="font-size:10px;color:var(--cyan);margin-top:4px;font-weight:600;">100 HOMES</div>
+            <div style="font-size:8px;color:var(--text-dim);">3 days &middot; 72 hours</div>
+          </div>
+        </div>
+        <div class="sc-content">
+          <div class="sc-step">The Scenario</div>
+          <div class="sc-title">You run a community microgrid in India during summer</div>
+          <div class="sc-body">Every hour for 3 days, you decide how to use the <strong>battery</strong>, <strong>diesel</strong>, and <strong>demand response</strong> &mdash; while the national grid automatically covers whatever is left over.</div>
+        </div>
+      </div>
+
+      <!-- Card 2: Your Resources -->
+      <div class="slide-card">
+        <div class="sc-visual" style="background:linear-gradient(135deg, rgba(234,179,8,0.12), rgba(34,197,94,0.08)); border:1px solid rgba(234,179,8,0.2);">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;">
+            <div style="text-align:center;"><div style="font-size:22px;">&#9728;&#65039;</div><div style="font-size:7px;color:var(--yellow);">SOLAR</div></div>
+            <div style="text-align:center;"><div style="font-size:22px;">&#128267;</div><div style="font-size:7px;color:var(--blue);">BATTERY</div></div>
+            <div style="text-align:center;"><div style="font-size:22px;">&#9981;</div><div style="font-size:7px;color:var(--orange);">DIESEL</div></div>
+            <div style="text-align:center;"><div style="font-size:22px;">&#9889;</div><div style="font-size:7px;color:var(--green);">GRID</div></div>
+          </div>
+        </div>
+        <div class="sc-content">
+          <div class="sc-step">Your Resources</div>
+          <div class="sc-title">Choose the right energy source to match demand</div>
+          <div class="sc-body"><strong>Solar</strong> is free but only shines during the day. <strong>Battery</strong> stores 500 kWh &mdash; you decide when to charge or use it. <strong>Diesel</strong> is expensive (Rs 25/kWh). <strong>Grid</strong> auto-fills the gap up to 200 kW.</div>
+        </div>
+      </div>
+
+      <!-- Card 3: Your Goal -->
+      <div class="slide-card">
+        <div class="sc-visual" style="background:linear-gradient(135deg, rgba(34,197,94,0.12), rgba(6,182,212,0.08)); border:1px solid rgba(34,197,94,0.2);">
+          <div style="text-align:center;">
+            <div style="font-size:28px;color:var(--green);font-weight:800;">&#8595; &#8377;</div>
+            <div style="display:flex;gap:4px;justify-content:center;margin-top:8px;">
+              <div style="background:var(--green);width:40px;height:6px;border-radius:3px;opacity:0.8;"></div>
+              <div style="background:var(--yellow);width:25px;height:6px;border-radius:3px;opacity:0.8;"></div>
+              <div style="background:var(--cyan);width:25px;height:6px;border-radius:3px;opacity:0.8;"></div>
+            </div>
+            <div style="font-size:7px;color:var(--text-dim);margin-top:4px;">50% cost &middot; 25% lights &middot; 25% green</div>
+          </div>
+        </div>
+        <div class="sc-content">
+          <div class="sc-step">Your Goal</div>
+          <div class="sc-title">Lose as little money as possible while keeping lights on</div>
+          <div class="sc-body">Switch between energy sources smartly. Buy grid power <strong>cheap at night</strong>, use free solar during the day, and discharge battery during <strong>expensive evening peaks</strong>. Blackouts cost <span class="warn">Rs 150/kWh</span> &mdash; keep them near zero.</div>
+        </div>
+      </div>
+
     </div>
 
-    <div class="the-catch">
-      <div class="catch-title">The catch</div>
-      At <strong>8 PM every evening</strong>, everyone turns on their AC. Demand hits <strong>250 kW</strong>.
-      But the grid connection maxes out at <strong>200 kW</strong>. That's a <strong>50 kW gap</strong>.
-      Your battery can cover it &mdash; <em>if you charged it during the day</em>.
-      If it's empty because you discharged it for profit?
-      <span style="color:var(--red);font-weight:700">Blackout. Rs 150/kWh penalty.</span>
-      On a heatwave day, demand spikes to <strong>375 kW</strong> and you'll need <em>everything</em>
-      &mdash; battery, diesel, shedding &mdash; just to survive.
-    </div>
-
-    <div class="controls-preview">
-      <div class="cp-item">
-        <span class="cp-icon">&#128267;</span>
-        <div class="cp-name">Battery</div>
-        <div class="cp-desc">Charge or discharge. -100 to +100 kW. Rs 2.5/kWh degradation.</div>
-      </div>
-      <div class="cp-item">
-        <span class="cp-icon">&#9981;</span>
-        <div class="cp-name">Diesel</div>
-        <div class="cp-desc">Emergency backup. Rs 25/kWh + Rs 100 startup cost.</div>
-      </div>
-      <div class="cp-item">
-        <span class="cp-icon">&#127968;</span>
-        <div class="cp-name">Demand Shed</div>
-        <div class="cp-desc">Ask residents to cut usage. Up to 20%. 100% rebounds next hour! Rs 40/kWh.</div>
-      </div>
-    </div>
-
-    <div class="the-catch" style="border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.05); margin-bottom: 20px;">
-      <div class="catch-title" style="color: var(--cyan);">The grid is your safety net</div>
-      The national grid <strong>automatically</strong> absorbs whatever is left over &mdash;
-      importing when you're short, exporting when you have surplus. But it's capped at
-      <strong>200 kW</strong>. If your community needs more than that, you'd better have
-      battery charge, diesel, or demand shedding ready.
-    </div>
-
-    <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">Your score is graded on</div>
-    <div class="scoring">
-      <div class="sc-item">
-        <div class="sc-pct" style="color:var(--cyan)">60%</div>
-        <div class="sc-what">Cost Savings</div>
-      </div>
-      <div class="sc-item">
-        <div class="sc-pct" style="color:var(--green)">20%</div>
-        <div class="sc-what">Reliability</div>
-      </div>
-      <div class="sc-item">
-        <div class="sc-pct" style="color:#22d3ee">20%</div>
-        <div class="sc-what">Green Score</div>
-      </div>
-    </div>
-
-    <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">3 escalating tasks</div>
-    <div class="tasks-preview">
-      <div class="tp-item tp-easy">
-        <div class="tp-name">Task 1: Normal Summer</div>
-        <div class="tp-desc">Clear skies. Smooth prices. Learn the daily cycle.</div>
-      </div>
-      <div class="tp-item tp-med">
-        <div class="tp-name">Task 2: Heatwave</div>
-        <div class="tp-desc">Day 2 heatwave. +30% demand. Price spikes. Battery decisions from Day 1 matter.</div>
-      </div>
-      <div class="tp-item tp-hard">
-        <div class="tp-name">Task 3: Crisis</div>
-        <div class="tp-desc">3-day heatwave. Solar drops 30%. Limited diesel. Survival mode.</div>
-      </div>
+    <div class="slide-dots" id="slideDots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
     </div>
 
     <button class="btn-start" id="btnStart">Start Operating</button>
@@ -1109,6 +1127,18 @@ document.getElementById('introOverlay').addEventListener('keydown', e => {
     resetEnv();
   }
 });
+// Slide dot indicators
+const slideTrack = document.getElementById('slideTrack');
+const dots = document.querySelectorAll('#slideDots .dot');
+if (slideTrack && dots.length) {
+  slideTrack.addEventListener('scroll', () => {
+    const idx = Math.round(slideTrack.scrollLeft / slideTrack.clientWidth);
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  });
+  dots.forEach((d, i) => d.addEventListener('click', () => {
+    slideTrack.scrollTo({ left: i * slideTrack.clientWidth, behavior: 'smooth' });
+  }));
+}
 document.getElementById('btnStart').focus();
 </script>
 </body>
