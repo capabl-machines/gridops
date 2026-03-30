@@ -168,10 +168,19 @@ class GridOpsEnvironment(Environment):
         )
 
     def get_metadata(self) -> EnvironmentMetadata:
+        readme = None
+        try:
+            from pathlib import Path
+            readme_path = Path(__file__).parent.parent.parent / "README.md"
+            if readme_path.exists():
+                readme = readme_path.read_text()
+        except Exception:
+            pass
         return EnvironmentMetadata(
             name="GridOps",
             description="Community microgrid bridge operator — balance solar, battery, diesel, and grid across 3-day episodes.",
             version="0.2.0",
+            readme_content=readme,
         )
 
     def _make_observation(self, reward: float, done: bool, narration: str) -> GridOpsObservation:

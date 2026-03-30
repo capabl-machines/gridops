@@ -150,16 +150,17 @@ The environment has 5 mechanisms that prevent reward hacking:
 
 ## Baseline Scores
 
-| Strategy | Task 1 | Task 2 | Task 3 |
-|----------|--------|--------|--------|
-| **Oracle (rule-based)** | **0.79** | **0.81** | **0.70** |
-| Do-Nothing (grid only) | 0.58 | 0.51 | 0.45 |
-| Always-Discharge | 0.59 | 0.51 | 0.45 |
-| Always-Diesel | 0.42 | 0.42 | 0.44 |
+| Strategy | Task 1 | Task 2 | Task 3 | What it does |
+|----------|--------|--------|--------|-------------|
+| **Oracle (rule-based)** | **0.79** | **0.81** | **0.70** | Time-of-day + price + SOC aware |
+| Do-Nothing (grid only) | 0.58 | 0.51 | 0.45 | Grid covers everything it can |
+| Always-Discharge | 0.59 | 0.51 | 0.45 | Drains battery, empty by evening |
+| Always-Diesel | 0.42 | 0.42 | 0.44 | Rs 25/kWh burns money |
 
 - **Deterministic**: identical scores across 3 runs (seeded RNG)
-- **Oracle ceiling is < 1.0**: proves the environment has real physics constraints, not inflated scores
-- **Clear separation**: oracle >> heuristics on every task
+- **Oracle ceiling < 1.0**: real physics constraints, not inflated scores
+- **Clear separation**: oracle >> heuristics on every task (0.20-0.35 gap)
+- **Task 3 hardest**: grid outage drops oracle from 0.81 to 0.70
 
 ---
 

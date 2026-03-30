@@ -79,19 +79,22 @@ def list_tasks():
                 "id": "task_1_normal",
                 "name": "Normal Summer",
                 "difficulty": "Easy",
-                "description": "Clear skies, standard demand, Rs 3-12 price range.",
+                "description": "Clear skies, ~100 kW avg demand, Rs 3-12 prices. Tests basic battery arbitrage.",
+                "oracle_score": 0.79,
             },
             {
                 "id": "task_2_heatwave",
-                "name": "Heatwave + Clouds",
+                "name": "Heatwave + Price Spike",
                 "difficulty": "Medium",
-                "description": "Day 2-3 heatwave, +30% demand, price spikes to Rs 18.",
+                "description": "Day 2-3 heatwave (+30% demand), Rs 20 price spike. Tests temporal planning via forecast.",
+                "oracle_score": 0.81,
             },
             {
                 "id": "task_3_crisis",
-                "name": "Extreme Crisis",
+                "name": "Extreme Crisis + Grid Outage",
                 "difficulty": "Hard",
-                "description": "Full 3-day heatwave, -30% solar, prices Rs 8-20, limited diesel.",
+                "description": "Full 3-day heatwave, -30% solar, +50% demand, limited diesel, 6-hour grid outage. Tests islanding.",
+                "oracle_score": 0.70,
             },
         ]
     }

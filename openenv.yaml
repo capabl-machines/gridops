@@ -1,6 +1,6 @@
 name: gridops
-description: "Community microgrid bridge operator — balance solar, battery, diesel, and grid trade across 3-day summer episodes in India."
-version: "0.1.0"
+description: "Community microgrid bridge operator — balance solar, battery, diesel, and grid across 3-day summer episodes in India."
+version: "0.2.0"
 
 environment:
   module: gridops.server.app
@@ -19,21 +19,23 @@ tasks:
   - id: task_1_normal
     name: "Normal Summer"
     difficulty: easy
-    description: "Clear skies, standard demand curve, smooth IEX prices Rs 4-8."
+    description: "Clear skies, ~100 kW avg demand, 250 kW evening peak, IEX prices Rs 3-12. Tests basic battery arbitrage."
 
   - id: task_2_heatwave
-    name: "Heatwave + Clouds"
+    name: "Heatwave + Price Spike"
     difficulty: medium
-    description: "Day 2-3 heatwave (+30% demand), intermittent clouds, price spikes to Rs 18."
+    description: "Day 2-3 heatwave (+30% demand), intermittent clouds, Rs 20 evening price spike. Tests temporal planning via 4h forecast."
 
   - id: task_3_crisis
-    name: "Extreme Crisis"
+    name: "Extreme Crisis + Grid Outage"
     difficulty: hard
-    description: "Full 3-day heatwave, -30% solar, Rs 8-20 prices, limited diesel fuel."
+    description: "Full 3-day heatwave, -30% solar, +50% demand, limited diesel (33%), 6-hour grid outage on Day 2. Tests islanding and constraint management."
 
 metadata:
   action_space: "3D continuous: battery_dispatch [-1,1], diesel_dispatch [0,1], demand_shedding [0,1]"
-  observation_space: "12 fields: hour, demand, solar, battery_soc, price, fuel, 3×4h forecasts, cumulative metrics"
+  observation_space: "30+ fields: hour, demand, solar, battery_soc, price, fuel, diesel_is_on, 3x4h noisy forecasts, cumulative metrics, detailed energy flows"
   episode_length: 72
   step_duration: "1 hour"
+  episode_start: "6 AM Day 1"
   grading: "Composite: 50% cost efficiency + 25% reliability + 25% green score. VoLL Rs 150/kWh blackout penalty."
+  anti_gaming: "Shedding Rs 40/kWh + 100% rebound, battery Rs 2.5/kWh degradation, diesel Rs 100 startup, smooth VoLL, grid cap 200 kW"
