@@ -14,21 +14,48 @@ tags:
 
 # GridOps — Community Microgrid Bridge Operator
 
-> Keep the lights on for 100 homes. Don't go broke. Don't pollute.
+> A production-grade OpenEnv RL environment for Indian community microgrid operation. Plug-and-play. Deterministic. Benchmarkable.
 
-An OpenEnv RL environment where an AI agent operates a **community microgrid in an Indian city during summer**. Every hour for 3 days, the agent decides how to use the battery, whether to run diesel, and whether to ask residents to cut usage — while the national grid automatically covers whatever is left over (up to its 200 kW limit).
+**Live demo**: [77ethers-gridops.hf.space/dashboard/](https://77ethers-gridops.hf.space/dashboard/) | **HF Space**: [huggingface.co/spaces/77ethers/gridops](https://huggingface.co/spaces/77ethers/gridops)
 
-**Live dashboard**: [77ethers-gridops.hf.space/dashboard/](https://77ethers-gridops.hf.space/dashboard/)
+---
+
+## At a Glance
+
+| | |
+|---|---|
+| **Domain** | Real-world Indian community microgrid operation (100 homes, summer) |
+| **Interface** | Full OpenEnv spec: `reset()` -> `step(action)` -> `state()`, typed Pydantic models |
+| **Actions** | 3D continuous: `battery_dispatch [-1,1]`, `diesel_dispatch [0,1]`, `demand_shedding [0,1]` |
+| **Observations** | 30+ fields: demand, solar, price, SOC, forecasts, energy flows. Partial observability (noisy forecasts). |
+| **Tasks** | 3 tasks (easy -> medium -> hard), each testing a different RL capability |
+| **Grading** | Deterministic, programmatic, 0.0-1.0. Same seed = same score, every run. |
+| **Reward** | Dense per-step signal, aligned with episode grader (50% cost + 25% reliability + 25% green) |
+| **Anti-gaming** | 5 mechanisms: degradation, startup costs, rebound, smooth VoLL, grid cap |
+| **Baseline** | Grok-4 LLM: 0.80/0.82/0.72 — beats hand-coded oracle on all tasks |
+| **Deployment** | Docker + HF Space + `openenv validate` 6/6 pass |
 
 ---
 
 ## Why This Environment Exists
 
-Community microgrid operation is a **real job** in India under the [RDSS](https://rdss.gov.in/) (Revamped Distribution Sector Scheme). IEX prosumer bidding is live. Over 50 million Indian homes will have rooftop solar by 2030, and someone needs to manage the battery-grid-diesel tradeoff in real time.
+Community microgrid operation is a **real job** in India under the [RDSS](https://rdss.gov.in/) (Revamped Distribution Sector Scheme). IEX prosumer bidding is live. Over 50 million Indian homes will have rooftop solar by 2030, and someone — or some agent — needs to manage the battery-grid-diesel tradeoff in real time.
 
-This environment captures the core tension: **sell surplus solar during expensive evening peaks for profit — but if a heatwave continues tomorrow and your battery is empty, the neighborhood goes dark.**
+This is not a toy problem. This is what a microgrid operator at an Indian housing society actually decides every hour:
 
-Simple heuristics ("always discharge at peak", "always run diesel when low") provably fail. The agent must learn multi-hour planning, price forecasting, and constraint management.
+- **Should I charge the battery now** (grid is cheap at Rs 4/kWh) **or save capacity for tonight** (price will spike to Rs 15)?
+- **Should I run diesel** (Rs 25/kWh + Rs 100 startup) **or risk a blackout** (Rs 150/kWh VoLL penalty)?
+- **Should I ask residents to reduce AC usage** (Rs 40/kWh + 100% rebounds tomorrow)?
+
+Simple heuristics provably fail. The environment requires multi-hour planning, price forecasting, and constraint management under partial observability.
+
+### What makes this a strong benchmark
+
+- **Any agent can plug in immediately** — typed JSON actions in, typed observations out, no custom hacks
+- **Fully deterministic** — same seed, same actions = identical trajectory every time. Leaderboard-ready.
+- **Tasks differentiate agents** — Do-Nothing scores 0.45-0.58, Oracle 0.70-0.81, Grok-4 LLM 0.72-0.82. Clear skill gradient.
+- **Can't be gamed** — 5 anti-exploit mechanisms prevent reward hacking (detailed below)
+- **Grader = ground truth** — programmatic, deterministic, partial credit, aligned with per-step reward
 
 ---
 
