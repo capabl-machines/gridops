@@ -152,15 +152,17 @@ The environment has 5 mechanisms that prevent reward hacking:
 
 | Strategy | Task 1 | Task 2 | Task 3 | What it does |
 |----------|--------|--------|--------|-------------|
-| **Oracle (rule-based)** | **0.79** | **0.81** | **0.70** | Time-of-day + price + SOC aware |
+| **Grok-4 (LLM)** | **0.80** | **0.82** | **0.72** | Reads observations, reasons about tradeoffs |
+| **Oracle (rule-based)** | 0.79 | 0.81 | 0.70 | Time-of-day + price + SOC heuristic |
 | Do-Nothing (grid only) | 0.58 | 0.51 | 0.45 | Grid covers everything it can |
 | Always-Discharge | 0.59 | 0.51 | 0.45 | Drains battery, empty by evening |
 | Always-Diesel | 0.42 | 0.42 | 0.44 | Rs 25/kWh burns money |
 
+- **LLM beats oracle**: Grok-4 matched or exceeded the hand-coded oracle on every task
 - **Deterministic**: identical scores across 3 runs (seeded RNG)
 - **Oracle ceiling < 1.0**: real physics constraints, not inflated scores
-- **Clear separation**: oracle >> heuristics on every task (0.20-0.35 gap)
-- **Task 3 hardest**: grid outage drops oracle from 0.81 to 0.70
+- **Clear separation**: LLM > oracle >> heuristics (0.20-0.38 gap from best to worst)
+- **Task 3 hardest**: grid outage makes it genuinely challenging even for frontier LLMs
 
 ---
 
