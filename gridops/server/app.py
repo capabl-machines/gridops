@@ -104,15 +104,19 @@ def list_tasks():
 # ── Root redirect to dashboard ───────────────────────────────────────────
 
 @app.get("/")
-def root_redirect():
-    """Redirect root to dashboard so HF Space iframe shows the UI."""
-    return RedirectResponse(url="/dashboard/")
+def root_serve():
+    """Serve dashboard directly at root so HF Space iframe shows the UI."""
+    from fastapi.responses import HTMLResponse
+    index = Path(__file__).parent / "static" / "index.html"
+    return HTMLResponse(content=index.read_text(), status_code=200)
 
 
 @app.get("/web")
-def web_redirect():
-    """Redirect /web to dashboard (OpenEnv default web UI path)."""
-    return RedirectResponse(url="/dashboard/")
+def web_serve():
+    """Serve dashboard at /web (OpenEnv default web UI path)."""
+    from fastapi.responses import HTMLResponse
+    index = Path(__file__).parent / "static" / "index.html"
+    return HTMLResponse(content=index.read_text(), status_code=200)
 
 
 # ── Serve dashboard static files ────────────────────────────────────────
