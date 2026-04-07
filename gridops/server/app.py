@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -98,6 +99,20 @@ def list_tasks():
             },
         ]
     }
+
+
+# ── Root redirect to dashboard ───────────────────────────────────────────
+
+@app.get("/")
+def root_redirect():
+    """Redirect root to dashboard so HF Space iframe shows the UI."""
+    return RedirectResponse(url="/dashboard/")
+
+
+@app.get("/web")
+def web_redirect():
+    """Redirect /web to dashboard (OpenEnv default web UI path)."""
+    return RedirectResponse(url="/dashboard/")
 
 
 # ── Serve dashboard static files ────────────────────────────────────────
