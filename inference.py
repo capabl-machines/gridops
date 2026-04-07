@@ -99,6 +99,9 @@ def run_task(client: OpenAI, env: GridOpsEnvironment, task_id: str, seed: int = 
     obs = env.reset(seed=seed, task_id=task_id)
     obs_dict = obs.model_dump()
 
+    # ── [START] structured output ──
+    print(f"[START] task={task_id}", flush=True)
+
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
     for step_idx in range(MAX_STEPS):
@@ -118,7 +121,6 @@ def run_task(client: OpenAI, env: GridOpsEnvironment, task_id: str, seed: int = 
             )
             reply = completion.choices[0].message.content or ""
         except Exception as e:
-            print(f"    LLM error at step {step_idx}: {e}")
             reply = "{}"
 
         messages.append({"role": "assistant", "content": reply})
@@ -132,47 +134,36 @@ def run_task(client: OpenAI, env: GridOpsEnvironment, task_id: str, seed: int = 
         obs = env.step(action)
         obs_dict = obs.model_dump()
 
-        if step_idx % 24 == 0:
-            print(f"    Hour {obs_dict['hour']:.0f}: SOC={obs_dict['battery_soc']*100:.0f}% "
-                  f"cost=Rs {obs_dict['cumulative_cost']:.0f} "
-                  f"blackout={obs_dict['cumulative_blackout_kwh']:.1f}")
+        # ── [STEP] structured output ──
+        reward = obs_dict.get("reward", 0.0)
+        print(f"[STEP] step={step_idx + 1} reward={reward:.4f}", flush=True)
 
         if obs_dict.get("done", False):
             break
 
     grade = env.state.grade
+    score = grade["score"] if grade else 0.0
+    steps = step_idx + 1
+
+    # ── [END] structured output ──
+    print(f"[END] task={task_id} score={score:.4f} steps={steps}", flush=True)
+
     return grade
 
 
 def main():
-    print("=" * 60)
-    print("  GridOps — LLM Baseline Inference")
-    print(f"  Model: {MODEL_NAME}")
-    print(f"  API:   {API_BASE_URL}")
-    print("=" * 60)
-
     client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
     env = GridOpsEnvironment()
 
     results = {}
     for task_id in TASKS:
-        print(f"\n--- {task_id} ---")
         grade = run_task(client, env, task_id)
         results[task_id] = grade
-        if grade:
-            print(f"  Score:       {grade['score']}")
-            print(f"  Reliability: {grade['reliability']}")
-            print(f"  Cost Eff:    {grade['cost_efficiency']}")
-            print(f"  Green:       {grade['green_score']}")
-            print(f"  Cost:        Rs {grade['actual_cost']:.0f} (baseline Rs {grade['baseline_cost']:.0f})")
 
-    print("\n" + "=" * 60)
-    print("  SUMMARY")
-    print("=" * 60)
+    # Summary
     for task_id, grade in results.items():
-        score = grade["score"] if grade else "ERROR"
-        print(f"  {task_id}: {score}")
-    print("=" * 60)
+        score = grade["score"] if grade else 0.0
+        print(f"[SUMMARY] task={task_id} score={score:.4f}", flush=True)
 
 
 if __name__ == "__main__":
