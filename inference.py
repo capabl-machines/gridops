@@ -127,9 +127,9 @@ def run_task(client: OpenAI, env: GridOpsEnvironment, task_id: str, seed: int = 
 
         action_dict = parse_action(reply)
         action = GridOpsAction(
-            battery_dispatch=float(action_dict.get("battery_dispatch", 0.0)),
-            diesel_dispatch=float(action_dict.get("diesel_dispatch", 0.0)),
-            demand_shedding=float(action_dict.get("demand_shedding", 0.0)),
+            battery_dispatch=max(-1.0, min(1.0, float(action_dict.get("battery_dispatch", 0.0)))),
+            diesel_dispatch=max(0.0, min(1.0, float(action_dict.get("diesel_dispatch", 0.0)))),
+            demand_shedding=max(0.0, min(1.0, float(action_dict.get("demand_shedding", 0.0)))),
         )
         obs = env.step(action)
         obs_dict = obs.model_dump()
