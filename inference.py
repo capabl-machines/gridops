@@ -30,7 +30,7 @@ from gridops.models import GridOpsAction
 TASKS = ["task_1_normal", "task_2_heatwave", "task_3_crisis"]
 MAX_STEPS = 72
 TEMPERATURE = 0.1
-MAX_TOKENS = 150
+MAX_TOKENS = 500  # higher to support reasoning models that emit thinking before JSON
 
 SYSTEM_PROMPT = """\
 You are an expert microgrid operator managing a 100-home community in India during summer.
