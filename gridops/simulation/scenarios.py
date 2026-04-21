@@ -148,8 +148,13 @@ def make_forecast(
     horizon: int,
     noise_frac: float,
     rng: np.random.Generator,
+    grow_noise: bool = False,
 ) -> list[float]:
-    """Return a noisy forecast for the next `horizon` hours."""
+    """Return a noisy forecast for the next `horizon` hours.
+
+    If `grow_noise` is True, noise scales with horizon: noise_k = noise_frac * (1 + k/24).
+    This reflects real forecast degradation — 1h ahead is more reliable than 24h ahead.
+    """
     forecasts = []
     for i in range(1, horizon + 1):
         h = current_hour + i
@@ -157,6 +162,7 @@ def make_forecast(
             val = true_values[h]
         else:
             val = true_values[-1]
-        noisy = val * (1.0 + rng.normal(0, noise_frac))
+        sigma = noise_frac * (1.0 + i / 24.0) if grow_noise else noise_frac
+        noisy = val * (1.0 + rng.normal(0, sigma))
         forecasts.append(max(0.0, float(noisy)))
     return forecasts

@@ -53,10 +53,15 @@ class GridOpsObservation(Observation):
     diesel_fuel_remaining: float = Field(default=1.0, description="Diesel fuel level (0-1)")
     diesel_is_on: bool = Field(default=False, description="Whether diesel was running last step")
 
-    # Noisy 4-hour forecasts
+    # Noisy 4-hour forecasts (kept for compatibility)
     demand_forecast_4h: List[float] = Field(default_factory=list, description="Demand forecast next 4h")
     solar_forecast_4h: List[float] = Field(default_factory=list, description="Solar forecast next 4h")
     price_forecast_4h: List[float] = Field(default_factory=list, description="Price forecast next 4h")
+
+    # 24-hour forecasts with horizon-growing noise (h+1 → h+24)
+    demand_forecast_24h: List[float] = Field(default_factory=list, description="Demand forecast next 24h (noise grows with horizon)")
+    solar_forecast_24h: List[float] = Field(default_factory=list, description="Solar forecast next 24h")
+    price_forecast_24h: List[float] = Field(default_factory=list, description="Price forecast next 24h")
 
     # Cumulative metrics
     cumulative_blackout_kwh: float = Field(default=0.0, description="Total unmet demand (kWh)")

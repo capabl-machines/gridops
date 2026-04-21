@@ -12,7 +12,7 @@ KEY DESIGN (per Gemini review):
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 
@@ -24,13 +24,16 @@ BATTERY_MAX_POWER_KW = 100.0
 BATTERY_EFFICIENCY = 0.90          # round-trip (applied as √0.9 each way)
 BATTERY_CHARGE_EFF = 0.949         # √0.90 ≈ 0.949
 BATTERY_DISCHARGE_EFF = 0.949      # agent gets 94.9% of what battery releases
-BATTERY_DEGRADATION_RS = 2.5       # Rs per kWh of throughput (charge or discharge)
+BATTERY_DEGRADATION_RS = 1.0       # Rs per kWh of throughput (LFP amortized)
 GRID_MAX_KW = 200.0
 DIESEL_MAX_KW = 100.0
 DIESEL_COST_PER_KWH = 25.0
 DIESEL_STARTUP_COST = 100.0        # Rs, one-time when turning on from off
 DEMAND_SHED_MAX_FRAC = 0.20
-SHED_REBOUND_FRAC = 1.00           # 100% of shed energy rebounds next hour (deferred, not destroyed)
+# Shed rebound: 30% of shed energy rebounds, spread over next 3 hours
+# (15% at h+1, 10% at h+2, 5% at h+3). Remaining 70% is permanently avoided —
+# lighting/TV not missed, HVAC thermal inertia partially absorbed.
+SHED_REBOUND_PROFILE = (0.15, 0.10, 0.05)
 DIESEL_TANK_KWH = 2400.0           # total fuel capacity
 VOLL = 150.0                       # Value of Lost Load (Rs/kWh)
 DT = 1.0                           # 1 hour per step
@@ -44,7 +47,8 @@ class MicrogridState:
     battery_soc_kwh: float = 250.0   # start half-charged
     diesel_fuel_kwh: float = 2400.0
     diesel_was_on: bool = False       # for startup cost
-    shed_rebound_kwh: float = 0.0     # deferred load from previous shedding
+    # Rebound queue: index 0 = kWh arriving this hour, 1 = next, 2 = hour after
+    shed_rebound_queue: list[float] = field(default_factory=lambda: [0.0, 0.0, 0.0])
     cumulative_cost: float = 0.0
     cumulative_blackout_kwh: float = 0.0
     cumulative_diesel_kwh: float = 0.0
@@ -119,11 +123,18 @@ def step(
     diesel_kw = float(np.clip(diesel_norm, 0, 1)) * DIESEL_MAX_KW
     shed_frac = float(np.clip(shed_norm, 0, 1)) * DEMAND_SHED_MAX_FRAC
 
-    # ── Demand (with shedding rebound from last step) ────────────────
-    actual_demand = demand_kw + state.shed_rebound_kwh / DT  # rebound is kWh, convert to kW
+    # ── Demand (with shedding rebound from prior steps) ──────────────
+    # Pop the rebound arriving this hour, shift queue, schedule new rebounds
+    rebound_this_hour = state.shed_rebound_queue[0]
+    state.shed_rebound_queue = state.shed_rebound_queue[1:] + [0.0]
+
+    actual_demand = demand_kw + rebound_this_hour / DT
     effective_demand = actual_demand * (1.0 - shed_frac)
     shed_kwh = actual_demand * shed_frac * DT
-    state.shed_rebound_kwh = shed_kwh * SHED_REBOUND_FRAC  # 100% rebounds next hour
+
+    # Schedule rebounds: 15% / 10% / 5% over next 3 hours (30% total, 70% avoided)
+    for i, frac in enumerate(SHED_REBOUND_PROFILE):
+        state.shed_rebound_queue[i] += shed_kwh * frac
 
     # ── Diesel fuel constraint ───────────────────────────────────────
     available_diesel_kwh = state.diesel_fuel_kwh
@@ -184,7 +195,7 @@ def step(
         total_supply_kw=solar_kw + grid_import + batt_discharge + diesel_kw,
         total_consumption_kw=effective_demand + grid_export + batt_charge,
         shed_kw=actual_demand * shed_frac,
-        rebound_kw=state.shed_rebound_kwh / SHED_REBOUND_FRAC if shed_frac == 0 else 0,
+        rebound_kw=rebound_this_hour / DT,
     )
 
     # ── Cost accounting ──────────────────────────────────────────────
@@ -227,13 +238,10 @@ def step(
     state.last_cost = step_cost
     state.last_grid_kw = grid_kw
 
-    # ── Per-step reward (aligned with episode grader weights) ────────
-    # Grader = 50% cost_efficiency + 25% reliability + 25% green_score
-    # Step reward mirrors these proportions for consistent learning signal.
-    cost_signal = -step_cost / 500.0
-    reliability_signal = -2.0 * (blackout_kwh / max(effective_demand * DT, 1.0))
-    green_signal = -0.5 * (diesel_kw / DIESEL_MAX_KW) if diesel_kw > 0 else 0.0
-    reward = 0.50 * cost_signal + 0.25 * reliability_signal + 0.25 * green_signal
+    # ── Per-step reward: pure economic signal ────────────────────────
+    # step_cost already monetizes blackouts (VoLL), diesel, shedding, battery
+    # degradation, and grid import/export. No double-counting.
+    reward = -step_cost / 500.0
     state.last_reward = reward
 
     # ── Advance clock ────────────────────────────────────────────────
@@ -308,7 +316,8 @@ def _narrate(
 
     if shed > 0:
         parts.append(f"Demand response active ({shed * 100:.0f}% shed).")
-        if s.shed_rebound_kwh > 1:
-            parts.append(f"Rebound: +{s.shed_rebound_kwh:.0f} kW next hour.")
+        pending_rebound = sum(s.shed_rebound_queue)
+        if pending_rebound > 1:
+            parts.append(f"Pending rebound: {pending_rebound:.0f} kWh over next 3h.")
 
     return " ".join(parts)
