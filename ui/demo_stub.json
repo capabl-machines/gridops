@@ -1,0 +1,340 @@
+{
+  "episode_id": "scripted_seed42_phase3",
+  "policy_label": "scripted",
+  "current_quarter": 12,
+  "total_quarters": 12,
+  "tech_bet": "green_leaps",
+  "news_feed": [
+    {
+      "quarter": 0,
+      "news": "Q1: routine quarter. No significant macro news.",
+      "tier": "routine",
+      "has_shock": false
+    },
+    {
+      "quarter": 1,
+      "news": "Fed minutes leaked: PCE core unexpectedly at 5.8%. Committee signals sustained tightening into 2027. 10-year yields climb 80bp. Dollar rallies against EM. Oil services announce capacity expansion.",
+      "tier": "ambiguous",
+      "has_shock": true
+    },
+    {
+      "quarter": 2,
+      "news": "Q3: routine quarter. No significant macro news.",
+      "tier": "routine",
+      "has_shock": false
+    },
+    {
+      "quarter": 3,
+      "news": "Q4: routine quarter. No significant macro news.",
+      "tier": "routine",
+      "has_shock": false
+    },
+    {
+      "quarter": 4,
+      "news": "Q5: routine quarter. No significant macro news.",
+      "tier": "routine",
+      "has_shock": false
+    },
+    {
+      "quarter": 5,
+      "news": "PLACEHOLDER \u2014 brother to fill an ambiguous-tier shock with 2nd-order effects.",
+      "tier": "ambiguous",
+      "has_shock": true
+    },
+    {
+      "quarter": 6,
+      "news": "Q7: routine quarter. No significant macro news.",
+      "tier": "routine",
+      "has_shock": false
+    },
+    {
+      "quarter": 7,
+      "news": "Q8: routine quarter. No significant macro news.",
+      "tier": "routine",
+      "has_shock": false
+    },
+    {
+      "quarter": 8,
+      "news": "PLACEHOLDER \u2014 brother to fill a hard-tier shock.",
+      "tier": "hard",
+      "has_shock": true
+    },
+    {
+      "quarter": 9,
+      "news": "PLACEHOLDER \u2014 brother to fill an ambiguous-tier shock.",
+      "tier": "ambiguous",
+      "has_shock": true
+    },
+    {
+      "quarter": 10,
+      "news": "Q11: routine quarter. No significant macro news.",
+      "tier": "routine",
+      "has_shock": false
+    },
+    {
+      "quarter": 11,
+      "news": "OPEC+ announces modest production cut of 500k bpd. Spot crude +4%. No broader market reaction.",
+      "tier": "easy",
+      "has_shock": true
+    }
+  ],
+  "think_stream": [
+    {
+      "quarter": 0,
+      "text": "Q0: scripted policy. Regime=normal. Holding equal-weighted."
+    },
+    {
+      "quarter": 1,
+      "text": "Q1: scripted policy. Regime=normal. Holding equal-weighted."
+    },
+    {
+      "quarter": 2,
+      "text": "Q2: scripted policy. Regime=stagflationary. Tilting heavily to OIL, REAL_ESTATE as inflation hedge."
+    },
+    {
+      "quarter": 3,
+      "text": "Q3: scripted policy. Regime=stagflationary. Tilting heavily to OIL, REAL_ESTATE as inflation hedge."
+    },
+    {
+      "quarter": 4,
+      "text": "Q4: scripted policy. Regime=stagflationary. Tilting heavily to OIL, REAL_ESTATE as inflation hedge."
+    },
+    {
+      "quarter": 5,
+      "text": "Q5: scripted policy. Regime=stagflationary. Tilting heavily to OIL, REAL_ESTATE as inflation hedge."
+    },
+    {
+      "quarter": 6,
+      "text": "Q6: scripted policy. Regime=stagflationary. Tilting heavily to OIL, REAL_ESTATE as inflation hedge."
+    },
+    {
+      "quarter": 7,
+      "text": "Q7: scripted policy. Regime=stagflationary. Tilting heavily to OIL, REAL_ESTATE as inflation hedge."
+    },
+    {
+      "quarter": 8,
+      "text": "Q8: scripted policy. Regime=stagflationary. Tilting heavily to OIL, REAL_ESTATE as inflation hedge."
+    },
+    {
+      "quarter": 9,
+      "text": "Q9: scripted policy. Regime=stagflationary. Tilting heavily to OIL, REAL_ESTATE as inflation hedge."
+    },
+    {
+      "quarter": 10,
+      "text": "Q10: scripted policy. Regime=stagflationary. Tilting heavily to OIL, REAL_ESTATE as inflation hedge."
+    },
+    {
+      "quarter": 11,
+      "text": "Q11: scripted policy. Regime=stagflationary. Tilting heavily to OIL, REAL_ESTATE as inflation hedge."
+    }
+  ],
+  "weights_history": [
+    [
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2
+    ],
+    [
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2
+    ],
+    [
+      0.1,
+      0.4,
+      0.1,
+      0.2,
+      0.2
+    ],
+    [
+      0.1,
+      0.4,
+      0.1,
+      0.2,
+      0.2
+    ],
+    [
+      0.1,
+      0.4,
+      0.1,
+      0.2,
+      0.2
+    ],
+    [
+      0.1,
+      0.4,
+      0.1,
+      0.2,
+      0.2
+    ],
+    [
+      0.1,
+      0.4,
+      0.1,
+      0.2,
+      0.2
+    ],
+    [
+      0.1,
+      0.4,
+      0.1,
+      0.2,
+      0.2
+    ],
+    [
+      0.1,
+      0.4,
+      0.1,
+      0.2,
+      0.2
+    ],
+    [
+      0.1,
+      0.4,
+      0.1,
+      0.2,
+      0.2
+    ],
+    [
+      0.1,
+      0.4,
+      0.1,
+      0.2,
+      0.2
+    ],
+    [
+      0.1,
+      0.4,
+      0.1,
+      0.2,
+      0.2
+    ]
+  ],
+  "interventions_used": [
+    {
+      "quarter": 0,
+      "type": "tech_bet",
+      "value": "green_leaps"
+    },
+    {
+      "quarter": 0,
+      "type": "infra_commit",
+      "value": 0.15
+    }
+  ],
+  "shock_markers": [
+    {
+      "quarter": 1,
+      "id": "ambig_stagflation_trigger",
+      "tier": "ambiguous"
+    },
+    {
+      "quarter": 5,
+      "id": "ambig_PLACEHOLDER_4",
+      "tier": "ambiguous"
+    },
+    {
+      "quarter": 8,
+      "id": "hard_PLACEHOLDER_4",
+      "tier": "hard"
+    },
+    {
+      "quarter": 9,
+      "id": "ambig_PLACEHOLDER_5",
+      "tier": "ambiguous"
+    },
+    {
+      "quarter": 11,
+      "id": "easy_oil_opec_cut",
+      "tier": "easy"
+    }
+  ],
+  "nav_series": {
+    "agent_real": [
+      1.0,
+      1.01385,
+      0.99322,
+      0.98583,
+      0.97977,
+      0.98299,
+      0.98287,
+      0.98585,
+      0.98954,
+      0.98288,
+      0.9756,
+      0.96352,
+      0.98622
+    ],
+    "agent_nominal": [
+      1.0,
+      1.02399,
+      1.01318,
+      1.03078,
+      1.05006,
+      1.07985,
+      1.10672,
+      1.13781,
+      1.17062,
+      1.19182,
+      1.21257,
+      1.22749,
+      1.28782
+    ],
+    "baseline_real": [
+      1.0,
+      1.01385,
+      0.99135,
+      0.9784,
+      0.96706,
+      0.95702,
+      0.94383,
+      0.93647,
+      0.93139,
+      0.9158,
+      0.90059,
+      0.88724,
+      0.88741
+    ]
+  },
+  "regime_series": [
+    "normal",
+    "normal",
+    "stagflationary",
+    "stagflationary",
+    "stagflationary",
+    "stagflationary",
+    "stagflationary",
+    "stagflationary",
+    "stagflationary",
+    "stagflationary",
+    "stagflationary",
+    "stagflationary",
+    "stagflationary"
+  ],
+  "carbon": {
+    "accumulated": 12.88,
+    "cap": 25.0,
+    "series": [
+      0.0,
+      0.54,
+      1.08,
+      2.14,
+      3.22,
+      4.33,
+      5.46,
+      6.63,
+      7.83,
+      9.05,
+      10.3,
+      11.56,
+      12.88
+    ],
+    "offsets_held": 0.0
+  },
+  "final_regret_real": 0.09881,
+  "timestamp": 1776969733
+}
