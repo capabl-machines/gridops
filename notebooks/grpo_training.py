@@ -200,17 +200,24 @@ def build_training_dataset(n_prompts: int, phase: int, rng: np.random.Generator)
 # SFT warm-start
 # ══════════════════════════════════════════════════════════════════════
 
-def run_sft_warmstart(model, tokenizer, sft_path: Path, max_steps: int = 60):
+def run_sft_warmstart(model, tokenizer, sft_path: Path, max_steps: int = 150):
     print(f'\n══ SFT warm-start — {sft_path} ══')
     if not sft_path.exists():
         print(f'  ! {sft_path} does not exist. Skipping SFT.')
         return model
+    # Use proper chat-template format so model learns {user → assistant} structure
+    # that matches what eval uses via tokenizer.apply_chat_template(...).
     rows = []
     with sft_path.open() as f:
         for line in f:
             t = json.loads(line)
-            rows.append({'text': t['prompt'] + '\n' + t['completion']})
-    print(f'  {len(rows)} SFT examples loaded')
+            rows.append({
+                'messages': [
+                    {'role': 'user',      'content': t['prompt']},
+                    {'role': 'assistant', 'content': t['completion']},
+                ]
+            })
+    print(f'  {len(rows)} SFT examples loaded (chat format)')
     ds = Dataset.from_list(rows)
 
     FastLanguageModel.for_training(model)
@@ -219,13 +226,15 @@ def run_sft_warmstart(model, tokenizer, sft_path: Path, max_steps: int = 60):
         max_steps=max_steps,
         per_device_train_batch_size=2,
         gradient_accumulation_steps=4,
-        learning_rate=2e-5,
-        warmup_ratio=0.1,
+        learning_rate=5e-5,           # bumped 2e-5 → 5e-5; format learning needs it
+        warmup_ratio=0.05,
         logging_steps=5,
-        save_strategy='no',
+        save_strategy='steps',
+        save_steps=max_steps,         # one save at end so we can inspect adapters
+        save_total_limit=1,
         bf16=is_bfloat16_supported(),
-        dataset_text_field='text',
         max_length=MAX_SEQ_LEN,
+        assistant_only_loss=True,     # only train on assistant turn, not the prompt
     )
     trainer = SFTTrainer(
         model=model,
@@ -292,11 +301,13 @@ def run_grpo_phase(model, tokenizer, phase: int):
 # Hold-out eval
 # ══════════════════════════════════════════════════════════════════════
 
-def evaluate_holdout(model, tokenizer, phase: int = 3) -> dict:
+def evaluate_holdout(model, tokenizer, phase: int = 3, verbose_samples: int = 1) -> dict:
+    """Eval on reserved holdout seeds. Prints raw completion for first N seeds
+    to help diagnose format/structure issues (e.g. 0/5 valid)."""
     from portfolio_env import holdout_seeds
     FastLanguageModel.for_inference(model)
     results = {}
-    for seed in holdout_seeds():
+    for i, seed in enumerate(holdout_seeds()):
         from portfolio_env.shocks import shocks_available
         pool = shocks_available(phase)
         rng = np.random.default_rng(seed)
@@ -307,9 +318,15 @@ def evaluate_holdout(model, tokenizer, phase: int = 3) -> dict:
             tokenize=False, add_generation_prompt=True,
         )
         inputs = tokenizer(msg_text, return_tensors='pt').to('cuda')
-        out = model.generate(**inputs, max_new_tokens=400, do_sample=False)
+        out = model.generate(**inputs, max_new_tokens=500, do_sample=False)
         completion = tokenizer.decode(out[0][inputs['input_ids'].shape[1]:], skip_special_tokens=False)
         action = _action_from_completion(completion)
+
+        if i < verbose_samples:
+            print(f'\n  [diagnostic] seed={seed} raw completion (first 500 chars):')
+            print('  ' + completion[:500].replace('\n', '\n  '))
+            print(f'  [parse_action result]: {action}')
+
         if action is None:
             results[seed] = {'valid': False, 'regret': None}
             continue
@@ -319,7 +336,7 @@ def evaluate_holdout(model, tokenizer, phase: int = 3) -> dict:
 
     valid_regrets = [r['regret'] for r in results.values() if r['valid']]
     print(f'\n── Hold-out eval ({len(valid_regrets)}/{len(results)} valid) ──')
-    print(f'  mean regret: {np.mean(valid_regrets):+.4f}' if valid_regrets else '  no valid')
+    print(f'  mean regret: {np.mean(valid_regrets):+.4f}' if valid_regrets else '  no valid completions')
     print(f'  beat baseline: {sum(1 for r in valid_regrets if r > 0)}/{len(valid_regrets)}')
     return results
 
