@@ -18,6 +18,7 @@ from .rewards import (
     extract_think,
     ALL_REWARDS,
 )
+from .sampling import training_seeds, holdout_seeds
 from .shocks import Shock, SHOCKS_BY_ID, shocks_available
 
 __all__ = [

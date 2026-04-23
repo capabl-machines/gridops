@@ -51,6 +51,10 @@ TECH_BET_OPTIONS = ('status_quo', 'green_leaps', 'carbon_priced', 'inflationary'
 
 BASELINE_WEIGHTS = [0.2] * N_ASSETS  # equal-weighted benchmark
 
+# v0.7: Reserve seeds for eval-only. Training seed sampler MUST skip these
+# so we can measure generalization cleanly. (FAQ #44, #52)
+HOLDOUT_SEEDS: tuple[int, ...] = (100, 200, 300, 400, 500)
+
 # Forecast / observation noise
 BASE_RETURN_NOISE = 0.02
 
