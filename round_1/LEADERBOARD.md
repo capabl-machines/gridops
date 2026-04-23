@@ -9,7 +9,7 @@ All runs use seed=42 for full reproducibility. Each task is 72 steps (3 days).
 
 | Rank | Agent | Task 1 (Normal) | Task 2 (Heatwave) | Task 3 (Crisis) | **Average** |
 |---:|---|:---:|:---:|:---:|:---:|
-| 1 | **Grok-4 (xAI)** | 0.80 | **0.82** | **0.72** | **0.78** |
+| 1 | **Grok-4.1 (xAI)** | 0.80 | **0.82** | **0.72** | **0.78** |
 | 2 | Oracle (rule-based) | 0.79 | 0.81 | 0.70 | 0.77 |
 | 3 | **GPT-5.4 (OpenAI)** | 0.79 | 0.79 | 0.67 | 0.75 |
 | 4 | Gemma-4-31B (Google) | **0.81** | 0.79 | 0.62 | 0.74 |

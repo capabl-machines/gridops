@@ -144,6 +144,7 @@ class GridOpsEnvironment(Environment):
             self._grade = grade_episode(
                 self._micro, self._demand, self._solar, self._price,
                 grid_outage_hours=self._cfg.grid_outage_hours,
+                diesel_fuel_cap_kwh=self._cfg.diesel_fuel_capacity * DIESEL_TANK_KWH,
             )
 
         obs = self._make_observation(
