@@ -12,3 +12,8 @@ build/
 04-training.md
 GRIDOPS_SPEC.md
 gemini31.py
+
+# Round 2 additions
+.playwright-mcp/
+sft_traces/_*.log
+sft_traces/_test_traces.jsonl

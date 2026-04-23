@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "portfolio-env"
+version = "0.6.0"
+description = "Reasoning-Under-Constraints OpenEnv — Meta PyTorch Hackathon Round 2"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.5",
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+training = [
+    "torch>=2.1",
+    "transformers>=4.40",
+    "trl>=0.11",
+    "unsloth",
+    "accelerate",
+    "datasets",
+]
+dev = [
+    "pytest>=8",
+    "ruff>=0.5",
+]
+
+[tool.setuptools.packages.find]
+include = ["portfolio_env*"]
+exclude = ["round_1*", "tests*", "notebooks*", "ui*"]
