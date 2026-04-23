@@ -205,19 +205,23 @@ def run_sft_warmstart(model, tokenizer, sft_path: Path, max_steps: int = 150):
     if not sft_path.exists():
         print(f'  ! {sft_path} does not exist. Skipping SFT.')
         return model
-    # Use proper chat-template format so model learns {user → assistant} structure
-    # that matches what eval uses via tokenizer.apply_chat_template(...).
+    # Pre-format as plain `text` using the tokenizer's chat template. This
+    # avoids Unsloth's `formatting_func` requirement while still ensuring the
+    # model trains on the same `<|im_start|>user ... <|im_end|><|im_start|>assistant ...`
+    # structure that eval produces.
     rows = []
     with sft_path.open() as f:
         for line in f:
             t = json.loads(line)
-            rows.append({
-                'messages': [
+            text = tokenizer.apply_chat_template(
+                [
                     {'role': 'user',      'content': t['prompt']},
                     {'role': 'assistant', 'content': t['completion']},
-                ]
-            })
-    print(f'  {len(rows)} SFT examples loaded (chat format)')
+                ],
+                tokenize=False,
+            )
+            rows.append({'text': text})
+    print(f'  {len(rows)} SFT examples loaded (chat format in `text`)')
     ds = Dataset.from_list(rows)
 
     FastLanguageModel.for_training(model)
@@ -233,8 +237,8 @@ def run_sft_warmstart(model, tokenizer, sft_path: Path, max_steps: int = 150):
         save_steps=max_steps,         # one save at end so we can inspect adapters
         save_total_limit=1,
         bf16=is_bfloat16_supported(),
+        dataset_text_field='text',
         max_length=MAX_SEQ_LEN,
-        assistant_only_loss=True,     # only train on assistant turn, not the prompt
     )
     trainer = SFTTrainer(
         model=model,
