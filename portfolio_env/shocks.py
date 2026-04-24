@@ -71,13 +71,16 @@ EASY_SHOCKS: list[Shock] = [
         impacts={'TECH': 0.0, 'OIL': 0.0, 'GREEN': 0.0, 'REAL_ESTATE': -0.03, 'BONDS': +0.01},
         tags=[],
     ),
-    # PLACEHOLDER — brother to fill
     Shock(
-        id='easy_PLACEHOLDER_5',
+        id='easy_ev_penetration',
         tier='easy',
-        news='PLACEHOLDER — brother fills in one more easy-tier shock.',
-        impacts={'TECH': 0.0, 'OIL': 0.0, 'GREEN': 0.0, 'REAL_ESTATE': 0.0, 'BONDS': 0.0},
+        news='EV registrations cross 20% of European new-car sales in Q3. '
+             'Traditional auto OEMs accelerate fleet electrification capex. '
+             'Charging network operators report record utilization.',
+        impacts={'TECH': +0.02, 'OIL': -0.03, 'GREEN': +0.07, 'REAL_ESTATE': 0.0, 'BONDS': 0.0},
+        tags=['transition_risk'],
     ),
+    # PLACEHOLDER — brother to fill one more easy-tier shock
     Shock(
         id='easy_PLACEHOLDER_6',
         tier='easy',
@@ -138,19 +141,39 @@ AMBIGUOUS_SHOCKS: list[Shock] = [
         },
         tags=[],
     ),
-    # PLACEHOLDER — brother to fill the remaining 4 ambiguous shocks
     Shock(
-        id='ambig_PLACEHOLDER_4',
+        id='ambig_insurance_retreat',
         tier='ambiguous',
-        news='PLACEHOLDER — brother to fill an ambiguous-tier shock with 2nd-order effects.',
-        impacts={'TECH': 0.0, 'OIL': 0.0, 'GREEN': 0.0, 'REAL_ESTATE': 0.0, 'BONDS': 0.0},
+        news='Three top-10 US insurers announce exit from Florida and California '
+             'property markets citing climate-loss economics. State regulators '
+             'hint at taxpayer-backed reinsurance pool. 10-year Treasury yields '
+             'fall 30bp on flight-to-safety; municipal bond market freezes.',
+        impacts={
+            'TECH':        -0.03,   # mild risk-off
+            'OIL':         -0.01,
+            'GREEN':       +0.04,   # climate-adaptation capex narrative strengthens
+            'REAL_ESTATE': -0.18,   # direct (obvious)
+            'BONDS':       +0.09,   # flight to quality + rate-cut pricing (non-obvious wins)
+        },
+        tags=['physical_risk'],
     ),
     Shock(
-        id='ambig_PLACEHOLDER_5',
+        id='ambig_ai_efficiency',
         tier='ambiguous',
-        news='PLACEHOLDER — brother to fill an ambiguous-tier shock.',
-        impacts={'TECH': 0.0, 'OIL': 0.0, 'GREEN': 0.0, 'REAL_ESTATE': 0.0, 'BONDS': 0.0},
+        news='Major lab demos 10× inference-efficiency gain on next-gen reasoning '
+             'model; hyperscalers announce deferred GPU orders. Data-center capex '
+             'forecasts revised down 40% for 2028. Power utility stocks sell off '
+             'on lowered electricity-demand projections.',
+        impacts={
+            'TECH':        +0.09,   # software efficiency wins (1st-order obvious)
+            'OIL':          0.0,
+            'GREEN':       -0.06,   # renewable buildout economics hurt (data-center demand softens)
+            'REAL_ESTATE': -0.08,   # data-center REIT exposure (non-obvious)
+            'BONDS':       +0.02,
+        },
+        tags=[],
     ),
+    # PLACEHOLDER — brother to fill 2 more ambiguous-tier shocks (see BROTHER_BRIEF.md §Task 1)
     Shock(
         id='ambig_PLACEHOLDER_6',
         tier='ambiguous',
@@ -204,17 +227,37 @@ HARD_SHOCKS: list[Shock] = [
         tags=['deflation'],
     ),
     Shock(
-        id='hard_PLACEHOLDER_3',
+        id='hard_taiwan_water_chip',
         tier='hard',
-        news='PLACEHOLDER — brother to fill a hard-tier shock with 3rd-order effects. '
-             'Target: a scenario where naive first-order reading loses money.',
-        impacts={'TECH': 0.0, 'OIL': 0.0, 'GREEN': 0.0, 'REAL_ESTATE': 0.0, 'BONDS': 0.0},
+        news='Taiwan water reservoirs hit 15% capacity; TSMC announces 30% output '
+             'cut across advanced nodes over next 3 quarters. Solar panel '
+             'manufacturers warn of polysilicon bottleneck. Pentagon accelerates '
+             'CHIPS Act drawdown. Oil majors announce record buybacks on '
+             'sector-rotation inflows.',
+        impacts={
+            'TECH':        -0.15,   # supply shock direct hit (1st-order)
+            'OIL':         +0.11,   # rotation flows into commodities (3rd-order — naive reads this as "crisis = sell oil")
+            'GREEN':       -0.13,   # solar supply chain (2nd-order non-obvious)
+            'REAL_ESTATE': -0.04,
+            'BONDS':       +0.04,
+        },
+        tags=['supply_chain', 'fragmentation', 'physical_risk'],
     ),
     Shock(
-        id='hard_PLACEHOLDER_4',
+        id='hard_carbon_offset_fraud',
         tier='hard',
-        news='PLACEHOLDER — brother to fill a hard-tier shock.',
-        impacts={'TECH': 0.0, 'OIL': 0.0, 'GREEN': 0.0, 'REAL_ESTATE': 0.0, 'BONDS': 0.0},
+        news='Two leading ratings agencies publish analysis finding 40% of voluntary '
+             'carbon offsets invalid (double-counting, phantom sequestration). '
+             'EU CBAM enforcement agency announces retroactive audit. Offset market '
+             'prices plunge 60%. Compliance-market credit prices spike 3×.',
+        impacts={
+            'TECH':        -0.02,
+            'OIL':         -0.14,   # compliance cost just went up massively (3rd-order; naive reads "carbon stuff down = oil free")
+            'GREEN':       +0.16,   # actual abatement required; renewable+CCS projects re-rated (2nd-order win)
+            'REAL_ESTATE': -0.05,   # construction carbon costs rise
+            'BONDS':       +0.02,
+        },
+        tags=['transition_risk', 'carbon_priced'],
     ),
 ]
 
