@@ -75,8 +75,8 @@ def run_episode(policy_fn, seed=42, phase=3):
     dummy_completion = '<think>adversarial test.</think>{"weights": [0.2,0.2,0.2,0.2,0.2]}'
     for _ in range(EPISODE_LENGTH):
         action = policy_fn(obs)
-        obs, snapshot, done, info = env.step(action, completion=dummy_completion)
-        if done:
+        obs = env.step(action, completion=dummy_completion)
+        if obs.done:
             break
     traj = env.trajectory
     return {

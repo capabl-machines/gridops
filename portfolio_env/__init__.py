@@ -6,7 +6,7 @@ with GRPO + Unsloth. See portfolio_env_design.md for the spec.
 """
 
 from .env import PortfolioEnv
-from .models import PortfolioAction, PortfolioObs
+from .models import PortfolioAction, PortfolioObs, PortfolioState
 from .rewards import (
     Trajectory,
     r_carbon,
@@ -25,6 +25,7 @@ __all__ = [
     'PortfolioEnv',
     'PortfolioAction',
     'PortfolioObs',
+    'PortfolioState',
     'Trajectory',
     'Shock',
     'SHOCKS_BY_ID',

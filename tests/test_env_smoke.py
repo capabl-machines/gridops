@@ -36,9 +36,9 @@ def run_episode(env: PortfolioEnv, rng: np.random.Generator) -> dict:
     dummy_completion = '<think>random.</think>{"weights": [0.2,0.2,0.2,0.2,0.2]}'
     while True:
         action = random_action(rng)
-        obs, snapshot, done, info = env.step(action, completion=dummy_completion)
+        obs = env.step(action, completion=dummy_completion)
         steps += 1
-        if done:
+        if obs.done:
             break
     return {
         'steps': steps,

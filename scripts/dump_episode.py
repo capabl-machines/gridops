@@ -110,7 +110,7 @@ def run_episode(args):
             interventions_used.append({'quarter': q, 'type': 'carbon_offset_buy', 'value': float(action.carbon_offset_buy)})
 
         dummy_completion = f'<think>{thought}</think>' + json.dumps({'weights': action.weights})
-        obs = env.step(action, completion=dummy_completion)[0]
+        obs = env.step(action, completion=dummy_completion)
 
         nav_agent_real.append(float(obs.portfolio_nav_real))
         nav_agent_nominal.append(float(obs.portfolio_nav_nominal))

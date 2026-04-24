@@ -1,22 +1,27 @@
 """Pydantic models — the OpenEnv contract.
 
-Action and Observation are what the LLM sees/emits. Everything else is
-derived from these.
+Action / Observation / State inherit from openenv-core base classes so
+the FastAPI server (`create_app`) can introspect the schemas, serve them
+at `/schema`, and validate inputs/outputs at the WebSocket / HTTP boundary.
 """
 
 from __future__ import annotations
 
-from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from typing import Any, Literal
+
+from pydantic import Field, field_validator
+
+from openenv.core.env_server.types import Action, Observation, State
 
 from .constants import N_ASSETS
 from .inflation import Regime
 
 
-class PortfolioAction(BaseModel):
-    """What the agent outputs each quarter."""
+class PortfolioAction(Action):
+    """What the agent outputs each quarter (single-turn flattened MDP).
 
-    model_config = ConfigDict(extra='forbid', validate_assignment=True)
+    Inherits `metadata` field from openenv `Action`.
+    """
 
     weights: list[float] = Field(
         ..., min_length=N_ASSETS, max_length=N_ASSETS,
@@ -32,7 +37,7 @@ class PortfolioAction(BaseModel):
     )
     put_hedge: float = Field(
         default=0.0, ge=0.0, le=0.05,
-        description='Protective put. 2% premium per quarter. Caps downside at −5% if worst asset < −15%.',
+        description='Protective put. 2% premium per quarter. Caps portfolio downside at −5% if return < −15%.',
     )
     tech_bet: Literal['status_quo', 'green_leaps', 'carbon_priced', 'inflationary', 'fragmentation'] = Field(
         default='status_quo',
@@ -50,10 +55,11 @@ class PortfolioAction(BaseModel):
         return [x / s for x in v]
 
 
-class PortfolioObs(BaseModel):
-    """What the agent sees each quarter."""
+class PortfolioObs(Observation):
+    """What the agent sees each quarter.
 
-    model_config = ConfigDict(extra='forbid', validate_assignment=True)
+    Inherits `done`, `reward`, `metadata` fields from openenv `Observation`.
+    """
 
     # Time
     quarter: int = Field(ge=0, le=11)
@@ -89,3 +95,16 @@ class PortfolioObs(BaseModel):
     last_quarter_returns_nominal: list[float] = Field(default_factory=lambda: [0.0] * N_ASSETS)
     last_quarter_returns_real: list[float] = Field(default_factory=lambda: [0.0] * N_ASSETS)
     last_quarter_regret: float = 0.0
+
+    # Narration for dashboard
+    narration: str = ''
+
+
+class PortfolioState(State):
+    """Episode-level state exposed at `/state`. Inherits `episode_id`, `step_count`."""
+
+    phase: int = 3
+    quarter: int = 0
+    done: bool = False
+    final_grade: dict[str, Any] | None = None
+    history: list[dict[str, Any]] = Field(default_factory=list)

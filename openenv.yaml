@@ -1,0 +1,40 @@
+name: portfolio-env
+description: "Reasoning-Under-Constraints OpenEnv: LLM acts as a climate-aware portfolio manager over a 12-quarter macro cycle. Trained via GRPO to reason about ambiguous shocks (1st/2nd/3rd-order causal chains), path-dependent decisions (transaction costs, locked capital, accumulated carbon), and competing objectives (return vs carbon vs risk vs drawdown). Action: 5 weights + 4 interventions. Observation: 20+ fields incl. macro news. Composite reward: format + regret-vs-equal-weighted-real + sharpe + non-linear carbon + drawdown."
+version: "0.7.0"
+
+environment:
+  module: portfolio_env.server.app
+  class: PortfolioEnv
+  action: PortfolioAction
+  observation: PortfolioObs
+
+server:
+  module: portfolio_env.server.app
+  app: app
+  host: "0.0.0.0"
+  port: 8000
+  workers: 1
+
+tasks:
+  - id: phase_1
+    name: "Phase 1 — Format + regret"
+    difficulty: easy
+    description: "4-quarter episodes, easy shocks only (6 in pool, sample 2 per ep). Tests basic JSON output shape + ability to beat equal-weighted baseline on trivial scenarios. carbon_weight=0."
+  - id: phase_2
+    name: "Phase 2 — Ambiguity"
+    difficulty: medium
+    description: "8-quarter episodes (half cycle), easy + ambiguous shocks (12, sample 3 per ep). Adds Sharpe + drawdown penalty + infra_commit intervention. carbon_weight=0.3. Tests reasoning under conflicting signals."
+  - id: phase_3
+    name: "Phase 3 — Full reasoning"
+    difficulty: hard
+    description: "12-quarter episodes (full bull-bear cycle), all 17 shocks (sample 5 per ep). All 4 interventions available (infra_commit, carbon_offset_buy, put_hedge, tech_bet). Full non-linear carbon penalty. Hard tier shocks dominate via 2nd/3rd-order effects."
+
+metadata:
+  action_space: "5-asset weights [TECH, OIL, GREEN, REAL_ESTATE, BONDS] (auto-normalized) + infra_commit [0, 0.2] + carbon_offset_buy [0, 0.1] + put_hedge [0, 0.05] + tech_bet (one-of 5: status_quo / green_leaps / carbon_priced / inflationary / fragmentation). Q1-only for tech_bet."
+  observation_space: "Pydantic with 20+ fields: quarter, current_weights, infra/carbon state, NAV (real + nominal + baseline), inflation regime + rate, accumulated carbon, macro news string (the reasoning signal), per-quarter return feedback. done/reward/metadata via openenv base Observation."
+  episode_length: 12
+  step_duration: "1 quarter (3 simulated months)"
+  episode_total: "3 simulated years (full bull-bear macroeconomic cycle)"
+  grading: "Composite of 5 reward functions: r_format (≤0.15), r_regret-vs-equal-weighted-real (primary, weight 1.0), r_sharpe (0.3×), r_carbon (non-linear above CARBON_CAP=25 kg, phase-weighted 0/0.3/1.0), r_drawdown (-2× max DD)."
+  anti_gaming: "Adversarial test runs 8 degenerate policies pre-training (all_bonds, all_tech, all_oil, yo_yo, put_hedge_farmer, carbon_offset_abuse, infra_max). Repaired exploits found at v0.7: tightened carbon cap (120→25), fixed infra_commit double-count + added physical-risk counter-penalty, switched put_hedge trigger to portfolio-NAV (vs single-asset). Hold-out seeds (100, 200, 300, 400, 500) reserved for eval-only."
+  training: "Qwen3-4B-Instruct-2507 with Unsloth 4-bit QLoRA + TRL GRPOTrainer (loss_type=dapo, beta=0). 3-phase curriculum with entry-criterion gates. SFT warm-start on 120 Gemini-3.1-Pro-generated traces (chat-template format). Flattened MDP per OpenEnv §59.6 (multi-turn GRPO not yet mature in Unsloth)."
