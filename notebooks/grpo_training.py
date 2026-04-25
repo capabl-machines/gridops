@@ -161,20 +161,10 @@ def make_reward_fn(component: str, phase: int, carbon_weight: float = 1.0):
 # ══════════════════════════════════════════════════════════════════════
 
 def build_prompt(news_preview: str) -> str:
-    """Single prompt that represents a flattened episode.
-    (In full flatten-MDP: this would list all 12 quarters' shock news.)
-    Start: just use current quarter's news for minimum viable.
-    """
-    return (
-        f"You are a climate-aware portfolio manager. News this quarter:\n"
-        f"{news_preview}\n\n"
-        f"Think step by step about 1st/2nd/3rd-order impacts on TECH, OIL, "
-        f"GREEN, REAL_ESTATE, BONDS. Then output your allocation.\n\n"
-        f"Format: <think>reasoning</think>"
-        f'{{"weights": [TECH, OIL, GREEN, REAL_ESTATE, BONDS], '
-        f'"infra_commit": 0-0.2, "carbon_offset_buy": 0-0.1, '
-        f'"put_hedge": 0-0.05, "tech_bet": "status_quo|green_leaps|carbon_priced|inflationary|fragmentation"}}'
-    )
+    """Single prompt for flattened MDP. Imports from portfolio_env.prompt
+    so SFT and GRPO use *exactly* the same context (Gemini's RLHF rule)."""
+    from portfolio_env.prompt import SYSTEM_PROMPT, build_user_prompt
+    return SYSTEM_PROMPT + '\n\n' + build_user_prompt(news_preview)
 
 
 def build_training_dataset(n_prompts: int, phase: int, rng: np.random.Generator) -> Dataset:

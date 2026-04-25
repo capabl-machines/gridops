@@ -44,6 +44,7 @@ if _env_path.exists():
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from portfolio_env.constants import ASSETS
 from portfolio_env.rewards import parse_json_action
+from portfolio_env.prompt import SYSTEM_PROMPT as ENV_SYSTEM_PROMPT, build_user_prompt
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -317,11 +318,13 @@ def format_trace_for_sft(trace: dict, seed: NewsSeed) -> dict:
         if key in trace and trace[key] not in (None, 0, 0.0, 'status_quo'):
             action[key] = trace[key]
 
-    prompt = (f"You are a climate-aware portfolio manager. News this quarter:\n"
-              f"{trace['news']}\n\n"
-              f"Think step by step about 1st/2nd/3rd-order impacts on TECH, OIL, "
-              f"GREEN, REAL_ESTATE, BONDS. Then output your allocation.\n\n"
-              f"Format: <think>reasoning</think>{{\"weights\": [TECH, OIL, GREEN, REAL_ESTATE, BONDS], ...}}")
+    # IMPORTANT: prompt MUST match what GRPO inference uses (single source of
+    # truth in portfolio_env/prompt.py). Different prompts at SFT vs GRPO →
+    # mode collapse during RL training (Gemini's "fundamental law" finding).
+    # The system prompt provides all rules + objective; user prompt is just
+    # today's news. We concatenate them as the SFT 'prompt' field for
+    # readability; the trainer applies the chat template per messages.
+    prompt = ENV_SYSTEM_PROMPT + '\n\n' + build_user_prompt(trace['news'])
 
     completion = (f"<think>\n{trace['reasoning'].strip()}\n</think>\n"
                   f"{json.dumps(action)}")
