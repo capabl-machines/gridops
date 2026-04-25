@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>SFT Traces Reviewer</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #161a22;
+    --panel-2: #1d222c;
+    --border: #2a3140;
+    --text: #e6e8ee;
+    --muted: #8a93a6;
+    --accent: #5aa7ff;
+    --good: #44c08a;
+    --bad: #e25c5c;
+    --warn: #d8a93b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    font-size: 14px; line-height: 1.45;
+  }
+  .app { max-width: 1100px; margin: 0 auto; padding: 18px; }
+  header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding-bottom: 14px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  header .spacer { flex: 1; }
+  .badge { font-size: 11px; padding: 3px 8px; border-radius: 999px;
+    background: var(--panel-2); color: var(--muted); border: 1px solid var(--border); }
+  .badge.rejected { background: #3a1d1d; color: #ffb3b3; border-color: #5a2a2a; }
+  .badge.dirty   { background: #3a311d; color: #ffd58a; border-color: #5a4a2a; }
+
+  button { background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+    padding: 7px 12px; border-radius: 6px; cursor: pointer; font: inherit; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: #1a3a66; border-color: #2c5fa3; }
+  button.danger  { background: #3a1d1d; border-color: #5a2a2a; }
+  button.ghost   { background: transparent; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  .panel { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+  .panel h2 { margin: 0 0 8px; font-size: 12px; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .panel.rejected { border-color: #5a2a2a; background: #1a1212; }
+
+  textarea, input[type="text"], input[type="number"], select {
+    width: 100%; background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px;
+    font: inherit; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+  }
+  textarea { resize: vertical; min-height: 80px; }
+  textarea.tall { min-height: 160px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+
+  .grid { display: grid; gap: 10px; }
+  .grid.weights { grid-template-columns: repeat(5, 1fr); }
+  .grid.knobs { grid-template-columns: repeat(4, 1fr); }
+  .field label { display: block; font-size: 11px; color: var(--muted);
+    margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
+
+  .nav { position: sticky; bottom: 0; background: linear-gradient(to top, var(--bg) 60%, transparent);
+    padding: 14px 0 6px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .progress { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty input[type=file] { display: none; }
+  .empty label.btn { display: inline-block; padding: 10px 18px; background: var(--panel-2);
+    border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text); }
+
+  .sum { font-variant-numeric: tabular-nums; font-size: 12px; color: var(--muted);
+    margin-top: 6px; }
+  .sum.bad { color: var(--bad); }
+  .sum.good { color: var(--good); }
+
+  .meta { display: flex; gap: 14px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+  .meta b { color: var(--text); font-weight: 500; }
+
+  .hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  kbd { background: var(--panel-2); border: 1px solid var(--border); padding: 1px 5px;
+    border-radius: 4px; font-size: 11px; font-family: inherit; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <h1>SFT Traces Reviewer</h1>
+  <span id="filename" class="badge">no file</span>
+  <span id="dirty"    class="badge dirty"    style="display:none">unsaved edits</span>
+  <span id="rejected" class="badge rejected" style="display:none">rejected</span>
+  <div class="spacer"></div>
+  <button id="loadBtn" class="ghost">Load JSONL</button>
+  <button id="downloadBtn" class="primary">Download cleaned JSONL</button>
+  <input type="file" id="fileInput" accept=".jsonl,.json,.txt" style="display:none" />
+</header>
+
+<div id="empty" class="empty">
+  <p>Load a <code>.jsonl</code> file to start reviewing.</p>
+  <label class="btn" for="fileInput2">Choose file…</label>
+  <input type="file" id="fileInput2" accept=".jsonl,.json,.txt" />
+  <p class="hint">Edits and rejections are auto-saved to your browser. Use <b>Download</b> to export the cleaned file.</p>
+</div>
+
+<div id="viewer" style="display:none">
+
+  <div class="panel">
+    <div class="meta">
+      <span><b id="rowId"></b></span>
+      <span>year: <b id="rowYear"></b></span>
+      <span>category: <b id="rowCat"></b></span>
+      <span>index: <b id="rowIdx"></b></span>
+    </div>
+  </div>
+
+  <div class="panel" id="newsPanel">
+    <h2>News (raw.news)</h2>
+    <textarea id="news" class="tall"></textarea>
+    <div class="hint">Edits sync into both <code>raw.news</code> and the body of <code>prompt</code>.</div>
+  </div>
+
+  <div class="panel">
+    <h2>Reasoning (&lt;think&gt; … &lt;/think&gt;)</h2>
+    <textarea id="reasoning" class="tall"></textarea>
+    <div class="hint">Edits sync into <code>raw.reasoning</code> and the &lt;think&gt; block of <code>completion</code>.</div>
+  </div>
+
+  <div class="panel">
+    <h2>Allocation</h2>
+    <div class="grid weights">
+      <div class="field"><label>TECH</label>        <input type="number" step="0.01" min="0" max="1" id="w0"/></div>
+      <div class="field"><label>OIL</label>         <input type="number" step="0.01" min="0" max="1" id="w1"/></div>
+      <div class="field"><label>GREEN</label>       <input type="number" step="0.01" min="0" max="1" id="w2"/></div>
+      <div class="field"><label>REAL_ESTATE</label> <input type="number" step="0.01" min="0" max="1" id="w3"/></div>
+      <div class="field"><label>BONDS</label>       <input type="number" step="0.01" min="0" max="1" id="w4"/></div>
+    </div>
+    <div id="weightSum" class="sum"></div>
+
+    <div class="grid knobs" style="margin-top:12px">
+      <div class="field"><label>infra_commit</label>      <input type="number" step="0.01" min="0" id="infra"/></div>
+      <div class="field"><label>carbon_offset_buy</label> <input type="number" step="0.01" min="0" id="offset"/></div>
+      <div class="field"><label>put_hedge</label>         <input type="number" step="0.01" min="0" id="put"/></div>
+      <div class="field"><label>tech_bet</label>
+        <select id="techBet">
+          <option value="">(none)</option>
+          <option value="carbon_priced">carbon_priced</option>
+          <option value="green_leaps">green_leaps</option>
+          <option value="oil_rebound">oil_rebound</option>
+          <option value="status_quo">status_quo</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <details class="panel">
+    <summary style="cursor:pointer; color:var(--muted); font-size:12px">advanced — raw JSON</summary>
+    <textarea id="rawJson" class="tall" style="margin-top:10px"></textarea>
+    <div class="hint">Manual edits here override the structured fields above when you click <b>Apply raw</b>.</div>
+    <button id="applyRaw" style="margin-top:8px">Apply raw</button>
+  </details>
+
+  <div class="nav">
+    <button id="prevBtn">← Prev</button>
+    <button id="nextBtn" class="primary">Next →</button>
+    <button id="rejectBtn" class="danger">Reject this row</button>
+    <button id="unrejectBtn" class="ghost" style="display:none">Un-reject</button>
+    <div class="spacer" style="flex:1"></div>
+    <span class="progress" id="progress"></span>
+    <span class="hint">Shortcuts: <kbd>←</kbd>/<kbd>→</kbd> nav · <kbd>R</kbd> reject · <kbd>Cmd+S</kbd> download</span>
+  </div>
+
+</div>
+
+</div>
+
+<script>
+"use strict";
+
+const TECH_BETS = ["carbon_priced","green_leaps","oil_rebound","status_quo"];
+const LS_KEY = "sft_review_state_v1";
+
+let state = {
+  filename: null,
+  rows: [],        // [{ data: <obj>, rejected: bool }]
+  cursor: 0,
+};
+let dirty = false;
+
+const $ = id => document.getElementById(id);
+
+// ---------- persistence ----------
+function persist() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch {}
+}
+function restore() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return false;
+    const s = JSON.parse(raw);
+    if (!s || !Array.isArray(s.rows) || s.rows.length === 0) return false;
+    state = s;
+    return true;
+  } catch { return false; }
+}
+
+// ---------- jsonl ----------
+function parseJsonl(text) {
+  return text.split(/\r?\n/).filter(l => l.trim().length).map((line, i) => {
+    try { return { data: JSON.parse(line), rejected: false }; }
+    catch (e) { throw new Error(`Line ${i+1}: ${e.message}`); }
+  });
+}
+function serializeJsonl(rows) {
+  return rows.filter(r => !r.rejected).map(r => JSON.stringify(r.data)).join("\n") + "\n";
+}
+
+// ---------- prompt/completion sync ----------
+// Replace the news paragraph inside the prompt template (between "News this quarter:\n" and "\n\nThink step by step")
+function syncPromptNews(prompt, newNews) {
+  if (typeof prompt !== "string") return prompt;
+  const head = "News this quarter:\n";
+  const tail = "\n\nThink step by step";
+  const i = prompt.indexOf(head);
+  const j = prompt.indexOf(tail);
+  if (i < 0 || j < 0 || j < i) return prompt;
+  return prompt.slice(0, i + head.length) + newNews + prompt.slice(j);
+}
+
+function buildCompletion(reasoning, payloadObj) {
+  return `<think>\n${reasoning}\n</think>\n${JSON.stringify(payloadObj)}`;
+}
+
+function payloadFromRaw(raw) {
+  const p = { weights: raw.weights };
+  if (raw.infra_commit)       p.infra_commit = raw.infra_commit;
+  if (raw.carbon_offset_buy)  p.carbon_offset_buy = raw.carbon_offset_buy;
+  if (raw.put_hedge)          p.put_hedge = raw.put_hedge;
+  if (raw.tech_bet)           p.tech_bet = raw.tech_bet;
+  return p;
+}
+
+// ---------- rendering ----------
+function render() {
+  if (state.rows.length === 0) {
+    $("empty").style.display = "";
+    $("viewer").style.display = "none";
+    return;
+  }
+  $("empty").style.display = "none";
+  $("viewer").style.display = "";
+
+  state.cursor = Math.max(0, Math.min(state.cursor, state.rows.length - 1));
+  const row = state.rows[state.cursor];
+  const d = row.data;
+  const raw = d.raw || {};
+
+  $("filename").textContent = state.filename || "(unnamed)";
+  $("rejected").style.display = row.rejected ? "" : "none";
+  $("dirty").style.display    = dirty ? "" : "none";
+
+  const cleanCount = state.rows.filter(r => !r.rejected).length;
+  $("progress").textContent = `${state.cursor + 1} / ${state.rows.length} · ${cleanCount} kept`;
+
+  $("rowId").textContent   = d.id ?? "—";
+  $("rowYear").textContent = d.seed_year ?? "—";
+  $("rowCat").textContent  = d.seed_category ?? "—";
+  $("rowIdx").textContent  = String(state.cursor);
+
+  $("news").value      = raw.news ?? "";
+  $("reasoning").value = raw.reasoning ?? "";
+
+  const w = Array.isArray(raw.weights) ? raw.weights : [0,0,0,0,0];
+  for (let i = 0; i < 5; i++) $("w"+i).value = w[i] ?? 0;
+
+  $("infra").value  = raw.infra_commit ?? 0;
+  $("offset").value = raw.carbon_offset_buy ?? 0;
+  $("put").value    = raw.put_hedge ?? 0;
+  $("techBet").value = raw.tech_bet ?? "";
+
+  $("rawJson").value = JSON.stringify(d, null, 2);
+
+  updateWeightSum();
+
+  $("rejectBtn").style.display   = row.rejected ? "none" : "";
+  $("unrejectBtn").style.display = row.rejected ? "" : "none";
+  $("prevBtn").disabled = state.cursor === 0;
+  $("nextBtn").disabled = state.cursor === state.rows.length - 1;
+
+  // gray out body when rejected
+  document.querySelectorAll(".panel:not(:first-child)").forEach(p => {
+    p.classList.toggle("rejected", row.rejected);
+  });
+}
+
+function updateWeightSum() {
+  let s = 0;
+  for (let i = 0; i < 5; i++) s += Number($("w"+i).value) || 0;
+  const el = $("weightSum");
+  const rounded = Math.round(s * 1000) / 1000;
+  el.textContent = `Σ weights = ${rounded.toFixed(3)}` + (Math.abs(s - 1) < 0.005 ? "  ✓" : "  (should be 1.0)");
+  el.className = "sum " + (Math.abs(s - 1) < 0.005 ? "good" : "bad");
+}
+
+// ---------- mutation ----------
+function commitFieldsToRow() {
+  const row = state.rows[state.cursor];
+  if (!row) return;
+  const d = row.data;
+  d.raw = d.raw || {};
+  const r = d.raw;
+
+  const news = $("news").value;
+  const reasoning = $("reasoning").value;
+  const weights = [0,1,2,3,4].map(i => Number($("w"+i).value) || 0);
+  const infra  = Number($("infra").value)  || 0;
+  const offset = Number($("offset").value) || 0;
+  const put    = Number($("put").value)    || 0;
+  const techBet = $("techBet").value || "";
+
+  r.news = news;
+  r.reasoning = reasoning;
+  r.weights = weights;
+  r.infra_commit = infra;
+  r.carbon_offset_buy = offset;
+  r.put_hedge = put;
+  r.tech_bet = techBet;
+
+  if (typeof d.prompt === "string")     d.prompt = syncPromptNews(d.prompt, news);
+  d.completion = buildCompletion(reasoning, payloadFromRaw(r));
+}
+
+function markDirty() {
+  dirty = true;
+  $("dirty").style.display = "";
+  commitFieldsToRow();
+  // refresh raw json view without losing focus
+  const ae = document.activeElement;
+  if (ae && ae.id !== "rawJson") {
+    $("rawJson").value = JSON.stringify(state.rows[state.cursor].data, null, 2);
+  }
+  persist();
+}
+
+// ---------- handlers ----------
+function loadFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const rows = parseJsonl(e.target.result);
+      state = { filename: file.name, rows, cursor: 0 };
+      dirty = false;
+      persist();
+      render();
+    } catch (err) { alert("Parse error: " + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+function download() {
+  // make sure current edits are committed
+  if (state.rows.length) commitFieldsToRow();
+  const text = serializeJsonl(state.rows);
+  const blob = new Blob([text], { type: "application/x-ndjson" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  const base = (state.filename || "traces.jsonl").replace(/\.jsonl$/i, "");
+  a.href = url;
+  a.download = `${base}.cleaned.jsonl`;
+  a.click();
+  URL.revokeObjectURL(url);
+  dirty = false;
+  $("dirty").style.display = "none";
+}
+
+function next() { if (state.cursor < state.rows.length - 1) { state.cursor++; persist(); render(); } }
+function prev() { if (state.cursor > 0) { state.cursor--; persist(); render(); } }
+function toggleReject(rejected) {
+  const row = state.rows[state.cursor]; if (!row) return;
+  row.rejected = rejected; persist(); render();
+}
+
+function applyRaw() {
+  try {
+    const obj = JSON.parse($("rawJson").value);
+    state.rows[state.cursor].data = obj;
+    dirty = true;
+    persist();
+    render();
+  } catch (e) { alert("Invalid JSON: " + e.message); }
+}
+
+// ---------- wiring ----------
+document.addEventListener("DOMContentLoaded", () => {
+  $("loadBtn").addEventListener("click", () => $("fileInput").click());
+  $("fileInput").addEventListener("change",  e => e.target.files[0] && loadFile(e.target.files[0]));
+  $("fileInput2").addEventListener("change", e => e.target.files[0] && loadFile(e.target.files[0]));
+  $("downloadBtn").addEventListener("click", download);
+  $("prevBtn").addEventListener("click", prev);
+  $("nextBtn").addEventListener("click", next);
+  $("rejectBtn").addEventListener("click",   () => toggleReject(true));
+  $("unrejectBtn").addEventListener("click", () => toggleReject(false));
+  $("applyRaw").addEventListener("click", applyRaw);
+
+  ["news","reasoning","infra","offset","put","techBet","w0","w1","w2","w3","w4"].forEach(id => {
+    $(id).addEventListener("input", () => { markDirty(); if (id.startsWith("w")) updateWeightSum(); });
+  });
+
+  document.addEventListener("keydown", e => {
+    const tag = (e.target.tagName || "").toLowerCase();
+    const inField = tag === "textarea" || tag === "input" || tag === "select";
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") { e.preventDefault(); download(); return; }
+    if (inField) return;
+    if (e.key === "ArrowRight") next();
+    else if (e.key === "ArrowLeft") prev();
+    else if (e.key.toLowerCase() === "r") toggleReject(!state.rows[state.cursor].rejected);
+  });
+
+  if (restore()) render();
+});
+</script>
+
+</body>
+</html>

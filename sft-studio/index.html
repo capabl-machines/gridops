@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>SFT Traces Studio</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #161a22;
+    --panel-2: #1d222c;
+    --border: #2a3140;
+    --text: #e6e8ee;
+    --muted: #8a93a6;
+    --accent: #5aa7ff;
+    --good: #44c08a;
+    --bad: #e25c5c;
+    --warn: #d8a93b;
+
+    --c-tech:  #5aa7ff;
+    --c-oil:   #c98a3d;
+    --c-green: #44c08a;
+    --c-real:  #d96a8a;
+    --c-bonds: #9a7be0;
+
+    --c-cat-transition: #5aa7ff;
+    --c-cat-physical:   #d96a8a;
+    --c-cat-policy:     #d8a93b;
+    --c-cat-market:     #44c08a;
+    --c-cat-tech:       #9a7be0;
+    --c-cat-other:      #8a93a6;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    font-size: 14px; line-height: 1.45;
+  }
+  .app { max-width: 1200px; margin: 0 auto; padding: 18px; }
+
+  header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding-bottom: 14px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  header .spacer { flex: 1; }
+
+  .tabs { display: flex; gap: 2px; background: var(--panel-2); padding: 3px; border-radius: 8px;
+    border: 1px solid var(--border); }
+  .tabs button { background: transparent; border: 0; padding: 6px 14px; border-radius: 5px;
+    color: var(--muted); font: inherit; cursor: pointer; }
+  .tabs button.active { background: var(--panel); color: var(--text); }
+  .tabs button:hover:not(.active) { color: var(--text); }
+
+  .badge { font-size: 11px; padding: 3px 8px; border-radius: 999px;
+    background: var(--panel-2); color: var(--muted); border: 1px solid var(--border); }
+  .badge.ok  { background: #1d3328; color: #b8f0d2; border-color: #2e5a44; }
+  .badge.warn{ background: #3a311d; color: #ffd58a; border-color: #5a4a2a; }
+
+  button { background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+    padding: 7px 12px; border-radius: 6px; cursor: pointer; font: inherit; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: #1a3a66; border-color: #2c5fa3; }
+  button.danger  { background: #3a1d1d; border-color: #5a2a2a; }
+  button.ghost   { background: transparent; }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+
+  .panel { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+  .panel h2 { margin: 0 0 10px; font-size: 12px; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--muted); font-weight: 600; }
+
+  textarea, input[type="text"], input[type="search"], input[type="number"], input[type="password"], select {
+    width: 100%; background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px;
+    font: inherit; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  textarea.tall { min-height: 170px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+
+  .grid { display: grid; gap: 10px; }
+  .grid.weights { grid-template-columns: repeat(5, 1fr); }
+  .grid.knobs   { grid-template-columns: repeat(4, 1fr); }
+  .grid.meta    { grid-template-columns: 1fr; }
+  .grid.api     { grid-template-columns: 3fr 1fr 1fr; }
+  .field label { display: block; font-size: 11px; color: var(--muted);
+    margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
+
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .spacer { flex: 1; }
+
+  .sum { font-variant-numeric: tabular-nums; font-size: 12px; color: var(--muted);
+    margin-top: 6px; }
+  .sum.bad { color: var(--bad); }
+  .sum.good { color: var(--good); }
+
+  .hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .err  { font-size: 12px; color: var(--bad); margin-top: 6px; white-space: pre-wrap; }
+  .ok   { font-size: 12px; color: var(--good); margin-top: 6px; }
+
+  details summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+  kbd { background: var(--panel-2); border: 1px solid var(--border); padding: 1px 5px;
+    border-radius: 4px; font-size: 11px; }
+
+  .spinner { display:inline-block; width:12px; height:12px; border:2px solid var(--border);
+    border-top-color: var(--accent); border-radius:50%; animation: spin .7s linear infinite;
+    vertical-align: -2px; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== creator dataset list ===== */
+  ul.list { list-style: none; padding: 0; margin: 0; max-height: 280px; overflow: auto;
+    border: 1px solid var(--border); border-radius: 6px; background: var(--panel-2); }
+  ul.list li { padding: 8px 10px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px; }
+  ul.list li:last-child { border-bottom: 0; }
+  ul.list li .id { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--accent); }
+  ul.list li .news { color: var(--muted); font-size: 12px; flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  ul.list li button { padding: 3px 8px; font-size: 11px; }
+
+  /* ===== browse view ===== */
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
+    border-radius: 999px; background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--muted); font-size: 12px; cursor: pointer; user-select: none; }
+  .chip:hover { color: var(--text); }
+  .chip.active { color: var(--text); border-color: var(--accent); background: #1a2840; }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+  .chip .ct  { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 11px; }
+  .chip.active .ct { color: var(--text); }
+
+  .browse-layout { display: grid; grid-template-columns: 360px 1fr; gap: 12px; }
+  @media (max-width: 900px) { .browse-layout { grid-template-columns: 1fr; } }
+
+  .list-pane { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; max-height: calc(100vh - 280px); min-height: 400px;
+    overflow: auto; }
+  .list-pane .item { padding: 10px 12px; border-bottom: 1px solid var(--border);
+    cursor: pointer; }
+  .list-pane .item:hover { background: var(--panel-2); }
+  .list-pane .item.selected { background: #1a2840; border-left: 3px solid var(--accent);
+    padding-left: 9px; }
+  .list-pane .item .top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .list-pane .item .id { font-family: ui-monospace, Menlo, monospace; font-size: 12px;
+    color: var(--accent); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1; }
+  .list-pane .item .cat-tag { font-size: 10px; padding: 1px 7px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: .04em; font-weight: 600;
+    border: 1px solid currentColor; flex-shrink: 0; }
+  .list-pane .item .year { font-size: 11px; color: var(--muted);
+    font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  .list-pane .item .news { color: var(--muted); font-size: 12px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; }
+  .list-pane .item .alloc-mini { display: flex; height: 4px; margin-top: 6px;
+    border-radius: 2px; overflow: hidden; }
+  .list-pane .item .alloc-mini > div { height: 100%; }
+
+  .detail-pane { background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; }
+  .detail-pane .head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 14px; }
+  .detail-pane .head .id { font-family: ui-monospace, Menlo, monospace; font-size: 16px;
+    color: var(--accent); font-weight: 600; }
+  .detail-pane .head .meta { color: var(--muted); font-size: 12px; }
+  .detail-pane .news-text { background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 12px; line-height: 1.55; margin-bottom: 14px; }
+  .detail-pane .reason-text { background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 12px; line-height: 1.55; font-family: ui-monospace, Menlo, monospace;
+    font-size: 13px; white-space: pre-wrap; }
+  .detail-pane .label { font-size: 11px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .04em; margin: 16px 0 6px; font-weight: 600; }
+
+  .alloc-bar { display: flex; height: 32px; border-radius: 6px; overflow: hidden;
+    border: 1px solid var(--border); }
+  .alloc-bar > div { display: flex; align-items: center; justify-content: center;
+    color: #0d1015; font-weight: 600; font-size: 11px; transition: width .2s; min-width: 0; }
+  .alloc-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px;
+    font-size: 11px; color: var(--muted); }
+  .alloc-legend .key { display: inline-flex; align-items: center; gap: 5px; }
+  .alloc-legend .swatch { width: 10px; height: 10px; border-radius: 2px; }
+
+  .knobs-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .knob { background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px;
+    padding: 8px 12px; min-width: 140px; }
+  .knob .k { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .knob .v { font-family: ui-monospace, Menlo, monospace; font-size: 14px; margin-top: 2px; }
+  .knob .v.zero { color: var(--muted); }
+  .knob.bet .v { color: var(--accent); }
+
+  .nav-bar { display: flex; gap: 8px; align-items: center; padding-top: 12px;
+    border-top: 1px solid var(--border); margin-top: 14px; }
+  .nav-bar .progress { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+  .empty-state { text-align: center; color: var(--muted); padding: 40px 20px; }
+  .empty-state input[type=file] { display: none; }
+  .empty-state label.btn { display: inline-block; padding: 8px 16px; background: var(--panel-2);
+    border: 1px solid var(--border); border-radius: 6px; cursor: pointer; color: var(--text); }
+  .empty-state label.btn:hover { border-color: var(--accent); }
+
+  .stats-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .stat { background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 12px; font-size: 12px; }
+  .stat b { font-size: 14px; font-variant-numeric: tabular-nums; margin-right: 4px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <h1>SFT Traces Studio</h1>
+  <nav class="tabs">
+    <button data-tab="browse" id="tabBrowse">Browse</button>
+    <button data-tab="create" id="tabCreate" class="active">Create</button>
+  </nav>
+  <div class="spacer"></div>
+  <span id="apiBadge"   class="badge warn" style="display:none">no API key</span>
+  <span id="countBadge" class="badge"      style="display:none">0 saved</span>
+  <span id="browseBadge" class="badge"     style="display:none">0 rows</span>
+</header>
+
+<!-- ============ BROWSE TAB ============ -->
+<section id="view-browse" style="display:none">
+
+  <div class="panel">
+    <div class="row" style="margin-bottom:10px">
+      <button id="bLoadBtn" class="ghost">Load JSONL…</button>
+      <button id="bReloadBtn" class="ghost" title="Re-fetch traces.jsonl from disk">Reload traces.jsonl</button>
+      <input type="file" id="bFileInput" accept=".jsonl,.json,.txt" style="display:none" />
+      <div class="spacer"></div>
+      <input type="search" id="bSearch" placeholder="Search id / news / reasoning…" style="max-width:340px" />
+    </div>
+    <div id="bChips" class="row"></div>
+    <div id="bStats" class="stats-row" style="margin-top:10px"></div>
+  </div>
+
+  <div id="bEmpty" class="empty-state panel">
+    <p>No browse data loaded yet.</p>
+    <label class="btn" for="bFileInput2">Load a JSONL file…</label>
+    <input type="file" id="bFileInput2" accept=".jsonl,.json,.txt" />
+    <p class="hint">If served via <code>http://</code>, <code>traces.jsonl</code> from this folder is loaded automatically.</p>
+  </div>
+
+  <div id="bMain" class="browse-layout" style="display:none">
+    <aside id="bList" class="list-pane"></aside>
+    <main id="bDetail" class="detail-pane"></main>
+  </div>
+
+</section>
+
+<!-- ============ CREATE TAB ============ -->
+<section id="view-create">
+
+  <div class="panel">
+    <div class="row">
+      <button id="loadBtn"     class="ghost">Load existing JSONL into draft</button>
+      <button id="downloadBtn" class="primary">Download draft JSONL</button>
+      <input type="file" id="fileInput" accept=".jsonl,.json,.txt" style="display:none" />
+    </div>
+  </div>
+
+  <details class="panel" id="settingsPanel" open>
+    <summary><b>Gemini settings</b> — stored in this browser only</summary>
+    <div class="grid api" style="margin-top:10px">
+      <div class="field">
+        <label>API key</label>
+        <input type="password" id="apiKey" placeholder="AIza…" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>Model</label>
+        <input type="text" id="model" value="gemini-3.1-pro-preview" />
+      </div>
+      <div class="field">
+        <label>Temperature</label>
+        <input type="number" id="temp" step="0.05" min="0" max="2" value="0.7" />
+      </div>
+    </div>
+    <div class="hint">Default model id is <code>gemini-3.1-pro-preview</code>. Override if your account uses a different alias.</div>
+  </details>
+
+  <div class="panel">
+    <h2>1 · News case</h2>
+    <div class="grid meta">
+      <div class="field"><label>seed_category</label>
+        <select id="rcat">
+          <option value="transition">transition</option>
+          <option value="physical">physical</option>
+          <option value="policy">policy</option>
+          <option value="market">market</option>
+          <option value="tech">tech</option>
+          <option value="other">other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="margin-top:10px">
+      <label>News scenario</label>
+      <textarea id="news" class="tall" placeholder="A 2-4 sentence climate / market news scenario…"></textarea>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button id="generateBtn" class="primary">Generate with Gemini</button>
+      <button id="clearBtn" class="ghost">Clear form</button>
+      <div class="spacer"></div>
+      <span id="genStatus" class="hint"></span>
+    </div>
+    <div id="genErr" class="err"></div>
+  </div>
+
+  <div class="panel">
+    <h2>2 · Reasoning &amp; allocation (edit before saving)</h2>
+    <div class="field">
+      <label>reasoning (&lt;think&gt; block)</label>
+      <textarea id="reasoning" class="tall" placeholder="Generated reasoning will appear here…"></textarea>
+    </div>
+
+    <div class="grid weights" style="margin-top:12px">
+      <div class="field"><label>TECH</label>        <input type="number" step="0.01" min="0" max="1" id="w0"/></div>
+      <div class="field"><label>OIL</label>         <input type="number" step="0.01" min="0" max="1" id="w1"/></div>
+      <div class="field"><label>GREEN</label>       <input type="number" step="0.01" min="0" max="1" id="w2"/></div>
+      <div class="field"><label>REAL_ESTATE</label> <input type="number" step="0.01" min="0" max="1" id="w3"/></div>
+      <div class="field"><label>BONDS</label>       <input type="number" step="0.01" min="0" max="1" id="w4"/></div>
+    </div>
+    <div id="weightSum" class="sum"></div>
+
+    <div class="grid knobs" style="margin-top:12px">
+      <div class="field"><label>infra_commit</label>      <input type="number" step="0.01" min="0" id="infra"/></div>
+      <div class="field"><label>carbon_offset_buy</label> <input type="number" step="0.01" min="0" id="offset"/></div>
+      <div class="field"><label>put_hedge</label>         <input type="number" step="0.01" min="0" id="put"/></div>
+      <div class="field"><label>tech_bet</label>
+        <select id="techBet">
+          <option value="">(none)</option>
+          <option value="carbon_priced">carbon_priced</option>
+          <option value="green_leaps">green_leaps</option>
+          <option value="oil_rebound">oil_rebound</option>
+          <option value="status_quo">status_quo</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:14px">
+      <button id="saveBtn" class="primary">Append to dataset →</button>
+      <button id="resetBtn" class="ghost">Reset editor</button>
+      <div class="spacer"></div>
+      <span id="saveStatus" class="ok"></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>3 · Draft dataset (<span id="count">0</span> rows)</h2>
+    <ul id="list" class="list"></ul>
+    <div class="hint">Auto-saved to your browser. Use <b>Download</b> to export. Shortcut: <kbd>Cmd/Ctrl+Enter</kbd> generate, <kbd>Cmd/Ctrl+S</kbd> download.</div>
+  </div>
+
+</section>
+
+</div>
+
+<script>
+"use strict";
+
+// ============================================================
+// shared
+// ============================================================
+const $ = id => document.getElementById(id);
+const escapeHtml = s => String(s ?? "").replace(/[&<>"']/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+
+const ASSETS = ["TECH","OIL","GREEN","REAL_ESTATE","BONDS"];
+const ASSET_COLORS = ["var(--c-tech)","var(--c-oil)","var(--c-green)","var(--c-real)","var(--c-bonds)"];
+const CATEGORIES = ["transition","physical","policy","market","tech","other"];
+const CAT_COLOR = {
+  transition: "var(--c-cat-transition)", physical: "var(--c-cat-physical)",
+  policy: "var(--c-cat-policy)", market: "var(--c-cat-market)",
+  tech: "var(--c-cat-tech)", other: "var(--c-cat-other)",
+};
+
+// ============================================================
+// tabs
+// ============================================================
+function setTab(name) {
+  document.querySelectorAll(".tabs button").forEach(b =>
+    b.classList.toggle("active", b.dataset.tab === name));
+  $("view-browse").style.display = name === "browse" ? ""    : "none";
+  $("view-create").style.display = name === "create" ? ""    : "none";
+  $("apiBadge").style.display    = name === "create" ? ""    : "none";
+  $("countBadge").style.display  = name === "create" ? ""    : "none";
+  $("browseBadge").style.display = name === "browse" ? ""    : "none";
+  try { localStorage.setItem("sft_active_tab", name); } catch {}
+
+  if (name === "browse" && browseRows.length === 0 && !browseTriedAuto) {
+    browseTriedAuto = true;
+    autoFetchBrowse();
+  }
+}
+
+// ============================================================
+// BROWSE
+// ============================================================
+let browseRows = [];          // raw rows from loaded jsonl
+let browseFiltered = [];      // filtered + sorted
+let browseSelected = 0;       // index into filtered
+let browseFilters = { cats: new Set(), q: "" };
+let browseTriedAuto = false;
+
+async function autoFetchBrowse() {
+  // Only works when served over http://. Silently fall back to picker on file://
+  try {
+    const res = await fetch("traces.jsonl", { cache: "no-store" });
+    if (!res.ok) return;
+    const text = await res.text();
+    setBrowseFromText(text, "traces.jsonl");
+  } catch {}
+}
+
+function setBrowseFromText(text, label) {
+  try {
+    const rows = text.split(/\r?\n/).filter(l => l.trim()).map((l, i) => {
+      try { return JSON.parse(l); } catch (e) { throw new Error(`Line ${i+1}: ${e.message}`); }
+    });
+    browseRows = rows;
+    browseSelected = 0;
+    $("browseBadge").textContent = `${rows.length} rows · ${label}`;
+    renderBrowse();
+  } catch (err) {
+    alert("Parse error: " + err.message);
+  }
+}
+
+function renderBrowse() {
+  if (browseRows.length === 0) {
+    $("bEmpty").style.display = "";
+    $("bMain").style.display = "none";
+    $("bChips").innerHTML = "";
+    $("bStats").innerHTML = "";
+    return;
+  }
+  $("bEmpty").style.display = "none";
+  $("bMain").style.display = "";
+
+  renderChips();
+  applyFilters();
+  renderStats();
+  renderList();
+  renderDetail();
+}
+
+function categoryCounts(rows) {
+  const c = {};
+  CATEGORIES.forEach(k => c[k] = 0);
+  rows.forEach(r => {
+    const k = r.seed_category || "other";
+    c[k] = (c[k] || 0) + 1;
+  });
+  return c;
+}
+
+function renderChips() {
+  const counts = categoryCounts(browseRows);
+  const el = $("bChips");
+  el.innerHTML = "";
+  CATEGORIES.forEach(cat => {
+    if (!counts[cat]) return;
+    const active = browseFilters.cats.has(cat);
+    const chip = document.createElement("span");
+    chip.className = "chip" + (active ? " active" : "");
+    chip.innerHTML = `<span class="dot" style="background:${CAT_COLOR[cat]}"></span>${cat}<span class="ct">${counts[cat]}</span>`;
+    chip.onclick = () => {
+      if (active) browseFilters.cats.delete(cat);
+      else browseFilters.cats.add(cat);
+      browseSelected = 0;
+      renderBrowse();
+    };
+    el.appendChild(chip);
+  });
+  if (browseFilters.cats.size > 0) {
+    const clear = document.createElement("span");
+    clear.className = "chip";
+    clear.style.borderStyle = "dashed";
+    clear.textContent = "clear";
+    clear.onclick = () => { browseFilters.cats.clear(); browseSelected = 0; renderBrowse(); };
+    el.appendChild(clear);
+  }
+}
+
+function applyFilters() {
+  const q = browseFilters.q.toLowerCase().trim();
+  browseFiltered = browseRows.filter(r => {
+    if (browseFilters.cats.size > 0 && !browseFilters.cats.has(r.seed_category || "other")) return false;
+    if (q) {
+      const hay = [r.id, r.seed_year, r.raw?.news, r.raw?.reasoning].filter(Boolean).join(" ").toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  if (browseSelected >= browseFiltered.length) browseSelected = Math.max(0, browseFiltered.length - 1);
+}
+
+function renderStats() {
+  const total = browseRows.length;
+  const shown = browseFiltered.length;
+  // average weights across filtered
+  const sum = [0,0,0,0,0]; let n = 0;
+  browseFiltered.forEach(r => {
+    const w = r.raw?.weights;
+    if (Array.isArray(w) && w.length === 5) { for (let i = 0; i < 5; i++) sum[i] += +w[i] || 0; n++; }
+  });
+  const avg = n ? sum.map(v => v / n) : [0,0,0,0,0];
+  const avgBar = n
+    ? `<div class="alloc-bar" style="height:14px; max-width:280px; display:inline-flex; vertical-align:middle">${
+        avg.map((v, i) => `<div style="background:${ASSET_COLORS[i]}; width:${(v*100).toFixed(1)}%"></div>`).join("")
+      }</div>`
+    : "";
+  $("bStats").innerHTML = `
+    <div class="stat"><b>${shown}</b>/ ${total} shown</div>
+    <div class="stat">avg allocation: ${avgBar}</div>
+  `;
+}
+
+function miniAllocBar(weights) {
+  if (!Array.isArray(weights) || weights.length !== 5) return "";
+  return `<div class="alloc-mini">${
+    weights.map((v, i) => `<div style="background:${ASSET_COLORS[i]}; width:${(Math.max(0,+v||0)*100).toFixed(1)}%"></div>`).join("")
+  }</div>`;
+}
+
+function renderList() {
+  const el = $("bList");
+  if (browseFiltered.length === 0) {
+    el.innerHTML = `<div class="empty-state">No rows match the current filters.</div>`;
+    return;
+  }
+  el.innerHTML = browseFiltered.map((r, i) => {
+    const cat = r.seed_category || "other";
+    const news = (r.raw?.news || "").slice(0, 200);
+    return `
+      <div class="item ${i === browseSelected ? "selected" : ""}" data-i="${i}">
+        <div class="top">
+          <span class="cat-tag" style="color:${CAT_COLOR[cat]}">${escapeHtml(cat)}</span>
+          <span class="id">${escapeHtml(r.id || "(no id)")}</span>
+          <span class="year">${escapeHtml(r.seed_year || "")}</span>
+        </div>
+        <div class="news">${escapeHtml(news)}</div>
+        ${miniAllocBar(r.raw?.weights)}
+      </div>`;
+  }).join("");
+  el.querySelectorAll(".item").forEach(d => d.addEventListener("click", e => {
+    browseSelected = +e.currentTarget.dataset.i;
+    renderList(); renderDetail();
+    const sel = el.querySelector(".item.selected");
+    if (sel) sel.scrollIntoView({ block: "nearest" });
+  }));
+}
+
+function renderDetail() {
+  const el = $("bDetail");
+  const row = browseFiltered[browseSelected];
+  if (!row) { el.innerHTML = `<div class="empty-state">Select a row to view details.</div>`; return; }
+
+  const r = row.raw || {};
+  const w = Array.isArray(r.weights) && r.weights.length === 5 ? r.weights : [0,0,0,0,0];
+  const cat = row.seed_category || "other";
+
+  const allocBar = `
+    <div class="alloc-bar">
+      ${w.map((v, i) => {
+        const pct = Math.max(0, +v || 0) * 100;
+        const label = pct >= 8 ? `${ASSETS[i]} ${pct.toFixed(0)}%` : "";
+        return `<div title="${ASSETS[i]} ${pct.toFixed(1)}%" style="background:${ASSET_COLORS[i]}; width:${pct.toFixed(2)}%">${escapeHtml(label)}</div>`;
+      }).join("")}
+    </div>
+    <div class="alloc-legend">
+      ${ASSETS.map((a, i) => `<span class="key"><span class="swatch" style="background:${ASSET_COLORS[i]}"></span>${a}: <b>${(+w[i] || 0).toFixed(2)}</b></span>`).join("")}
+    </div>`;
+
+  const knob = (label, v, suffix = "") => `
+    <div class="knob">
+      <div class="k">${label}</div>
+      <div class="v ${(!v || v === 0) ? "zero" : ""}">${v ? v + suffix : "—"}</div>
+    </div>`;
+  const knobs = `
+    <div class="knobs-row">
+      ${knob("infra_commit",      r.infra_commit)}
+      ${knob("carbon_offset_buy", r.carbon_offset_buy)}
+      ${knob("put_hedge",         r.put_hedge)}
+      <div class="knob bet"><div class="k">tech_bet</div><div class="v ${r.tech_bet ? "" : "zero"}">${escapeHtml(r.tech_bet || "—")}</div></div>
+    </div>`;
+
+  el.innerHTML = `
+    <div class="head">
+      <span class="id">${escapeHtml(row.id || "(no id)")}</span>
+      <span class="chip" style="background:${CAT_COLOR[cat]}22; border-color:${CAT_COLOR[cat]}55"><span class="dot" style="background:${CAT_COLOR[cat]}"></span>${escapeHtml(cat)}</span>
+      <span class="meta">${escapeHtml(row.seed_year || "")}</span>
+    </div>
+
+    <div class="label">News</div>
+    <div class="news-text">${escapeHtml(r.news || row.prompt || "")}</div>
+
+    <div class="label">Allocation</div>
+    ${allocBar}
+
+    <div class="label">Allocation knobs</div>
+    ${knobs}
+
+    <div class="label">Reasoning</div>
+    <div class="reason-text">${escapeHtml(r.reasoning || "")}</div>
+
+    <div class="nav-bar">
+      <button id="bPrev">← Prev</button>
+      <button id="bNext" class="primary">Next →</button>
+      <button id="bCopy" class="ghost" title="Copy this scenario into the Create form as a starting point">Use as template ↗</button>
+      <div class="spacer"></div>
+      <span class="progress">${browseSelected + 1} / ${browseFiltered.length}</span>
+    </div>`;
+
+  $("bPrev").onclick = () => browseNav(-1);
+  $("bNext").onclick = () => browseNav(+1);
+  $("bCopy").onclick = () => {
+    $("rcat").value = cat;
+    $("news").value = r.news || "";
+    fillEditor({ reasoning: r.reasoning, weights: w,
+      infra_commit: r.infra_commit, carbon_offset_buy: r.carbon_offset_buy,
+      put_hedge: r.put_hedge, tech_bet: r.tech_bet });
+    editingIndex = null;
+    setTab("create");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  $("bPrev").disabled = browseSelected === 0;
+  $("bNext").disabled = browseSelected === browseFiltered.length - 1;
+}
+
+function browseNav(delta) {
+  const next = browseSelected + delta;
+  if (next < 0 || next >= browseFiltered.length) return;
+  browseSelected = next;
+  renderList(); renderDetail();
+  const sel = $("bList").querySelector(".item.selected");
+  if (sel) sel.scrollIntoView({ block: "nearest" });
+}
+
+function loadBrowseFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => setBrowseFromText(e.target.result, file.name);
+  reader.readAsText(file);
+}
+
+// ============================================================
+// CREATE
+// ============================================================
+const LS_DATASET = "sft_create_dataset_v1";
+const LS_SETTINGS = "sft_create_settings_v1";
+let dataset = [];
+let editingIndex = null;
+
+function persistDataset() { try { localStorage.setItem(LS_DATASET, JSON.stringify(dataset)); } catch {} }
+function restoreDataset() {
+  try {
+    const raw = localStorage.getItem(LS_DATASET);
+    if (!raw) return;
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) dataset = arr;
+  } catch {}
+}
+function persistSettings() {
+  try {
+    localStorage.setItem(LS_SETTINGS, JSON.stringify({
+      apiKey: $("apiKey").value, model: $("model").value, temp: $("temp").value,
+    }));
+  } catch {}
+}
+function restoreSettings() {
+  try {
+    const raw = localStorage.getItem(LS_SETTINGS);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (s.apiKey) $("apiKey").value = s.apiKey;
+    if (s.model)  $("model").value  = s.model;
+    if (s.temp)   $("temp").value   = s.temp;
+  } catch {}
+}
+
+function buildPrompt(news) {
+  return `You are a climate-aware portfolio manager. News this quarter:\n${news}\n\nThink step by step about 1st/2nd/3rd-order impacts on TECH, OIL, GREEN, REAL_ESTATE, BONDS. Then output your allocation.\n\nFormat: <think>reasoning</think>{"weights": [TECH, OIL, GREEN, REAL_ESTATE, BONDS], ...}`;
+}
+function payloadFromFields(weights, infra, offset, put, techBet) {
+  const p = { weights };
+  if (infra)   p.infra_commit = infra;
+  if (offset)  p.carbon_offset_buy = offset;
+  if (put)     p.put_hedge = put;
+  if (techBet) p.tech_bet = techBet;
+  return p;
+}
+function buildCompletion(reasoning, payload) {
+  return `<think>\n${reasoning}\n</think>\n${JSON.stringify(payload)}`;
+}
+
+// Gemini's responseSchema (OpenAPI subset) rejects empty strings in enums and has no oneOf,
+// so we model "no tech_bet" by leaving the field out of `required` rather than allowing "".
+const SCHEMA = {
+  type: "object",
+  properties: {
+    reasoning:         { type: "string" },
+    weights:           { type: "array", items: { type: "number" }, minItems: 5, maxItems: 5 },
+    infra_commit:      { type: "number" },
+    carbon_offset_buy: { type: "number" },
+    put_hedge:         { type: "number" },
+    tech_bet:          { type: "string", enum: ["carbon_priced","green_leaps","oil_rebound","status_quo"] }
+  },
+  required: ["reasoning","weights","infra_commit","carbon_offset_buy","put_hedge"],
+  propertyOrdering: ["reasoning","weights","infra_commit","carbon_offset_buy","put_hedge","tech_bet"]
+};
+
+const SYSTEM_INSTRUCTION =
+  "You are a climate-aware portfolio manager generating supervised fine-tuning training data. " +
+  "Given a quarterly news scenario, produce concise step-by-step reasoning covering 1st/2nd/3rd-order " +
+  "impacts on TECH, OIL, GREEN, REAL_ESTATE, BONDS, and a corresponding allocation.\n\n" +
+  "Constraints:\n" +
+  "- weights: array of exactly 5 non-negative floats (TECH, OIL, GREEN, REAL_ESTATE, BONDS) summing to 1.0\n" +
+  "- infra_commit: 0.0 to 0.2\n" +
+  "- carbon_offset_buy: 0.0 to 0.05\n" +
+  "- put_hedge: 0.0 to 0.1\n" +
+  "- tech_bet: one of carbon_priced | green_leaps | oil_rebound | status_quo. OMIT this field entirely if none fits.\n" +
+  "- reasoning: 3-6 dense sentences, mention 1st/2nd/3rd-order explicitly. No bullet points.\n" +
+  "Return ONLY the JSON object, no commentary.";
+
+async function callGemini({ apiKey, model, news, temperature }) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const body = {
+    systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
+    contents: [{ role: "user", parts: [{ text: `News this quarter:\n${news}` }] }],
+    generationConfig: { temperature, responseMimeType: "application/json", responseSchema: SCHEMA },
+  };
+  const res = await fetch(url, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json?.error?.message || `HTTP ${res.status}`);
+  const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!text) throw new Error("Empty response from Gemini.\n" + JSON.stringify(json).slice(0, 500));
+  try { return JSON.parse(text); }
+  catch { throw new Error("Gemini returned non-JSON:\n" + text.slice(0, 500)); }
+}
+
+function updateApiBadge() {
+  const ok = $("apiKey").value.trim().length > 10;
+  const b = $("apiBadge");
+  b.textContent = ok ? "API key set" : "no API key";
+  b.className = "badge " + (ok ? "ok" : "warn");
+}
+function updateCountBadge() {
+  $("countBadge").textContent = `${dataset.length} draft`;
+  $("count").textContent = dataset.length;
+}
+function updateWeightSum() {
+  let s = 0;
+  for (let i = 0; i < 5; i++) s += Number($("w"+i).value) || 0;
+  const r = Math.round(s * 1000) / 1000;
+  const ok = Math.abs(s - 1) < 0.005;
+  const el = $("weightSum");
+  el.textContent = `Σ weights = ${r.toFixed(3)}` + (ok ? "  ✓" : "  (should be 1.0)");
+  el.className = "sum " + (ok ? "good" : "bad");
+}
+function fillEditor(g) {
+  $("reasoning").value = g.reasoning || "";
+  const w = Array.isArray(g.weights) && g.weights.length === 5 ? g.weights : [0,0,0,0,0];
+  for (let i = 0; i < 5; i++) $("w"+i).value = w[i] ?? 0;
+  $("infra").value  = g.infra_commit ?? 0;
+  $("offset").value = g.carbon_offset_buy ?? 0;
+  $("put").value    = g.put_hedge ?? 0;
+  $("techBet").value = g.tech_bet ?? "";
+  updateWeightSum();
+}
+function resetEditor() {
+  $("reasoning").value = "";
+  for (let i = 0; i < 5; i++) $("w"+i).value = "";
+  $("infra").value = ""; $("offset").value = ""; $("put").value = ""; $("techBet").value = "";
+  updateWeightSum();
+}
+function clearForm() {
+  $("news").value = ""; $("rcat").value = "transition";
+  resetEditor();
+  $("genErr").textContent = ""; $("saveStatus").textContent = "";
+}
+
+function renderList() {
+  const ul = $("list");
+  ul.innerHTML = "";
+  if (dataset.length === 0) {
+    ul.innerHTML = `<li><span class="news" style="text-align:center; width:100%">No draft rows yet.</span></li>`;
+    return;
+  }
+  dataset.forEach((row, i) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span class="id">${escapeHtml(row.id || "(no id)")}</span>
+      <span class="news">${escapeHtml((row.raw?.news || "").slice(0, 120))}</span>
+      <button data-i="${i}" class="edit ghost">Load</button>
+      <button data-i="${i}" class="del danger">Delete</button>`;
+    ul.appendChild(li);
+  });
+  ul.querySelectorAll("button.del").forEach(b => b.addEventListener("click", e => {
+    const i = +e.currentTarget.dataset.i;
+    if (confirm(`Delete row ${dataset[i].id}?`)) {
+      dataset.splice(i, 1); persistDataset(); renderList(); updateCountBadge();
+    }
+  }));
+  ul.querySelectorAll("button.edit").forEach(b => b.addEventListener("click", e => {
+    const i = +e.currentTarget.dataset.i;
+    loadRowIntoForm(dataset[i], i);
+  }));
+}
+
+function loadRowIntoForm(row, idx) {
+  editingIndex = idx;
+  $("rcat").value  = row.seed_category || "transition";
+  $("news").value  = row.raw?.news || "";
+  fillEditor({
+    reasoning: row.raw?.reasoning, weights: row.raw?.weights,
+    infra_commit: row.raw?.infra_commit, carbon_offset_buy: row.raw?.carbon_offset_buy,
+    put_hedge: row.raw?.put_hedge, tech_bet: row.raw?.tech_bet,
+  });
+  $("saveStatus").style.color = "var(--muted)";
+  $("saveStatus").textContent = `Editing row "${row.id}" (#${idx}) — Save will replace it.`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+async function generate() {
+  $("genErr").textContent = "";
+  const apiKey = $("apiKey").value.trim();
+  const model  = $("model").value.trim() || "gemini-3.1-pro-preview";
+  const temp   = Number($("temp").value) || 0.7;
+  const news   = $("news").value.trim();
+  if (!apiKey) { $("genErr").textContent = "Set a Gemini API key in settings first."; return; }
+  if (!news)   { $("genErr").textContent = "Enter a news scenario first."; return; }
+
+  const btn = $("generateBtn");
+  btn.disabled = true;
+  $("genStatus").innerHTML = `<span class="spinner"></span>calling ${escapeHtml(model)}…`;
+  persistSettings();
+  try {
+    const out = await callGemini({ apiKey, model, news, temperature: temp });
+    fillEditor(out);
+    $("genStatus").textContent = "done · review and edit before saving.";
+  } catch (err) {
+    $("genStatus").textContent = "";
+    $("genErr").textContent = "Gemini error: " + err.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function generateId(news) {
+  const stop = new Set(["the","a","an","of","to","in","on","for","and","is","at","by","with","from","as"]);
+  const words = (news || "").toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ").split(/\s+/)
+    .filter(w => w && !stop.has(w) && w.length > 2)
+    .slice(0, 3);
+  const slug = words.join("_") || "case";
+  const stamp = Date.now().toString(36).slice(-5);
+  return `${slug}_${stamp}`;
+}
+
+function buildRow() {
+  const cat = $("rcat").value;
+  const news = $("news").value.trim();
+  const reasoning = $("reasoning").value.trim();
+  const weights = [0,1,2,3,4].map(i => Number($("w"+i).value) || 0);
+  const infra  = Number($("infra").value)  || 0;
+  const offset = Number($("offset").value) || 0;
+  const put    = Number($("put").value)    || 0;
+  const techBet= $("techBet").value || "";
+
+  if (!news)      throw new Error("news is required.");
+  if (!reasoning) throw new Error("reasoning is required.");
+  const sumW = weights.reduce((a,b)=>a+b, 0);
+  if (Math.abs(sumW - 1) > 0.02) throw new Error(`weights must sum to 1.0 (got ${sumW.toFixed(3)}).`);
+
+  const id = (editingIndex !== null && dataset[editingIndex]?.id) || generateId(news);
+  const payload = payloadFromFields(weights, infra, offset, put, techBet);
+  const raw = { id, news, reasoning, weights, infra_commit: infra,
+                carbon_offset_buy: offset, put_hedge: put, tech_bet: techBet };
+  return { id, seed_id: id, seed_category: cat,
+    prompt: buildPrompt(news), completion: buildCompletion(reasoning, payload), raw };
+}
+
+function save() {
+  $("saveStatus").textContent = "";
+  let row;
+  try { row = buildRow(); }
+  catch (e) { $("saveStatus").style.color = "var(--bad)"; $("saveStatus").textContent = e.message; return; }
+  if (editingIndex !== null) {
+    dataset[editingIndex] = row;
+    $("saveStatus").style.color = "var(--good)";
+    $("saveStatus").textContent = `Replaced row "${row.id}".`;
+    editingIndex = null;
+  } else {
+    dataset.push(row);
+    $("saveStatus").style.color = "var(--good)";
+    $("saveStatus").textContent = `Saved as "${row.id}" · ${dataset.length} rows total.`;
+    clearForm();
+  }
+  persistDataset(); renderList(); updateCountBadge();
+}
+
+function download() {
+  if (dataset.length === 0) { alert("Draft is empty."); return; }
+  const text = dataset.map(r => JSON.stringify(r)).join("\n") + "\n";
+  const blob = new Blob([text], { type: "application/x-ndjson" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  a.href = url; a.download = `traces.created.${stamp}.jsonl`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function loadIntoDraft(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const lines = e.target.result.split(/\r?\n/).filter(l => l.trim());
+      const parsed = lines.map((l, i) => {
+        try { return JSON.parse(l); } catch (err) { throw new Error(`Line ${i+1}: ${err.message}`); }
+      });
+      if (dataset.length && !confirm(`Append ${parsed.length} rows to the existing ${dataset.length}? (Cancel to replace.)`)) {
+        dataset = parsed;
+      } else {
+        dataset = dataset.concat(parsed);
+      }
+      persistDataset(); renderList(); updateCountBadge();
+    } catch (err) { alert("Parse error: " + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================
+// wiring
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  // tabs
+  document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => setTab(b.dataset.tab)));
+  let initialTab;
+  try { initialTab = localStorage.getItem("sft_active_tab"); } catch {}
+  setTab(initialTab === "browse" ? "browse" : "create");
+
+  // create
+  restoreSettings(); restoreDataset();
+  updateApiBadge(); updateCountBadge(); renderList(); updateWeightSum();
+
+  $("apiKey").addEventListener("input", () => { updateApiBadge(); persistSettings(); });
+  $("model").addEventListener("input",  persistSettings);
+  $("temp").addEventListener("input",   persistSettings);
+
+  $("generateBtn").addEventListener("click", generate);
+  $("clearBtn").addEventListener("click", () => { editingIndex = null; clearForm(); });
+  $("saveBtn").addEventListener("click", save);
+  $("resetBtn").addEventListener("click", () => { editingIndex = null; resetEditor(); $("saveStatus").textContent=""; });
+  $("downloadBtn").addEventListener("click", download);
+  $("loadBtn").addEventListener("click", () => $("fileInput").click());
+  $("fileInput").addEventListener("change", e => e.target.files[0] && loadIntoDraft(e.target.files[0]));
+
+  for (let i = 0; i < 5; i++) $("w"+i).addEventListener("input", updateWeightSum);
+
+  // browse
+  $("bLoadBtn").addEventListener("click", () => $("bFileInput").click());
+  $("bFileInput").addEventListener("change",  e => e.target.files[0] && loadBrowseFile(e.target.files[0]));
+  $("bFileInput2").addEventListener("change", e => e.target.files[0] && loadBrowseFile(e.target.files[0]));
+  $("bReloadBtn").addEventListener("click", () => { browseTriedAuto = false; autoFetchBrowse(); });
+  $("bSearch").addEventListener("input", e => {
+    browseFilters.q = e.target.value;
+    browseSelected = 0;
+    applyFilters(); renderStats(); renderList(); renderDetail();
+  });
+
+  // keyboard
+  document.addEventListener("keydown", e => {
+    const tag = (e.target.tagName || "").toLowerCase();
+    const inField = tag === "textarea" || tag === "input" || tag === "select";
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") { e.preventDefault(); generate(); return; }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") { e.preventDefault(); download(); return; }
+    if (inField) return;
+    const browsing = $("view-browse").style.display !== "none";
+    if (browsing && browseFiltered.length) {
+      if (e.key === "ArrowRight" || e.key === "j") browseNav(+1);
+      else if (e.key === "ArrowLeft" || e.key === "k") browseNav(-1);
+    }
+  });
+});
+</script>
+
+</body>
+</html>

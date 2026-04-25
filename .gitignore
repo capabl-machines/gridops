@@ -17,3 +17,4 @@ gemini31.py
 .playwright-mcp/
 sft_traces/_*.log
 sft_traces/_test_traces.jsonl
+from-hackathon.txt
