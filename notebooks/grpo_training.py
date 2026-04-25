@@ -226,7 +226,7 @@ def run_sft_warmstart(model, tokenizer, sft_path: Path, max_steps: int = 150):
         save_strategy='steps',
         save_steps=max_steps,         # one save at end so we can inspect adapters
         save_total_limit=1,
-        bf16=is_bfloat16_supported(),
+        bf16=False, fp16=True,        # align with Unsloth LoRA kernel autocast
         dataset_text_field='text',
         max_length=MAX_SEQ_LEN,
     )
@@ -274,7 +274,7 @@ def run_grpo_phase(model, tokenizer, phase: int):
         top_p=0.95,
         loss_type='dapo',              # v1.0 default but explicit for clarity
         beta=0.0,                      # KL-free (DAPO / R1-Zero)
-        bf16=is_bfloat16_supported(),
+        bf16=False, fp16=True,         # align with Unsloth LoRA kernel autocast
     )
 
     FastLanguageModel.for_training(model)
@@ -349,16 +349,17 @@ def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print(f'Loading {MODEL_NAME}...')
-    # Explicit bfloat16 dtype prevents the Half vs BFloat16 mismatch in
-    # Unsloth's fast LoRA kernel during GRPO rollouts on Blackwell.
-    # (dtype=None silently picked Half in some code paths, causing
-    # `self and mat2 must have the same dtype, but got Half and BFloat16`
-    # in matmul_lora during the first iter.)
+    # Use fp16 (Half) throughout — Unsloth's fast LoRA kernel wraps every
+    # call in torch.amp.autocast.decorate_fwd which allocates Half buffers
+    # for the matmul. With bf16 LoRA adapters, this caused a hard crash:
+    #   "self and mat2 must have the same dtype, but got Half and BFloat16"
+    # on Phase 1 GRPO iter 0 across multiple checkpointing variants.
+    # Going fp16 everywhere aligns with what autocast wants.
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=MODEL_NAME,
         max_seq_length=MAX_SEQ_LEN,
         load_in_4bit=True,
-        dtype=torch.bfloat16,
+        dtype=torch.float16,
     )
     # Add LoRA adapters for efficient training.
     # use_gradient_checkpointing=False (was 'unsloth') — Unsloth's variant
