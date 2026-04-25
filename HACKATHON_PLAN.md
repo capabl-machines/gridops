@@ -11,14 +11,15 @@
 
 | Field | Value |
 |---|---|
-| Today | 2026-04-23 (Thursday late evening) |
-| Phase | Tonight — pre-training validation complete; SFT pipeline next |
-| Current blocker | None |
-| Critical path next | Write SFT warm-start trace generation pipeline |
-| Training hours used | 0 / 48 |
-| Model locked | **Qwen3-4B-Instruct-2507** (Thinking variant overshoots token budget — tested and rejected) |
-| Compute target | **RunPod RTX 5090 32GB (active)**; HF credits onsite Apr 25 |
-| Measured stack throughput | 80 tok/s batched on 5090 Blackwell (Unsloth 2026.4.7 + TRL 0.24 + torch 2.10) |
+| Today | 2026-04-25 (Saturday — onsite Day 1, morning) |
+| Phase | Onsite — Phase 1 GRPO running on pod A; v3 trace experiment in flight on pod B |
+| Current blocker | None — both pods alive after 5 RunPod restarts overnight |
+| Critical path next | Phase 1 GRPO completion (~2 hr) → real reward curve PNGs → HF Space deploy |
+| Training hours used | ~30 min (SFT) of ~48 hr window |
+| Model locked | **Qwen3-4B-Instruct-2507** (Thinking variant rejected: overshoots token budget) |
+| Active pods | **A: RTX 5090 32GB** @ 157.157.221.29:55515 (Phase 1 GRPO running) · **B: RTX PRO 6000 Blackwell 97GB** @ 157.157.221.177:16666 (idle, awaiting v3 SFT) |
+| Repo | round-2 branch, **43 commits**, public at github.com/capabl-machines/gridops |
+| Onsite compute decision | Organizers said "use any infra you like" — went RunPod for speed |
 
 ---
 
@@ -79,6 +80,38 @@
 - [x] Measured real throughput: 80 tok/s batched long-context, 217 tok/s short-context on 5090
 - [x] **Adversarial reward stress-test** run: caught 4 real exploits (all_oil, infra double-count, put_hedge farmer, infra no-downside) — all fixed
 - [x] v0.7 reward patches committed (commit `8d63d4e`) — all exploits below baseline
+
+---
+
+## Onsite Day 1 progress log (Apr 25 morning)
+
+- [x] Travelled to venue with public repo + 8 commits ahead
+- [x] Asked organizers re compute → "use any infra you like"; chose RunPod for speed
+- [x] **6 RunPod restart/re-provision events** in 24 hrs — pattern: pods idle-preempted on community cloud. Each loses /workspace data; venv+install needs re-run (~5 min). Resilience: scripted setup keeps recovery fast.
+- [x] Settled on pod A: 157.157.221.29:55515, RTX 5090 32GB, /dev/nvidia0 working
+- [x] Brought up pod B: 157.157.221.177:16666, RTX PRO 6000 Blackwell **97GB VRAM** (3× pod A capacity)
+- [x] Both pods bootstrapped: venv at /root/env, full Unsloth+TRL+torch stack, smoke + adversarial + holdout tests pass
+- [x] **Gemini 3.1 Pro review of SFT prompt design** — surfaced "fundamental RLHF law: SFT prompt MUST match GRPO inference prompt" → led to single-source `portfolio_env/prompt.py`
+- [x] Generated **v2 SFT traces** (120 examples) with Gemini-aligned enriched prompt — reasoning length +25% (760→952 chars), hedging usage halved (more disciplined), 0 duplicates
+- [x] **SFT v2 validated** on pod A:
+  - Loss: 3.56 → 0.78 (deep convergence in 6.6 min)
+  - Hold-out: **5/5 valid format** (up from v1's 3/5 — major win for GRPO bootstrap)
+  - Mean regret: -0.09 (loses to baseline by 9% — expected for SFT-only; GRPO's job to fix)
+  - Beat baseline: 2/5 valid samples
+- [x] Pod A: kicked off **Phase 1 GRPO with v2 SFT** (commit a target: 50 GRPO iters, ~2 hr ETA)
+- [ ] **In flight:** generating 100 additional SFT traces locally (55/100 done) for v3 experiment
+- [ ] **Next:** concat v2 + new_100 → traces_v3.jsonl (220 examples) → SFT v3 on pod B (300 steps for ~10-epoch coverage) → A/B compare against v2 hold-out scores
+
+### Key decisions logged
+
+| Decision | Why |
+|---|---|
+| Skip Colab Pro $10 spend | Organizers provide compute; Colab notebook just needs to be runnable, not where training happens |
+| Skip Lambda/Vast pivot | Got new RunPod working; switching cost not worth it now |
+| Use BOTH pods in parallel | Pod B's 97GB VRAM enables larger batches / future stretch experiments (Llama 8B / dual SFT comparison) |
+| Phase 1 GRPO on pod A *before* v3 SFT result lands | Don't waste pod A idle — worst case we re-run with v3 SFT checkpoint later |
+| `--sft-steps 300` for v3 (220 traces) | Maintains ~10-epoch per-trace exposure (matches v2's 150-step / 120-trace ratio) |
+| Single-source prompt module | Per Gemini's RLHF rule — prevents mode collapse during GRPO |
 
 ---
 
