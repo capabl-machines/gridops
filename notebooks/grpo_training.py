@@ -360,7 +360,12 @@ def main():
         load_in_4bit=True,
         dtype=torch.bfloat16,
     )
-    # Add LoRA adapters for efficient training
+    # Add LoRA adapters for efficient training.
+    # use_gradient_checkpointing=False (was 'unsloth') — Unsloth's variant
+    # wraps the kernel in autocast that allocates Half (fp16) output buffers
+    # while the bf16 LoRA adapters cause dtype-mismatch crashes during
+    # GRPO's rollout forward passes on Blackwell. We have VRAM headroom
+    # (4B model = 4GB, pod has 32GB+), so disabling checkpointing is fine.
     model = FastLanguageModel.get_peft_model(
         model,
         r=16, lora_alpha=16,
@@ -368,7 +373,7 @@ def main():
                         'gate_proj', 'up_proj', 'down_proj'],
         lora_dropout=0.0,
         bias='none',
-        use_gradient_checkpointing='unsloth',
+        use_gradient_checkpointing=False,
         random_state=42,
     )
     print(f'VRAM allocated: {torch.cuda.memory_allocated()/1e9:.2f} GB')
