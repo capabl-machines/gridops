@@ -349,11 +349,16 @@ def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print(f'Loading {MODEL_NAME}...')
+    # Explicit bfloat16 dtype prevents the Half vs BFloat16 mismatch in
+    # Unsloth's fast LoRA kernel during GRPO rollouts on Blackwell.
+    # (dtype=None silently picked Half in some code paths, causing
+    # `self and mat2 must have the same dtype, but got Half and BFloat16`
+    # in matmul_lora during the first iter.)
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=MODEL_NAME,
         max_seq_length=MAX_SEQ_LEN,
         load_in_4bit=True,
-        dtype=None,
+        dtype=torch.bfloat16,
     )
     # Add LoRA adapters for efficient training
     model = FastLanguageModel.get_peft_model(
