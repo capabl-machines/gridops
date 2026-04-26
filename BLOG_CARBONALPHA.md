@@ -1,5 +1,22 @@
 # CarbonAlpha: Teaching a 7B Model to Manage a Carbon-Budgeted Portfolio Through Macro Shocks
 
+![Live CarbonAlpha demo dashboard showing a Q7 macro headline, model reasoning, locked allocation, carbon timeline, NAV versus benchmark, and reward breakdown](assets/blog/carbonalpha-demo-live-screenshot.jpg)
+
+*The live CarbonAlpha demo: edit a macro headline, re-plan from that quarter, and watch allocation, carbon budget, NAV, and reward components move together.*
+
+## Submission Links
+
+- Live demo Space: [77ethers-carbonalpha-demo.hf.space](https://77ethers-carbonalpha-demo.hf.space/)
+- Hugging Face Space repo: [huggingface.co/spaces/77ethers/CarbonAlpha-demo](https://huggingface.co/spaces/77ethers/CarbonAlpha-demo)
+- Hugging Face model repo: [huggingface.co/77ethers/CarbonAlpha](https://huggingface.co/77ethers/CarbonAlpha)
+- Final GRPO adapter: [grpo_qwen25_7b_adapter_phase1_100_v1](https://huggingface.co/77ethers/CarbonAlpha/tree/main/grpo_qwen25_7b_adapter_phase1_100_v1)
+- SFT warm-start adapter: [sft_qwen25_7b_curriculum400_v1](https://huggingface.co/77ethers/CarbonAlpha/tree/main/sft_qwen25_7b_curriculum400_v1)
+- Training dataset repo: [huggingface.co/datasets/77ethers/CarbonAlpha-train](https://huggingface.co/datasets/77ethers/CarbonAlpha-train)
+- Final Colab notebook: [carbonalpha_final_pipeline.ipynb](https://colab.research.google.com/github/capabl-machines/gridops/blob/round-2/notebooks/carbonalpha_final_pipeline.ipynb)
+- GitHub branch: [capabl-machines/gridops/tree/round-2](https://github.com/capabl-machines/gridops/tree/round-2)
+- Model card: [README.md on Hugging Face](https://huggingface.co/77ethers/CarbonAlpha/blob/main/README.md)
+- Training evidence: [loss plot](https://huggingface.co/77ethers/CarbonAlpha/blob/main/assets/loss_curve.png), [reward plot](https://huggingface.co/77ethers/CarbonAlpha/blob/main/assets/reward_curve.png), [raw GRPO log](https://huggingface.co/77ethers/CarbonAlpha/blob/main/training_logs/qwen25_grpo_phase1_100_v1.log)
+
 ## Why This Problem
 
 ESG-mandated capital is now measured in tens of trillions, and the mandates are getting teeth.
@@ -13,10 +30,6 @@ A human PM cannot consistently reason through 1st, 2nd, and 3rd-order effects of
 And a generic LLM with a clever prompt cannot do it either — not reliably. It hallucinates carbon intensities, drifts from the action schema, ignores the budget constraint when the news is exciting, and has no notion of regret against a benchmark.
 
 CarbonAlpha is our attempt to build the missing thing: a small, fine-tuned, RL-trained reasoning agent that lives inside a real portfolio environment with a real carbon budget, and learns to allocate through it.
-
-![CarbonAlpha demo dashboard showing macro shocks, portfolio NAV, carbon budget, and allocation state](assets/blog/carbonalpha-demo-dashboard.png)
-
-*The demo frames CarbonAlpha as a live portfolio agent: one macro shock enters, the model reasons, and the environment turns that reasoning into allocations, carbon usage, NAV, and benchmark-relative outcomes.*
 
 ## The Core Bet
 
@@ -59,10 +72,6 @@ This matters because finance is full of outputs that can sound intelligent but a
 The harness makes the model answerable to consequences.
 
 In that sense, CarbonAlpha is not just a fine-tuned LLM. It is an **evaluation harness for carbon-aware portfolio reasoning** and a **training harness for turning macro theses into scored actions**.
-
-![CarbonAlpha harness diagram showing simulator, action schema, guardrails, carbon budget, benchmark, reward function, validation, and evaluation](assets/blog/carbonalpha-harness.png)
-
-*Reliability comes from the system around the model: the simulator, schema, carbon budget, benchmark, reward function, validation loop, and evaluation set.*
 
 ## The Environment
 
@@ -113,10 +122,6 @@ Ambiguous shocks test conflicting signals. A hurricane can hurt real estate, lif
 Hard shocks test second- and third-order reasoning. A rare-earth export restriction sounds like a climate transition story, but it can hurt GREEN supply chains and rotate capital into OIL. A deflation pulse can make BONDS the only asset with positive real protection. A carbon-offset fraud scandal can destroy voluntary offset prices while rewarding real abatement assets.
 
 This shock structure became both the environment curriculum and the data curriculum.
-
-![CarbonAlpha curriculum progression from easy to ambiguous to hard macro shocks](assets/blog/carbonalpha-curriculum.png)
-
-*The training curriculum moves from clean first-order cases to ambiguous mixed-signal events and then hard, nonlinear macro shocks.*
 
 ## The Training Dataset
 
@@ -345,10 +350,6 @@ The reward stack connects directly to portfolio management:
 
 This is the core engineering move: the model is not rewarded for sounding like a portfolio manager. It is rewarded for producing actions that survive the simulator.
 
-![GRPO simulation arena showing candidate portfolio actions scored by reward components](assets/blog/carbonalpha-grpo-arena.png)
-
-*GRPO turns candidate trade tickets into scored outcomes. The best completions are the ones that execute cleanly, respect carbon limits, reduce drawdown, and beat the benchmark.*
-
 ## Why Regret Is the Right Financial Signal
 
 Raw return is not enough. If every asset rises, a model can look good by accident.
@@ -388,10 +389,6 @@ beats baseline: 5/5
 ```
 
 We also tested a Qwen3-4B-Base branch. It passed the mechanical GRPO smoke gate, but did not beat the Qwen2.5 model. So for the demo, Qwen2.5-7B remains the stronger candidate.
-
-![CarbonAlpha outperforming equal-weight while staying within carbon budget](assets/blog/carbonalpha-results-race.png)
-
-*The desired behavior is not just higher return. CarbonAlpha must outperform while staying inside a hard carbon budget and surviving inflation, transition shocks, physical climate risk, hedge bleed, and drawdown pressure.*
 
 ## How We Evaluated It
 
@@ -545,10 +542,6 @@ The demo is designed to make the training delta visible.
 
 You can choose or edit a macro headline, then click **Plan Portfolio**. CarbonAlpha reasons live and produces an allocation.
 
-![Live CarbonAlpha demo dashboard showing a Q7 macro headline, model reasoning, locked allocation, carbon timeline, NAV versus benchmark, and reward breakdown](assets/blog/carbonalpha-demo-live-screenshot.jpg)
-
-*A live demo run: the user edits a quarter headline, replans from that point, and watches the allocation, carbon path, NAV, and reward components update together.*
-
 The interface shows:
 
 - model reasoning;
@@ -562,6 +555,10 @@ The interface shows:
 The important thing is not just the final answer. It is watching how the trained model changes behavior compared with the warm-start and base model.
 
 A base model may produce plausible prose. The trained model is more likely to produce a valid action that respects the environment.
+
+![CarbonAlpha training progression screenshot comparing GRPO, SFT, and base Qwen responses to the same prompt](assets/blog/carbonalpha-training-progression-screenshot.png)
+
+*The demo also exposes the training progression directly: GRPO, SFT, and base Qwen answer the same macro prompt side by side.*
 
 ## What Still Fails
 
@@ -590,3 +587,27 @@ CarbonAlpha is one version of that idea: a small reasoning model trained to mana
 - Salesforce, ["Agent Harness: The Infrastructure for Reliable AI"](https://www.salesforce.com/agentforce/ai-agents/agent-harness/)
 - Future of Being Human, ["What we miss when we talk about AI Harnesses"](https://www.futureofbeinghuman.com/p/what-we-miss-when-we-talk-about-ai-harnesses)
 - rmax.ai, ["Harness Engineering Is the Primary Lever for Agent Reliability in 2025-2026"](https://rmax.ai/notes/harness-new-model-agent-systems-2026/)
+
+## Visual Appendix
+
+The images below are AI-generated concept visuals used to explain the system narrative. The real demo screenshots are shown at the top of the blog and in the demo section above.
+
+![CarbonAlpha demo dashboard concept showing macro shocks, portfolio NAV, carbon budget, and allocation state](assets/blog/carbonalpha-demo-dashboard.png)
+
+*Concept 1: CarbonAlpha as a live portfolio agent.*
+
+![CarbonAlpha harness diagram showing simulator, action schema, guardrails, carbon budget, benchmark, reward function, validation, and evaluation](assets/blog/carbonalpha-harness.png)
+
+*Concept 2: the harness around the model.*
+
+![CarbonAlpha curriculum progression from easy to ambiguous to hard macro shocks](assets/blog/carbonalpha-curriculum.png)
+
+*Concept 3: the easy, ambiguous, and hard curriculum.*
+
+![GRPO simulation arena showing candidate portfolio actions scored by reward components](assets/blog/carbonalpha-grpo-arena.png)
+
+*Concept 4: GRPO as a simulation arena for candidate allocations.*
+
+![CarbonAlpha outperforming equal-weight while staying within carbon budget](assets/blog/carbonalpha-results-race.png)
+
+*Concept 5: the target behavior: outperform while staying inside the carbon budget.*
