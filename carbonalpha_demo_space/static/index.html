@@ -128,46 +128,152 @@
     }
     .subtitle strong { color: var(--text); font-weight: 600; }
 
-    /* ─── "How it works" 5-card explainer ─── */
-    .how-it-works {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      margin-top: 14px;
+    /* ─── Intro modal (first-load explainer + lightbulb-recall) ─── */
+    .intro-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(14, 16, 18, 0.75);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1100;
+      padding: 24px;
+      animation: intro-fade-in 0.25s ease-out;
     }
-    @media (max-width: 1100px) { .how-it-works { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px)  { .how-it-works { grid-template-columns: 1fr; } }
-    .hiw-card {
+    .intro-backdrop.show { display: flex; }
+    @keyframes intro-fade-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .intro-card {
+      position: relative;
+      max-width: 760px;
+      width: 100%;
+      max-height: calc(100vh - 48px);
+      overflow: auto;
       background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 10px 12px;
+      border: 1px solid var(--line-2);
+      border-radius: 12px;
+      padding: 36px 40px 32px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(139,168,136,0.12) inset;
+      animation: intro-card-in 0.32s cubic-bezier(0.2,0.7,0.2,1);
+    }
+    @keyframes intro-card-in {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .intro-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 34px;
+      height: 34px;
+      background: var(--panel-3);
+      border: 1px solid var(--line-2);
+      color: var(--text-muted);
+      border-radius: 50%;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
       display: grid;
-      gap: 4px;
+      place-items: center;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
     }
-    .hiw-card .hiw-num {
-      font-family: var(--font-mono);
-      font-size: 9px;
-      letter-spacing: 0.2em;
-      color: var(--cream);
-      font-weight: 700;
-    }
-    .hiw-card .hiw-title {
+    .intro-close:hover { color: var(--text); border-color: var(--text); background: var(--panel-2); }
+    .intro-title {
       font-family: var(--font-ui);
-      font-size: 12.5px;
+      font-weight: 700;
+      font-size: 30px;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin: 0 0 8px;
+    }
+    .intro-title em { font-style: normal; color: var(--sage); }
+    .intro-lede {
+      font-size: 16px;
+      line-height: 1.55;
+      color: var(--text-soft);
+      margin-bottom: 26px;
+      max-width: 640px;
+    }
+    .intro-lede strong { color: var(--text); font-weight: 600; }
+    .intro-sections { display: grid; gap: 22px; }
+    .intro-section {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    .intro-section .num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--cream);
+      padding-top: 4px;
+    }
+    .intro-section h3 {
+      font-family: var(--font-ui);
+      font-size: 18px;
       font-weight: 600;
       color: var(--text);
+      margin: 0 0 6px;
       letter-spacing: -0.005em;
     }
-    .hiw-card .hiw-body {
-      font-size: 11px;
-      line-height: 1.5;
-      color: var(--text-muted);
+    .intro-section p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-soft);
+      margin: 0 0 8px;
     }
-    .hiw-card .hiw-body em { font-style: normal; color: var(--sage); }
-    .hiw-card .hiw-body code {
-      font-family: var(--font-mono); font-size: 10.5px;
-      background: var(--panel-3); border: 1px solid var(--line); padding: 0 4px; border-radius: 2px; color: var(--text-soft);
+    .intro-section p:last-child { margin-bottom: 0; }
+    .intro-section strong { color: var(--text); font-weight: 600; }
+    .intro-section .sage  { color: var(--sage);  font-weight: 600; }
+    .intro-section .cream { color: var(--cream); font-weight: 600; }
+    .intro-section .slate { color: var(--slate); font-weight: 600; }
+    .intro-section code {
+      font-family: var(--font-mono); font-size: 12.5px;
+      background: var(--panel-3); border: 1px solid var(--line); padding: 1px 5px; border-radius: 2px; color: var(--text);
+    }
+    .intro-cta {
+      margin-top: 28px;
+      width: 100%;
+      padding: 14px 20px;
+      background: var(--sage);
+      color: #0e1a11;
+      border: 0;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.05s;
+    }
+    .intro-cta:hover { background: #9bb898; }
+    .intro-cta:active { transform: translateY(1px); }
+
+    .lightbulb {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      border: 1px solid var(--line-2);
+      color: var(--text-muted);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s, box-shadow 0.2s;
+    }
+    .lightbulb:hover { color: var(--cream); border-color: var(--cream); background: rgba(214,201,168,0.06); box-shadow: 0 0 12px rgba(214,201,168,0.18); }
+    .lightbulb svg { width: 16px; height: 16px; }
+    @media (max-width: 600px) {
+      .intro-card { padding: 28px 22px 22px; }
+      .intro-title { font-size: 24px; }
+      .intro-section { grid-template-columns: 1fr; }
+      .intro-section .num { padding-top: 0; }
     }
 
     /* ─── Status ribbon (trader terminal touch) ─── */
@@ -1054,8 +1160,8 @@
     .loader-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(22, 24, 26, 0.78);
-      backdrop-filter: blur(4px);
+      background: rgba(22, 24, 26, 0.55);
+      backdrop-filter: blur(2px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -1122,6 +1228,13 @@
     <div class="title-divider"></div>
     <span class="meta-tag" id="modelTag">Qwen 2.5 · 7B · SFT → GRPO p1·100</span>
     <button class="meta-tag" id="exportBtn" title="Download JSON of all quarters' news, allocations, both model completions, and judge verdicts">Export ⤓</button>
+    <button class="lightbulb" id="lightbulbBtn" title="How this works" aria-label="Open explanation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18h6"/>
+        <path d="M10 22h4"/>
+        <path d="M12 2a7 7 0 0 0-4 12.7c.7.6 1 1.5 1 2.3v1h6v-1c0-.8.3-1.7 1-2.3A7 7 0 0 0 12 2z"/>
+      </svg>
+    </button>
   </div>
   <p class="subtitle">
     <strong>From a macro headline, CarbonAlpha plans a 3-year ETF allocation</strong> —
@@ -1129,34 +1242,6 @@
     at the same time, both measured against an equal-weight benchmark. You can re-plan any quarter
     by editing its headline. Backtest window: <strong>Q1 2022 – Q4 2024</strong>.
   </p>
-
-  <section class="how-it-works">
-    <div class="hiw-card">
-      <div class="hiw-num">01 · LOCK</div>
-      <div class="hiw-title">One decision, 3 years out</div>
-      <div class="hiw-body">A single allocation that holds for all <em>12 quarters</em>. No rebalancing. The model must reason at the macro-cycle level, not quarter-by-quarter.</div>
-    </div>
-    <div class="hiw-card">
-      <div class="hiw-num">02 · CARBON</div>
-      <div class="hiw-title">Hard 25 kg cap</div>
-      <div class="hiw-body">Cumulative kg over 12 quarters can't exceed 25. <em>OIL</em> emits 2.5 kg/$/q; <em>GREEN</em> ~zero. Returns and carbon are co-equal objectives.</div>
-    </div>
-    <div class="hiw-card">
-      <div class="hiw-num">03 · ETFs</div>
-      <div class="hiw-title">5 real-world ETFs</div>
-      <div class="hiw-body">Backtested against actual <code>IXN</code>, <code>DBO</code>, <code>ICLN</code>, <code>VNQI</code>, <code>BNDW</code> returns — Q1 2022 to Q4 2024.</div>
-    </div>
-    <div class="hiw-card">
-      <div class="hiw-num">04 · SHOCKS</div>
-      <div class="hiw-title">17 macro shocks · 4 categories</div>
-      <div class="hiw-body">Physical (hurricanes, droughts), transition (CBAM, methane fees), geopolitical (rare-earth, sanctions), monetary (Fed pivots). The model never knows the schedule.</div>
-    </div>
-    <div class="hiw-card">
-      <div class="hiw-num">05 · LEVERS</div>
-      <div class="hiw-title">4 intervention levers</div>
-      <div class="hiw-body"><code>infra_commit</code>, <code>carbon_offset_buy</code>, <code>put_hedge</code>, <code>tech_bet</code>. Use only when news justifies — misuse <em>bleeds</em> reward.</div>
-    </div>
-  </section>
 
   <div class="ribbon" id="ribbon">
     <div class="cell"><span class="l">QUARTER</span><span class="v" id="rbQ">—</span></div>
@@ -1330,6 +1415,68 @@
   </section>
 
 </main>
+
+<div class="intro-backdrop" id="introModal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <div class="intro-card">
+    <button class="intro-close" id="introClose" aria-label="Close explanation">×</button>
+    <h2 class="intro-title" id="introTitle">How <em>CarbonAlpha</em> works</h2>
+    <p class="intro-lede">
+      A <strong>7B-parameter language model</strong> that reads one macro headline today,
+      then commits a single <strong>3-year portfolio</strong> across five real ETFs —
+      designed to outperform an equal-weight benchmark on <strong>both portfolio returns and carbon emissions</strong>.
+    </p>
+
+    <div class="intro-sections">
+
+      <div class="intro-section">
+        <div class="num">01</div>
+        <div>
+          <h3>The challenge</h3>
+          <p>Build a portfolio agent that <strong>optimises returns while favouring carbon savings</strong>, navigating global macro events through coherent macro reasoning.</p>
+          <p>Goal: outperform the equal-weight benchmark on <span class="sage">both real return and cumulative carbon</span> across a 12-quarter macro path.</p>
+        </div>
+      </div>
+
+      <div class="intro-section">
+        <div class="num">02</div>
+        <div>
+          <h3>Long-horizon thinking</h3>
+          <p>CarbonAlpha can plan for full 3 year cycle and navigates itself in any unforeseen scenario.</p>
+          <p>So it has to reason at the <strong>macro-cycle level</strong>: identify the <span class="sage">1st-order</span> direct hit, the <span class="sage">2nd-order</span> chain (capital flows, sector rotation), and the <span class="sage">3rd-order</span> counterintuitive move that pattern-matchers miss.</p>
+        </div>
+      </div>
+
+      <div class="intro-section">
+        <div class="num">03</div>
+        <div>
+          <h3>Re-planning Capability</h3>
+          <p>If new global news arrives, the agent can <strong>re-plan upcoming quarters</strong>. Every re-plan carries <span class="sage">turnover costs</span> and <span class="sage">carbon consequences</span></p>
+        </div>
+      </div>
+
+      <div class="intro-section">
+        <div class="num">04</div>
+        <div>
+          <h3>How it was trained</h3>
+          <p><strong>Qwen 2.5 7B</strong> base → <strong>SFT</strong> on a 400-trace curriculum (easy / ambiguous / hard shocks) → <strong>GRPO</strong> reinforcement-learning refinement (Phase 1, 100 steps).</p>
+          <p>SFT teaches the format and the macro-cycle frame. GRPO refines toward the actual reward: high real return × low carbon × low drawdown × clean output format.</p>
+        </div>
+      </div>
+
+      <div class="intro-section">
+        <div class="num">05</div>
+        <div>
+          <h3>What you can do here</h3>
+          <p>Click <strong>Plan Portfolio</strong>. The model reasons live, word by word. The <strong>same prompt</strong> runs through three versions side-by-side: <span class="sage">A · GRPO</span> (final), <span class="cream">B · SFT</span> (warm-start), <span class="slate">C · base Qwen</span> (untouched). You see the training delta directly.</p>
+          <p>Edit any quarter's headline and re-plan — every quarter from there forward re-projects from the new allocation. The carbon thermometer, NAV vs benchmark, and Reward Breakdown update live.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="intro-cta" id="introStart">Got it · Open the demo</button>
+  </div>
+</div>
 
 <div class="loader-backdrop" id="loader">
   <div class="loader-card">
@@ -2487,6 +2634,27 @@ async function handleStreamEvent(data, ctx) {
 $('plan').onclick = planQuarter;
 $('shuffle').onclick = shuffleNews;
 $('exportBtn').onclick = exportRun;
+
+// ───────── Intro modal ─────────
+const INTRO_DISMISS_KEY = 'carbonalpha:introDismissedV1';
+function showIntro() { $('introModal').classList.add('show'); }
+function hideIntro() {
+  $('introModal').classList.remove('show');
+  try { localStorage.setItem(INTRO_DISMISS_KEY, '1'); } catch (_) {}
+}
+$('lightbulbBtn').onclick = showIntro;
+$('introClose').onclick = hideIntro;
+$('introStart').onclick = hideIntro;
+$('introModal').addEventListener('click', (e) => {
+  if (e.target === $('introModal')) hideIntro();   // click on backdrop closes
+});
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && $('introModal').classList.contains('show')) hideIntro();
+});
+// Show on first visit; subsequent visits skip until lightbulb is clicked.
+try {
+  if (!localStorage.getItem(INTRO_DISMISS_KEY)) showIntro();
+} catch (_) { showIntro(); }
 
 function exportRun() {
   // Snapshot the live in-flight news edit too.
