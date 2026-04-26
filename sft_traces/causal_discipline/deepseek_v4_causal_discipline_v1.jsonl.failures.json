@@ -1,0 +1,30 @@
+[
+  [
+    "bitcoin_legalization_deepseek_v002",
+    "RuntimeError: OpenRouter HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"deepseek/deepseek-v4-pro is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"Together\",\"is_byok\":false,\"retry_after_seconds\":1}},\"user_id\":\"user_2xFtESZLD2WlKJSUOH6VIiq9vp2\"}"
+  ],
+  [
+    "political_scandal_noise_deepseek_v001",
+    "RuntimeError: OpenRouter HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"deepseek/deepseek-v4-pro is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"Together\",\"is_byok\":false,\"retry_after_seconds\":1}},\"user_id\":\"user_2xFtESZLD2WlKJSUOH6VIiq9vp2\"}"
+  ],
+  [
+    "yen_carry_unwind_deepseek_v001",
+    "RuntimeError: OpenRouter HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"deepseek/deepseek-v4-pro is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"Together\",\"is_byok\":false,\"retry_after_seconds\":2}},\"user_id\":\"user_2xFtESZLD2WlKJSUOH6VIiq9vp2\"}"
+  ],
+  [
+    "boring_micro_news_deepseek_v001",
+    "contains forbidden claim: regime shift"
+  ],
+  [
+    "boring_micro_news_deepseek_v003",
+    "contains forbidden claim: regime shift"
+  ],
+  [
+    "physical_insurance_retreat_deepseek_v002",
+    "RuntimeError: OpenRouter HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"deepseek/deepseek-v4-pro is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"Together\",\"is_byok\":false,\"retry_after_seconds\":2}},\"user_id\":\"user_2xFtESZLD2WlKJSUOH6VIiq9vp2\"}"
+  ],
+  [
+    "bitcoin_legalization_deepseek_v001",
+    "RuntimeError: OpenRouter HTTP 429: {\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"deepseek/deepseek-v4-pro is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/integrations\",\"provider_name\":\"Together\",\"is_byok\":false,\"retry_after_seconds\":1}},\"user_id\":\"user_2xFtESZLD2WlKJSUOH6VIiq9vp2\"}"
+  ]
+]

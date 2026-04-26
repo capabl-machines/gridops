@@ -1,0 +1,74 @@
+[
+  [
+    "easy_easy_oil_opec_cut_v003",
+    "reasoning mentions only 1 assets"
+  ],
+  [
+    "hard_hard_carbon_offset_fraud_v027",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "easy_easy_oil_opec_cut_v009",
+    "reasoning mentions only 1 assets"
+  ],
+  [
+    "hard_hard_carbon_offset_fraud_v017",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "easy_easy_housing_cooling_v002",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "easy_easy_tech_earnings_v007",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "hard_hard_carbon_offset_fraud_v031",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "hard_hard_carbon_offset_fraud_v037",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "medium_ambig_tech_breakthrough_v025",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "hard_hard_carbon_offset_fraud_v003",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "easy_easy_oil_opec_cut_v012",
+    "reasoning mentions only 1 assets"
+  ],
+  [
+    "easy_easy_green_subsidy_v001",
+    "reasoning mentions only 1 assets"
+  ],
+  [
+    "medium_ambig_insurance_retreat_v032",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "easy_easy_ev_penetration_v014",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "easy_easy_tech_earnings_v005",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "easy_easy_tech_earnings_v013",
+    "reasoning mentions only 1 assets"
+  ],
+  [
+    "easy_easy_green_subsidy_v012",
+    "reasoning mentions only 1 assets"
+  ],
+  [
+    "easy_easy_tech_earnings_v012",
+    "reasoning mentions only 1 assets"
+  ]
+]

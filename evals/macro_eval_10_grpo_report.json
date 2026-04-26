@@ -1,0 +1,444 @@
+{
+  "base": {
+    "q01_goldilocks_productivity": {
+      "completion": "<think>\nThe news suggests a mild easing in inflation without, but no clear shift towards stagflation or deflation. The stable job growth and strong semiconductor earnings indicate a resilient economy, which is positive for tech and real estate. Oil remaining flat despite lower inflation suggests it\u2019s not a supply shock, reducing risk of stagflation. The mild move in bond yields indicates no immediate flight to safety, so bonds aren\u2019t favored. Given on the current base case, we avoid hedges unless there's a clear signal of a regime shift.\n\nTech and real estate benefit from a stable economic outlook, while green assets could see gains as investors seek sustainable investments. Given on the current news, we allocate more to tech and real estate, with a small tilt towards green for sustainability. No need for infrastructure commitment or carbon offsets given the current conditions.\n\n{\"weights\": [0.4, 0.1, 0.2, 0.2, 0.1], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"status_quo\"}\n</think>\n{\"weights\": [0.4, 0.1, 0.2, 0.2, 0.1], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"status_quo\"}",
+      "news": "A quarter opens with US core inflation falling from 3.4% to 2.6%, payroll growth steady at 150k per month, and semiconductor earnings beating estimates on productivity-driven margin expansion. Long bond yields fall 25bp while oil is flat. What allocation should CarbonAlpha choose?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": null,
+        "tech_bet": null,
+        "tokens_approx": 171,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": false,
+        "weights": null
+      }
+    },
+    "q02_oil_chokepoint_inflation": {
+      "completion": "<think>\nThe news suggests a near-term supply shock in oil, which could lead to stagflation. This regime favors OIL and REAL_ESTATE while crushing BONDS. The policy response indicates a restrictive stance, which supports OIL and REAL_ESTATE further. Given the carbon cap constraint, we need to be cautious with OIL exposure. A tech bet on \"inflationary\" might be prudent as tech companies often benefit from higher interest rates. No immediate need for hedges or offsets given the base case remains normal markets.\n\n- TECH: Likely to perform well in an inflationary environment.\n- OIL: Beneficial in a stagflation scenario but risky due to high emissions.\n- GREEN: Minimal impact in this scenario.\n- REAL_ESTATE: Benefits from both supply constraints and restrictive policies.\n- BONDS: Likely to underperform but necessary to keep carbon emissions low.\n\nGiven the constraints and the potential for stagflation, a balanced approach is needed.\n</think>\n\n{\"weights\": [0.3, 0.3, 0.1, 0.2, 0.1], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"inflationary\"}",
+      "news": "A military escalation temporarily closes a major shipping chokepoint, removing 3 million barrels per day of oil supply. Brent crude jumps 14%, inflation breakevens rise, and central banks signal policy will stay restrictive for longer. How should the portfolio react?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "inflationary",
+        "tokens_approx": 161,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.3,
+          0.3,
+          0.1,
+          0.2,
+          0.1
+        ]
+      }
+    },
+    "q03_cre_credit_freeze": {
+      "completion": "<think>\nGiven today's news, we're likely facing a short-term liquidity crunch and potential deflationary pressures, which favor BONDS but could also lead to stagflation in the medium term. The sudden stop in redemptions and tightening of short-term funding markets suggest a near-term risk of deflation and a need for safe-haven assets like BONDS. However, the long-term risk of stagflation means OIL and REAL_ESTATE could perform better as the economy slows down.\n\nTo survive these potential regime shifts, we should hedge against significant drawdowns with a modest put hedge. Additionally, given the current market conditions, a tech bet on \"status_quo\" might be prudent to maintain exposure to the tech sector while avoiding bets on more speculative outcomes.\n\nThe allocation will be:\n- TECH: 30%\n- OIL: 2%\n- GREEN: 10%\n- REAL_ESTATE: 48%\n- BONDS: 10%\n\nThis mix provides a balance between growth and safety, with enough flexibility to adapt to different economic scenarios. The put hedge will protect against significant drawdowns, and the tech bet on \"status_quo\" keeps us aligned with the current market sentiment without minimal risk.\n</think>\n\n{\"weights\": [0.3, 0.02, 0.1, 0.48, 0.1], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.02, \"tech_bet\": \"status_quo\"}",
+      "news": "Several regional banks and private credit funds halt redemptions after sudden commercial real estate loan losses. Short-term funding markets tighten, bank equity indices plunge, and Treasury yields fall on safe-haven demand. What should CarbonAlpha do?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.02,
+        "tech_bet": "status_quo",
+        "tokens_approx": 193,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.3,
+          0.02,
+          0.1,
+          0.48,
+          0.1
+        ]
+      }
+    },
+    "q04_ai_efficiency_paradox": {
+      "completion": "<think>\nThe news of a 10x inference-efficiency gain in AI technology suggests a significant shift towards more efficient and cost-effective computing, which could accelerate the adoption of green technologies and reduce the carbon footprint of data centers. This could lead to a positive second-order effect on the tech sector and potentially on green investments as companies invest in more sustainable practices. However, it also implies a potential near-term negative impact on oil and real estate, especially if hyperscalers reduce their capex and data center expansion plans.\n\nGiven this, the portfolio should be positioned to benefit from the tech sector's potential gains while hedging against the risks posed by a potential slowdown in oil and real estate. The transition shock favoringing tech and green assets makes this a favorable time to invest in these sectors. \n\nAllocating more to TECH and GREEN would capture the long-term benefits of technological advancements and sustainability. BONDS can provide some stability, but given the potential for a tech-driven recovery, they might not offer significant returns. REAL_ESTATE could be negatively impacted, so a smaller allocation here is advisable. OIL, while it might see some short-term gains, is risky due to the potential for a broader economic slowdown.\n\nNo interventions are necessary based on today's news, as the signal does not strongly indicate a regime shift.\n</think>\n\n{\"weights\": [0.4, 0.1, 0.3, 0.1, 0.1], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"green_leaps\"}",
+      "news": "A major AI lab demonstrates a 10x inference-efficiency gain. Hyperscalers defer GPU orders, data-center capex forecasts drop 40%, and power-utility demand forecasts are revised lower. Software margins are expected to improve. How should CarbonAlpha allocate?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "green_leaps",
+        "tokens_approx": 233,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.4,
+          0.1,
+          0.3,
+          0.1,
+          0.1
+        ]
+      }
+    },
+    "q05_carbon_offset_fraud": {
+      "completion": "<think>\nThe news about carbon offsets indicates a significant risk of regulatory tightening and increased scrutiny, which could lead to physical-risk shocks affecting REAL_ESTATE. Additionally, the volatility in carbon pricing suggests a period of uncertainty and potential stagflation. Given these factors, we should avoid OIL and focus on assets with lower carbon footprints and less sensitivity to regulatory changes. BONDS might offer some stability but given the potential for stagflation, they may underperform. GREEN assets are likely to benefit from increased demand for sustainable solutions. The tech sector, especially those focused on green technology, could also perform well as the market adjusts to new regulations.\n\nGiven the carbon cap constraint, we need to be cautious with GREEN investments but still allocate enough to benefit from potential regulatory support. A moderate tech bet could hedge against stagflation while providing growth potential.\n</think>\n\n{\"weights\": [0.3, 0.0, 0.4, 0.2, 0.3], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"green_leaps\"}",
+      "news": "Two leading ratings agencies find 40% of voluntary carbon offsets invalid due to double-counting and phantom sequestration. EU CBAM regulators announce retroactive audits, voluntary offset prices plunge 60%, and compliance-market credit prices spike 3x. What is the allocation?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "green_leaps",
+        "tokens_approx": 155,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.3,
+          0.0,
+          0.4,
+          0.2,
+          0.3
+        ]
+      }
+    },
+    "q06_rare_earth_export_controls": {
+      "completion": "<think>\nToday's news suggests a significant supply chain disruption in critical technology components, which could lead to stagflation or a transition shock favoring GREEN assets. The announcement of rare-earth export cuts and tightening US export controls could severely impact tech companies' supply chains, leading to potential stagflation or supply shortages. This environment would likely favor OIL and REAL_ESTATE while crushing BONDS. However, given the potential for a transition towards more sustainable technologies, GREEN assets could become more attractive as the market adjusts.\n\nGiven these considerations, we should allocate to GREEN to hedge against the transition shock and maintain exposure to OIL and REAL_ESTATE to benefit from stagflation. We should avoid BONDS due to their vulnerability in stagflation scenarios. The tech sector's uncertainty makes a tech bet speculative, so we'll avoid it for now.\n\nTo manage risk, we can consider a small put hedge to protect against large drawdowns, especially given the uncertain outlook.\n</think>\n\n{\"weights\": [0.2, 0.3, 0.4, 0.1, 0.0], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.02, \"tech_bet\": \"status_quo\"}",
+      "news": "China announces an 80% reduction in rare-earth exports over 18 months, citing domestic demand. US semiconductor export controls tighten, renewable manufacturers warn of three quarters of supply-chain disruption, and oil majors announce record buybacks on sector-rotation inflows. What should CarbonAlpha do?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.02,
+        "tech_bet": "status_quo",
+        "tokens_approx": 168,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.2,
+          0.3,
+          0.4,
+          0.1,
+          0.0
+        ]
+      }
+    },
+    "q07_insurance_retreat_climate": {
+      "completion": "<think>\nToday's news suggests a transition shock with potential physical-risk and regulatory changes. Insurers exiting Florida and California indicate rising climate-related losses, which could lead to higher premiums or reduced coverage in these regions. This signals a move towards more resilient infrastructure and potentially higher demand for green assets. State regulators proposing reinsurance pools and widening municipal bond spreads suggest a shift towards safer, more stable investments, favoringing bonds but also indicating increased risk aversion. The flight-to-quality in Treasuries further supports this trend.\n\nGiven these signals, we should avoid oil as it is heavily carbon-intensive and likely to suffer in a transition shock environment. Green assets are likely to benefit from increased investment in resilience and infrastructure. Real estate, especially in high-risk areas, is at risk due to climate change. Bonds, particularly municipals, are seen as safe-havens but may not offer significant returns in this environment.\n\nAllocating to tech can be risky given the uncertainty, so we'll stick to a more conservative approach. A put hedge might be prudent given the volatility and potential for significant drawdowns.\n\nWe will:\n- Tech: 2 (status quo)\n- Oil: 0\n- Green: 0.4 (to benefit from increased investment in resilience)\n- Real Estate: 0.1 (small allocation to diversify)\n- Bonds: 0.5 (safe-haven and potential for stable returns)\n\nThe put hedge provides protection against significant drawdowns, which is are likely in this uncertain environment.\n</think>\n\n{\"weights\": [0.2, 0.0, 0.4, 0.1, 0.5], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.02, \"tech_bet\": \"status_quo\"}",
+      "news": "Three top-10 insurers exit Florida and California property markets citing climate-loss economics. State regulators propose taxpayer-backed reinsurance pools, municipal bond spreads widen, and 10-year Treasury yields fall 30bp on flight-to-quality. How should CarbonAlpha allocate?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.02,
+        "tech_bet": "status_quo",
+        "tokens_approx": 245,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.2,
+          0.0,
+          0.4,
+          0.1,
+          0.5
+        ]
+      }
+    },
+    "q08_global_deflation_pulse": {
+      "completion": "<think>\nGiven today's news, we see signs of potential stagflation and deflationary pressures, which could lead to a shift in market conditions. The sharp decline in China's manufacturing PMI and export prices suggests weakening demand and potential supply gluts, aligning with stagflation fears. This environment would likely favor OIL and REAL_ESTATE while crushing BONDS. However, the sudden drop in Treasury yields and intervention by the Bank of Japan suggest a flight to safety assets, which could temporarily support BONDS. \n\nThe allocation should be defensive yet flexible enough to capture any potential shifts. Given the high carbon emissions from OIL and the need to stay under the 2 carbon cap, we should avoid significant exposure to OIL. BONDS offer some safety but their performance might lag in a stagflation scenario. GREEN assets could benefit from increased focus on sustainability, and REAL_ESTATE might suffer from supply gluts. TECH could offer some resilience through innovation and diversification.\n\nGiven these considerations, a balanced approach with a slight tilt towards GREEN and a small hedge against large drawdowns seems prudent.\n</think>\n\n{\"weights\": [0.3, 0.05, 0.4, 0.15, 0.1], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.01, \"tech_bet\": \"status_quo\"}",
+      "news": "China manufacturing PMI falls to 41, export prices drop 12% year over year, and global supply gluts appear across semiconductors, oil, and real estate. Treasury yields plunge on safe-haven demand while the Bank of Japan intervenes to stabilize currency markets. What should the model choose?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.01,
+        "tech_bet": "status_quo",
+        "tokens_approx": 190,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.3,
+          0.05,
+          0.4,
+          0.15,
+          0.1
+        ]
+      }
+    },
+    "q09_crypto_policy_noise": {
+      "completion": "<think>\nGiven today's news, the regulatory changes for Bitcoin suggest increased financial integration and acceptance of digital assets, which could boost tech stocks in the long term. However, this does not signal an immediate regime shift, so we avoid interventions. The base case remains normal markets, with no strong signals for stagflation, deflation, or physical-risk shocks. Tech companies are likely to benefit from increased blockchain and crypto adoption, making a tech bet reasonable. Green assets might also see some positive sentiment but are less certain compared to tech. Bonds remain stable but offer lower returns. Real estate could be slightly affected but not significantly. \n\nAllocating more to TECH and GREEN aligns with potential long-term growth, while keeping a balanced position in BONDS for stability. No need for infrastructure commitment or hedges given the current outlook.\n</think>\n\n{\"weights\": [0.4, 0.1, 0.2, 0.2, 0.1], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"green_leaps\"}",
+      "news": "The US, EU, Japan, and India finalize laws allowing regulated Bitcoin custody and spot trading inside major banks and brokerages. There are no announced changes to monetary policy, energy policy, fiscal spending, bank capital rules, or carbon regulation. What should CarbonAlpha do?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "green_leaps",
+        "tokens_approx": 150,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.4,
+          0.1,
+          0.2,
+          0.2,
+          0.1
+        ]
+      }
+    },
+    "q10_yen_carry_unwind": {
+      "completion": "<think>\nGiven today's news, it appears we are entering a period of market stress and potential stagflation, which favors OIL and REAL_ESTATE while being harsh on BONDS. The sudden rate hike and yen rally suggest a tightening monetary policy environment, which could lead to a credit crunch and lower growth expectations. This scenario aligns with stagflation conditions, where energy and real estate become more attractive, while bonds suffer.\n\nTECH and GREEN assets might be less favored in this environment, but given the need to keep carbon emissions low, we should avoid significant exposure to OIL. A defensive stance with some bet on OIL and REAL_ESTATE, along with a small hedge, seems prudent.\n\nWe can also consider a tech bet on \"status_quo\" as the market environment might not yet be clear enough to justify a strong bet on any specific tech trend.\n</think>\n\n{\"weights\": [0.2, 0.3, 0.1, 0.3, 0.1], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.01, \"tech_bet\": \"status_quo\"}",
+      "news": "The Bank of Japan unexpectedly hikes rates and the yen rallies 9% in two sessions. Prime brokers report forced deleveraging as global macro funds unwind yen-funded carry trades. Equity futures fall, credit spreads widen, and sovereign bond futures rally. What should CarbonAlpha do?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.01,
+        "tech_bet": "status_quo",
+        "tokens_approx": 156,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.2,
+          0.3,
+          0.1,
+          0.3,
+          0.1
+        ]
+      }
+    }
+  },
+  "base_model": "unsloth/Qwen2.5-7B-Instruct",
+  "cases": [
+    {
+      "id": "q01_goldilocks_productivity",
+      "news": "A quarter opens with US core inflation falling from 3.4% to 2.6%, payroll growth steady at 150k per month, and semiconductor earnings beating estimates on productivity-driven margin expansion. Long bond yields fall 25bp while oil is flat. What allocation should CarbonAlpha choose?"
+    },
+    {
+      "id": "q02_oil_chokepoint_inflation",
+      "news": "A military escalation temporarily closes a major shipping chokepoint, removing 3 million barrels per day of oil supply. Brent crude jumps 14%, inflation breakevens rise, and central banks signal policy will stay restrictive for longer. How should the portfolio react?"
+    },
+    {
+      "id": "q03_cre_credit_freeze",
+      "news": "Several regional banks and private credit funds halt redemptions after sudden commercial real estate loan losses. Short-term funding markets tighten, bank equity indices plunge, and Treasury yields fall on safe-haven demand. What should CarbonAlpha do?"
+    },
+    {
+      "id": "q04_ai_efficiency_paradox",
+      "news": "A major AI lab demonstrates a 10x inference-efficiency gain. Hyperscalers defer GPU orders, data-center capex forecasts drop 40%, and power-utility demand forecasts are revised lower. Software margins are expected to improve. How should CarbonAlpha allocate?"
+    },
+    {
+      "id": "q05_carbon_offset_fraud",
+      "news": "Two leading ratings agencies find 40% of voluntary carbon offsets invalid due to double-counting and phantom sequestration. EU CBAM regulators announce retroactive audits, voluntary offset prices plunge 60%, and compliance-market credit prices spike 3x. What is the allocation?"
+    },
+    {
+      "id": "q06_rare_earth_export_controls",
+      "news": "China announces an 80% reduction in rare-earth exports over 18 months, citing domestic demand. US semiconductor export controls tighten, renewable manufacturers warn of three quarters of supply-chain disruption, and oil majors announce record buybacks on sector-rotation inflows. What should CarbonAlpha do?"
+    },
+    {
+      "id": "q07_insurance_retreat_climate",
+      "news": "Three top-10 insurers exit Florida and California property markets citing climate-loss economics. State regulators propose taxpayer-backed reinsurance pools, municipal bond spreads widen, and 10-year Treasury yields fall 30bp on flight-to-quality. How should CarbonAlpha allocate?"
+    },
+    {
+      "id": "q08_global_deflation_pulse",
+      "news": "China manufacturing PMI falls to 41, export prices drop 12% year over year, and global supply gluts appear across semiconductors, oil, and real estate. Treasury yields plunge on safe-haven demand while the Bank of Japan intervenes to stabilize currency markets. What should the model choose?"
+    },
+    {
+      "id": "q09_crypto_policy_noise",
+      "news": "The US, EU, Japan, and India finalize laws allowing regulated Bitcoin custody and spot trading inside major banks and brokerages. There are no announced changes to monetary policy, energy policy, fiscal spending, bank capital rules, or carbon regulation. What should CarbonAlpha do?"
+    },
+    {
+      "id": "q10_yen_carry_unwind",
+      "news": "The Bank of Japan unexpectedly hikes rates and the yen rallies 9% in two sessions. Prime brokers report forced deleveraging as global macro funds unwind yen-funded carry trades. Equity futures fall, credit spreads widen, and sovereign bond futures rally. What should CarbonAlpha do?"
+    }
+  ],
+  "trained": {
+    "q01_goldilocks_productivity": {
+      "completion": "<think>\nThe base-rate assumption remains intact: a mild, stable regime. The primary driver here is a softeningening of inflationary pressures, which supports a modest rotation out of inflation hedges (BONDS) into equities. The absence of a broader macro shock means REAL_ESTATE and TECH remain viable long-term bets. OIL is stable but offers no upside catalyst. I will allocate slightly more to TECH and GREEN, maintaining a balanced portfolio.\n</think>\n{\"weights\": [0.4, 0.15, 0.25, 0.1, 0.2], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"status_quo\"}",
+      "news": "A quarter opens with US core inflation falling from 3.4% to 2.6%, payroll growth steady at 150k per month, and semiconductor earnings beating estimates on productivity-driven margin expansion. Long bond yields fall 25bp while oil is flat. What allocation should CarbonAlpha choose?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "status_quo",
+        "tokens_approx": 83,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.4,
+          0.15,
+          0.25,
+          0.1,
+          0.2
+        ]
+      }
+    },
+    "q02_oil_chokepoint_inflation": {
+      "completion": "<think>\nThis is a classic supply shock in an inflationary regime. The immediate 14% spike in oil prices is highly damaging to margins for TECH, OIL, and REAL_ESTATE, which rely on high energy costs. However, the broader macro environment is one of stagflation, where fixed-income BONDS suffer from rising yields and real returns destruction. The trap is buying GREEN as a naive 'transition play' without the sector is highly correlated with OIL. The optimal strategy is to aggressively reduce exposure to OIL and REAL_ESTATE, while maintaining a balanced position in TECH and BONDS. I will deploy a put hedge to protect against the equity market drawdown and keep the allocation strictly under the 2 22kg carbon cap.\n</think>\n{\"weights\": [0.35, 0.05, 0.25, 0.05, 0.3], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.03, \"tech_bet\": \"inflationary\"}",
+      "news": "A military escalation temporarily closes a major shipping chokepoint, removing 3 million barrels per day of oil supply. Brent crude jumps 14%, inflation breakevens rise, and central banks signal policy will stay restrictive for longer. How should the portfolio react?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.03,
+        "tech_bet": "inflationary",
+        "tokens_approx": 132,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.35,
+          0.05,
+          0.25,
+          0.05,
+          0.3
+        ]
+      }
+    },
+    "q03_cre_credit_freeze": {
+      "completion": "<think>\nThis is a classic liquidity crisis with a heavy tilt towards a deflationary regime. The immediate trap is buying distressed REITs or oil because of their high yields. However, the 2 1st-order effect is a severe contraction in credit availability, which directly hurts REAL ESTATE and OIL. The 2nd-order effect is a flight-to-safety bid in sovereign BONDS, which provides a massive tailwind. TECH remains largely insulated from this shock. I will allocate heavily to BONDS, cut REAL ESTATE entirely, and maintain a balanced position in TECH and GREEN.\n</think>\n{\"weights\": [0.3, 0.1, 0.25, 0.0, 0.35], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"status_quo\"}",
+      "news": "Several regional banks and private credit funds halt redemptions after sudden commercial real estate loan losses. Short-term funding markets tighten, bank equity indices plunge, and Treasury yields fall on safe-haven demand. What should CarbonAlpha do?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "status_quo",
+        "tokens_approx": 104,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.3,
+          0.1,
+          0.25,
+          0.0,
+          0.35
+        ]
+      }
+    },
+    "q04_ai_efficiency_paradox": {
+      "completion": "<think>\nThe pattern-matching model sees a simple 'tech efficiency' win and assumes hardware capex is slashed. However, the 10x inference efficiency directly translates into massive software margin expansion, reducing the need for physical infrastructure and energy consumption. The trap is selling GREEN and REAL_ESTATE based on a naive assumption of reduced capex. In reality, software margins expanding means TECH profits soar, and the reduction in physical infrastructure lowers the carbon footprint. I will overweight TECH and GREEN, keeping BONDS as a ballast against broader market volatility.\n</think>\n{\"weights\": [0.45, 0.15, 0.3, 0.05, 0.05], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"green_leaps\"}",
+      "news": "A major AI lab demonstrates a 10x inference-efficiency gain. Hyperscalers defer GPU orders, data-center capex forecasts drop 40%, and power-utility demand forecasts are revised lower. Software margins are expected to improve. How should CarbonAlpha allocate?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "green_leaps",
+        "tokens_approx": 101,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.45,
+          0.15,
+          0.3,
+          0.05,
+          0.05
+        ]
+      }
+    },
+    "q05_carbon_offset_fraud": {
+      "completion": "<think>\nThe trap here is assuming the collapse of voluntary offsets means a free pass for heavy emitters. In reality, this creates massive regulatory risk for OIL and exposes the true cost of compliance. The 3x spike in compliance credits forces a strict, immediate transition to low-emission assets. GREEN becomes the primary beneficiary as it offers genuine decarbonization. BONDS provide safe haven from the volatility, while TECH and REAL_ESTATE remain largely unaffected. I will allocate heavily to GREEN and BONDS, avoiding OIL entirely.\n</think>\n{\"weights\": [0.2, 0.0, 0.5, 0.1, 0.3], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"carbon_priced\"}",
+      "news": "Two leading ratings agencies find 40% of voluntary carbon offsets invalid due to double-counting and phantom sequestration. EU CBAM regulators announce retroactive audits, voluntary offset prices plunge 60%, and compliance-market credit prices spike 3x. What is the allocation?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "carbon_priced",
+        "tokens_approx": 98,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.2,
+          0.0,
+          0.5,
+          0.1,
+          0.3
+        ]
+      }
+    },
+    "q06_rare_earth_export_controls": {
+      "completion": "<think>\nThe trap here is assuming a simple 'tech crash' narrative. The reality is a severe fragmentation shock. Rare-earth bottlenecks freeze advanced TECH and GREEN hardware pipelines for 18 months. Oil majors see massive capital rotation into their high-margin buybacks. 2-order impact: TECH and GREEN suffer massive margin compression due to supply chain paralysis. 2-order impact: OIL acts as a safe haven, driving massive sector rotation. 2-order impact: BONDS offer a safe haven from equity volatility but provide low yield. I will allocate heavily to OIL and BONDS, avoiding TECH and GREEN entirely. I will use the fragmentation bet to capture the sector rotation.\n</think>\n{\"weights\": [0.0, 0.6, 0.0, 0.0, 0.4], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"fragmentation\"}",
+      "news": "China announces an 80% reduction in rare-earth exports over 18 months, citing domestic demand. US semiconductor export controls tighten, renewable manufacturers warn of three quarters of supply-chain disruption, and oil majors announce record buybacks on sector-rotation inflows. What should CarbonAlpha do?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "fragmentation",
+        "tokens_approx": 119,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.0,
+          0.6,
+          0.0,
+          0.0,
+          0.4
+        ]
+      }
+    },
+    "q07_insurance_retreat_climate": {
+      "completion": "<think>\nThe pattern-matching model sees 'municipal bonds widening' and assumes a default risk event. In reality, this is a classic physical-risk shock where uninsurable assets become stranded. The 10-year yield drop indicates a flight-to-safety, but the real impact is on REAL_ESTATE. The trap is buying municipal bonds or BONDS here; the true risk is the massive write-down of coastal property values. We must aggressively underweight REAL_ESTATE and overweight BONDS for the duration of the physical-risk repricing. TECH and GREEN offer some diversification from the real estate sector.\n</think>\n{\"weights\": [0.3, 0.15, 0.25, 0.0, 0.3], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"status_quo\"}",
+      "news": "Three top-10 insurers exit Florida and California property markets citing climate-loss economics. State regulators propose taxpayer-backed reinsurance pools, municipal bond spreads widen, and 10-year Treasury yields fall 30bp on flight-to-quality. How should CarbonAlpha allocate?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "status_quo",
+        "tokens_approx": 102,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.3,
+          0.15,
+          0.25,
+          0.0,
+          0.3
+        ]
+      }
+    },
+    "q08_global_deflation_pulse": {
+      "completion": "<think>\nThis is a classic deflationary regime shift. The trap is assuming TECH or GREEN can weather a broad deflationary shock. 1st-order: Falling export prices mean massive margin compression for exporters (OIL, TECH, REAL_ESTATE). 2th-order: Deflation forces central banks into aggressive rate cuts, which crush long-duration assets like TECH and GREEN. The only viable survival strategy is to buy the dip in sovereign BONDS, which act as the ultimate safe haven. We allocate heavily to BONDS and cut all risky assets to zero.\n</think>\n{\"weights\": [0.0, 0.0, 0.0, 0.0, 0.95], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"status_quo\"}",
+      "news": "China manufacturing PMI falls to 41, export prices drop 12% year over year, and global supply gluts appear across semiconductors, oil, and real estate. Treasury yields plunge on safe-haven demand while the Bank of Japan intervenes to stabilize currency markets. What should the model choose?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "status_quo",
+        "tokens_approx": 98,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.95
+        ]
+      }
+    },
+    "q09_crypto_policy_noise": {
+      "completion": "<think>\nThis is a straightforward neutral macro environment with no regime shift. The news about Bitcoin simply expands the financial ecosystem without slightly. It does not impact the base rate of growth for TECH, OIL, GREEN, or REAL_ESTATE. The lack of broader policy or regulatory changes means there is no immediate flight-to-safety or risk-on impulse. The optimal strategy is a balanced portfolio that captures steady returns from all assets without. We allocate normally across TECH, GREEN, and BONDS, keeping OIL low to avoid the carbon cap constraint, and avoiding any interventions.\n</think>\n{\"weights\": [0.3, 0.1, 0.3, 0.1, 0.2], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.0, \"tech_bet\": \"status_quo\"}",
+      "news": "The US, EU, Japan, and India finalize laws allowing regulated Bitcoin custody and spot trading inside major banks and brokerages. There are no announced changes to monetary policy, energy policy, fiscal spending, bank capital rules, or carbon regulation. What should CarbonAlpha do?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.0,
+        "tech_bet": "status_quo",
+        "tokens_approx": 106,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.3,
+          0.1,
+          0.3,
+          0.1,
+          0.2
+        ]
+      }
+    },
+    "q10_yen_carry_unwind": {
+      "completion": "<think>\nThis is a classic regime shift into deflationary risk aversion. The immediate shock is a massive capital flight from risky assets (equities, high-yield debt) into safe-haven assets (BONDS, cash). The 2nd-order effect is a severe liquidity crunch, which hurts leverageded assets like OIL and REAL_ESTATE. The 3rd-order impact is a steep drop in long-duration assets, making BONDS the primary beneficiary. I will aggressively overweight BONDS and cut exposure to OIL and REAL_ESTATE. I will also deploy a put hedge to protect against the equity market drawdown.\n</think>\n{\"weights\": [0.2, 0.0, 0.1, 0.0, 0.7], \"infra_commit\": 0.0, \"carbon_offset_buy\": 0.0, \"put_hedge\": 0.03, \"tech_bet\": \"status_quo\"}",
+      "news": "The Bank of Japan unexpectedly hikes rates and the yen rallies 9% in two sessions. Prime brokers report forced deleveraging as global macro funds unwind yen-funded carry trades. Equity futures fall, credit spreads widen, and sovereign bond futures rally. What should CarbonAlpha do?",
+      "score": {
+        "closed_think": true,
+        "mentions_not_assuming": false,
+        "put_hedge": 0.03,
+        "tech_bet": "status_quo",
+        "tokens_approx": 102,
+        "unsupported_oil_surge_phrase": false,
+        "valid_action": true,
+        "weights": [
+          0.2,
+          0.0,
+          0.1,
+          0.0,
+          0.7
+        ]
+      }
+    }
+  },
+  "trained_adapter": "77ethers/CarbonAlpha/grpo_qwen25_7b_adapter_phase1_100_v1"
+}

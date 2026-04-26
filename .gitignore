@@ -18,3 +18,4 @@ gemini31.py
 sft_traces/_*.log
 sft_traces/_test_traces.jsonl
 from-hackathon.txt
+.claude/

@@ -1,0 +1,46 @@
+[
+  [
+    "boring_micro_news_v006",
+    "contains forbidden claim: regime shift"
+  ],
+  [
+    "political_scandal_noise_v002",
+    "reasoning mentions only 0 assets"
+  ],
+  [
+    "boring_micro_news_v001",
+    "reasoning mentions only 1 assets"
+  ],
+  [
+    "carbon_policy_real_v006",
+    "reasoning mentions only 2 assets"
+  ],
+  [
+    "boring_micro_news_v004",
+    "contains forbidden claim: regime shift"
+  ],
+  [
+    "bitcoin_legalization_v001",
+    "reasoning mentions only 1 assets"
+  ],
+  [
+    "political_scandal_noise_v003",
+    "contains forbidden claim: regime shift"
+  ],
+  [
+    "political_scandal_noise_v006",
+    "contains forbidden claim: global contagion"
+  ],
+  [
+    "boring_micro_news_v002",
+    "contains forbidden claim: regime shift"
+  ],
+  [
+    "boring_micro_news_v005",
+    "reasoning mentions only 1 assets"
+  ],
+  [
+    "political_scandal_noise_v005",
+    "contains forbidden claim: commodity shock"
+  ]
+]

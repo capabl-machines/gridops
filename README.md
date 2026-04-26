@@ -2,7 +2,7 @@
 
 **Meta PyTorch × Scaler OpenEnv Hackathon · April 25–26, 2026 · Bangalore**
 
-An OpenEnv environment that trains LLMs to reason about **competing constraints under ambiguous signals and path-dependent decisions**. We flatten a 12-quarter portfolio-manager MDP into a single-turn prompt-completion task, then apply GRPO (via TRL + Unsloth) on Qwen3-4B-Instruct to teach the model to connect news → causal reasoning → portfolio action.
+An OpenEnv environment that trains LLMs to reason about **competing constraints under ambiguous signals and path-dependent decisions**. We flatten a 12-quarter portfolio-manager MDP into a single-turn prompt-completion task, then use SFT and GRPO to teach the model to connect news to causal reasoning to a constrained portfolio action.
 
 **Team:** Ekansh + brother
 **Themes:** #3.1 World Modeling · #2 Long-Horizon · #5 Wild Card
@@ -13,10 +13,10 @@ An OpenEnv environment that trains LLMs to reason about **competing constraints 
 
 | # | Required | Where |
 |---|---|---|
-| 1 | Public, cloneable HF Space | **TBD — `huggingface.co/spaces/<our-org>/portfolio-env` will be linked here at submission** |
+| 1 | Public, cloneable HF Space | [`77ethers-carbonalpha-demo.hf.space`](https://77ethers-carbonalpha-demo.hf.space/) |
 | 2 | OpenEnv `Environment` base class + `openenv.yaml` | [portfolio_env/env.py](portfolio_env/env.py) (PortfolioEnv inherits from `openenv.core.env_server.interfaces.Environment`) · [openenv.yaml](openenv.yaml) |
 | 3 | Loss curve + reward curve as committed PNGs | [assets/loss_curve.png](assets/loss_curve.png) · [assets/reward_curve.png](assets/reward_curve.png) |
-| 4 | Runnable training script (Colab preferred) | [notebooks/grpo_training.ipynb](notebooks/grpo_training.ipynb) (Colab) · [notebooks/grpo_training.py](notebooks/grpo_training.py) (Python) |
+| 4 | Runnable training script (Colab preferred) | [Open final Colab](https://colab.research.google.com/github/capabl-machines/gridops/blob/round-2/notebooks/carbonalpha_final_pipeline.ipynb) · [notebooks/carbonalpha_final_pipeline.ipynb](notebooks/carbonalpha_final_pipeline.ipynb) |
 | 5 | README with inline plots + every-deliverable links | this file |
 
 ### Loss curve
@@ -27,11 +27,14 @@ An OpenEnv environment that trains LLMs to reason about **competing constraints 
 
 ![5-component composite reward over training](assets/reward_curve.png)
 
+Training evidence, raw job logs, metrics, limitations, and model lineage are
+documented in [MODEL_CARD.md](MODEL_CARD.md).
+
 ---
 
 ## What we built in one paragraph
 
-A 12-quarter (3-year bull-bear cycle) portfolio environment where each quarter the LLM reads a macro news headline with conflicting 1st/2nd/3rd-order causal hooks, emits `<think>` reasoning + a JSON action containing 5 portfolio weights and 4 optional interventions (infra_commit lockup, carbon_offset_buy, put_hedge, tech_bet thesis). Path-dependent physics (transaction costs, locked capital, accumulated carbon, inflation regime) tie Q1 decisions to Q8 outcomes. Episode reward is a composite of 5 verifiable functions: format compliance, regret-vs-equal-weighted-baseline on inflation-adjusted real returns, Sharpe, non-linear carbon penalty above cap, and max drawdown. The agent is trained via SFT warm-start (120 Gemini-generated traces) → GRPO with DAPO loss in 3 curriculum phases. Adversarial pre-training stress-test repaired 4 reward exploits before any compute was spent. Hold-out seeds reserved for clean generalization measurement.
+A 12-quarter (3-year bull-bear cycle) portfolio environment where the LLM reads a macro news headline with conflicting 1st/2nd/3rd-order causal hooks, emits `<think>` reasoning + a JSON action containing 5 portfolio weights and 4 optional interventions (infra_commit lockup, carbon_offset_buy, put_hedge, tech_bet thesis). Path-dependent physics (transaction costs, locked capital, accumulated carbon, inflation regime) tie one locked allocation to the full 3-year outcome. Episode reward is built from verifiable components: format compliance, regret-vs-equal-weighted-baseline on inflation-adjusted real returns, risk/carbon/drawdown penalties, and action validity. The best current research model is Qwen2.5-7B-Instruct SFT on 400 curriculum traces, then 100 Phase-1 GRPO steps. Adversarial pre-training stress-tests repaired reward exploits before model optimization. Hold-out seeds are reserved for clean generalization measurement.
 
 ---
 
@@ -40,6 +43,7 @@ A 12-quarter (3-year bull-bear cycle) portfolio environment where each quarter t
 | Path | What it is |
 |---|---|
 | **[MASTER_UNDERSTANDING.md](MASTER_UNDERSTANDING.md)** | **Read this first.** Single canonical narrative — what we're building in OpenEnv terms + every design decision with its rationale |
+| [MODEL_CARD.md](MODEL_CARD.md) | Model lineage, real training evidence, plots, metrics, limitations |
 | [portfolio_env/](portfolio_env/) | The OpenEnv package |
 | └── [env.py](portfolio_env/env.py) | `PortfolioEnv(Environment)` — reset/step/state/get_metadata |
 | └── [models.py](portfolio_env/models.py) | `PortfolioAction(Action)`, `PortfolioObs(Observation)`, `PortfolioState(State)` |
@@ -53,8 +57,11 @@ A 12-quarter (3-year bull-bear cycle) portfolio environment where each quarter t
 | [tests/test_adversarial.py](tests/test_adversarial.py) | Pre-training reward stress-test (8 adversarial policies) |
 | [tests/test_env_smoke.py](tests/test_env_smoke.py) | End-to-end sanity check across 3 phases |
 | [tests/test_holdout.py](tests/test_holdout.py) | Verifies training sampler never leaks holdout seeds |
-| [notebooks/grpo_training.ipynb](notebooks/grpo_training.ipynb) | Colab-ready training notebook (the deliverable) |
+| [notebooks/carbonalpha_final_pipeline.ipynb](notebooks/carbonalpha_final_pipeline.ipynb) | Final Colab-ready training and evaluation notebook |
+| [notebooks/grpo_training.ipynb](notebooks/grpo_training.ipynb) | Earlier training notebook retained for lineage/history |
 | [notebooks/grpo_training.py](notebooks/grpo_training.py) | Same as above as a runnable Python script |
+| [training_logs/qwen25_grpo_phase1_100_v1.log](training_logs/qwen25_grpo_phase1_100_v1.log) | Raw HF Job log from the real 100-step GRPO run |
+| [training_logs/qwen25_grpo_phase1_100_v1_rows.jsonl](training_logs/qwen25_grpo_phase1_100_v1_rows.jsonl) | Parsed per-step GRPO metrics used for plots |
 | [scripts/dump_episode.py](scripts/dump_episode.py) | Episode → JSON state for the Greenberg Terminal UI |
 | [scripts/plot_training.py](scripts/plot_training.py) | Reads training logs → emits committed PNG plots |
 | [sft_traces/traces.jsonl](sft_traces/traces.jsonl) | 120 expert `<think>` traces for SFT warm-start |
@@ -68,16 +75,18 @@ A 12-quarter (3-year bull-bear cycle) portfolio environment where each quarter t
 
 ---
 
-## The stack (locked April 23, empirically validated)
+## The stack (final validated lineage)
 
 | Layer | Choice | Reason |
 |---|---|---|
-| Base model | `unsloth/Qwen3-4B-Instruct-2507-unsloth-bnb-4bit` | Hackathon §59.1 recommends Advanced Qwen3 4B GRPO recipe; Instruct chosen over Thinking after empirical test (Thinking variant generates 2000+ tokens, never closes `</think>`) |
-| Training | `trl.GRPOTrainer` with `loss_type="dapo"` (TRL v1.0 default), `beta=0.0` | DAPO token-level loss is TRL's stable default; KL-free per Open-Reasoner-Zero |
-| Efficiency | Unsloth 4-bit QLoRA, LoRA r=16 on 7 attn+MLP layers | 33M trainable / 4B base (0.81% trained); 3.6 GB VRAM at runtime |
+| Best research model | `unsloth/Qwen2.5-7B-Instruct` + LoRA adapter | Strongest validated holdout result after SFT + GRPO |
+| Safe numerical baseline | `77ethers/CarbonAlpha/v6_sft_only_v2` | Preserved SFT-only Qwen3 artifact; never overwritten |
+| Training | SFT warm-start + `trl.GRPOTrainer` | Heavy runs launched through HF Jobs for repeatability |
+| Efficiency | QLoRA adapters; isolated model subfolders | Avoids overwriting known-good artifacts |
 | Architecture | Flatten 12-quarter MDP to single-turn prompt-completion | Hackathon §59.6 explicitly notes multi-turn GRPO not yet mature in Unsloth — flattening is the accepted state-of-art |
-| Warm-start | SFT on 120 Gemini-generated chat-template-formatted traces, 150 steps | Empirically: cold Qwen3 emits 0% valid format; SFT pushes to 60% (3/5 holdout) — GRPO bootstraps from there |
-| Compute | RunPod RTX 5090 32GB (Blackwell) for prep · HF Spaces credits onsite | Measured throughput: 80 tok/s batched on long-context rollouts → ~31hr training budget fits 48hr window |
+| Warm-start | SFT on `sft_traces/curriculum_400_e80_m160_h160.jsonl` | 400 Gemini curriculum traces: 80 easy, 160 medium, 160 hard |
+| Best GRPO artifact | `77ethers/CarbonAlpha/grpo_qwen25_7b_adapter_phase1_100_v1` | 5/5 valid holdout, mean regret `+0.1058`, beats baseline on 5/5 seeds |
+| Compute | HF Jobs L40S | Container-per-job execution made training and artifacts reproducible |
 
 ---
 
@@ -103,7 +112,7 @@ uvicorn portfolio_env.server.app:app --host 0.0.0.0 --port 8000
 
 ## How to train
 
-**Colab (recommended):** open [notebooks/grpo_training.ipynb](notebooks/grpo_training.ipynb), Runtime → Change runtime type → T4 GPU, **Run all**.
+**Colab (recommended):** open the [final Colab notebook](https://colab.research.google.com/github/capabl-machines/gridops/blob/round-2/notebooks/carbonalpha_final_pipeline.ipynb). It verifies artifacts and can optionally launch the exact HF Jobs training runs.
 
 **Local / pod:**
 ```bash

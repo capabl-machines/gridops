@@ -1,0 +1,2583 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CarbonAlpha — climate-aware portfolio reasoner</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+
+      /* ─── Zen + trader-terminal palette (warm charcoal, sage/clay sentiment) ─── */
+      --bg:           #14171a;
+      --panel:        #1c1f22;
+      --panel-2:      #22262a;
+      --panel-3:      #16191c;
+      --line:         #2a2f33;
+      --line-2:       #393f43;
+
+      --text:         #e6e2da;
+      --text-muted:   #8b918d;
+      --text-soft:    #b3b0a8;
+
+      --sage:         #8ba888;        /* up / good */
+      --sage-soft:    rgba(139,168,136,0.13);
+      --slate:        #8a96a3;        /* benchmark */
+      --slate-soft:   rgba(138,150,163,0.13);
+      --amber:        #c4a373;        /* warn */
+      --clay:         #b87b6f;        /* down / bad */
+      --cream:        #d6c9a8;
+
+      --c-tech:       #8a96a3;
+      --c-oil:        #b87b6f;
+      --c-green:      #8ba888;
+      --c-re:         #b39bb6;
+      --c-bonds:      #a09a8e;
+
+      --font-ui:   'Segoe UI', ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'Cascadia Mono', 'JetBrains Mono', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 1.5;
+      letter-spacing: 0.005em;
+      -webkit-font-smoothing: antialiased;
+      font-variant-numeric: tabular-nums;
+    }
+    .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    button, input, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    h1, h2, h3, h4, p { margin: 0; }
+
+    /* ─── Header ─── */
+    header {
+      padding: 22px clamp(20px, 4vw, 56px) 16px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #181b1e, var(--panel-3));
+    }
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    h1.title {
+      font-family: var(--font-ui);
+      font-weight: 700;
+      font-size: clamp(24px, 2.6vw, 30px);
+      letter-spacing: -0.005em;
+      color: var(--text);
+    }
+    h1.title em {
+      font-style: normal;
+      color: var(--sage);
+      font-weight: 600;
+    }
+    .brand-tagline {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.005em;
+      line-height: 1.4;
+      padding-left: 14px;
+      border-left: 1px solid var(--line-2);
+      max-width: 540px;
+    }
+    .brand-tagline em { color: var(--sage); font-style: normal; font-weight: 500; }
+    .title-divider {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--line-2), transparent);
+      margin: 0 4px;
+      align-self: center;
+    }
+    .meta-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 3px 9px;
+      border: 1px solid var(--line-2);
+      border-radius: 3px;
+    }
+    button.meta-tag {
+      background: transparent;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    button.meta-tag:hover { color: var(--cream); border-color: var(--cream); background: rgba(214,201,168,0.06); }
+    button.meta-tag:active { transform: translateY(1px); }
+    button.meta-tag:disabled { opacity: 0.45; cursor: not-allowed; }
+    .subtitle {
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text-soft);
+      max-width: 880px;
+    }
+    .subtitle strong { color: var(--text); font-weight: 600; }
+
+    /* ─── "How it works" 5-card explainer ─── */
+    .how-it-works {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+    @media (max-width: 1100px) { .how-it-works { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px)  { .how-it-works { grid-template-columns: 1fr; } }
+    .hiw-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+      display: grid;
+      gap: 4px;
+    }
+    .hiw-card .hiw-num {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--cream);
+      font-weight: 700;
+    }
+    .hiw-card .hiw-title {
+      font-family: var(--font-ui);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.005em;
+    }
+    .hiw-card .hiw-body {
+      font-size: 11px;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+    .hiw-card .hiw-body em { font-style: normal; color: var(--sage); }
+    .hiw-card .hiw-body code {
+      font-family: var(--font-mono); font-size: 10.5px;
+      background: var(--panel-3); border: 1px solid var(--line); padding: 0 4px; border-radius: 2px; color: var(--text-soft);
+    }
+
+    /* ─── Status ribbon (trader terminal touch) ─── */
+    .ribbon {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      align-items: stretch;
+      padding: 0;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--panel);
+      overflow: hidden;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .ribbon .cell {
+      padding: 7px 14px;
+      border-right: 1px solid var(--line);
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+      white-space: nowrap;
+    }
+    .ribbon .cell:last-child { border-right: 0; }
+    .ribbon .cell .l {
+      color: var(--text-muted);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .ribbon .cell .v { color: var(--text); }
+    .ribbon .cell .v.up   { color: var(--sage); }
+    .ribbon .cell .v.down { color: var(--clay); }
+    .ribbon .cell .v.warn { color: var(--amber); }
+
+    /* ─── Main app shell ─── */
+    .app {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 16px;
+      padding: 16px clamp(16px, 3vw, 40px) 28px;
+      align-items: start;
+    }
+    .main-col { display: grid; gap: 14px; min-width: 0; }
+    .side-col { display: grid; gap: 12px; }
+
+    /* ─── Generic panel ─── */
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 14px;
+    }
+    .panel h2 {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .panel h2 .sub {
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--text-muted);
+      font-weight: 400;
+      font-size: 11px;
+      margin-left: 6px;
+      font-family: var(--font-ui);
+    }
+
+    /* ─── News + Plan band ─── */
+    .news-band {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .news-band .news-input {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px 14px;
+      display: grid;
+      gap: 6px;
+    }
+    .news-input label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .news-input textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      resize: vertical;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.55;
+      outline: none;
+      font-family: var(--font-ui);
+    }
+    .news-input textarea::placeholder { color: var(--text-muted); }
+    .news-helpers {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 2px;
+    }
+    .news-helpers a {
+      color: var(--sage);
+      text-decoration: none;
+      border-bottom: 1px dotted rgba(139,168,136,0.45);
+      padding-bottom: 1px;
+      cursor: pointer;
+    }
+    .news-helpers a:hover { border-bottom-color: var(--sage); color: #b3cdb1; }
+    .news-helpers .sep { opacity: 0.55; }
+    .news-helpers[hidden] { display: none; }
+    .news-actions {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 8px;
+    }
+    .btn-plan {
+      background: var(--sage);
+      color: #0e1a11;
+      border: 0;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0 18px;
+      transition: background 0.12s, transform 0.05s;
+    }
+    .btn-plan:hover:not(:disabled) { background: #9bb898; }
+    .btn-plan:active:not(:disabled) { transform: translateY(1px); }
+    .btn-plan:disabled { opacity: 0.55; cursor: progress; }
+    .btn-shuffle {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--line-2);
+      border-radius: 4px;
+      padding: 7px 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-shuffle:hover { color: var(--text); border-color: var(--text-muted); }
+
+    /* ─── Verdict band ─── */
+    .verdict {
+      background: linear-gradient(180deg, var(--panel), var(--panel-3));
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px 18px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+    }
+    .verdict-text {
+      font-family: var(--font-ui);
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-soft);
+    }
+    .verdict-text strong { font-weight: 600; color: var(--text); font-family: var(--font-mono); }
+    .verdict-text .sage { color: var(--sage); font-weight: 600; font-family: var(--font-mono); }
+    .verdict-text .clay { color: var(--clay); font-weight: 600; font-family: var(--font-mono); }
+    .verdict-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 9px;
+      border: 1px solid var(--line-2);
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--text-soft);
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+    .pill.good { border-color: rgba(139,168,136,0.4); color: var(--sage); background: var(--sage-soft); }
+    .pill.warn { border-color: rgba(196,163,115,0.4); color: var(--amber); background: rgba(196,163,115,0.10); }
+    .pill.bad  { border-color: rgba(184,123,111,0.4); color: var(--clay);  background: rgba(184,123,111,0.10); }
+
+    /* ─── Quarter strip ─── */
+    .qstrip-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .qstrip-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+    .qstrip-head h2 {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin: 0;
+    }
+    .qstrip-head .legend {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    .qstrip-head .legend span {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 12px;
+    }
+    .qstrip-head .legend i {
+      display: inline-block;
+      width: 9px; height: 9px;
+      border-radius: 2px;
+      margin-right: 5px;
+    }
+    .qstrip {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 6px;
+    }
+    .qcell {
+      position: relative;
+      padding: 8px 4px 7px;
+      background: var(--panel-3);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      user-select: none;
+    }
+    .qcell:hover { border-color: var(--text-muted); color: var(--text-soft); }
+    .qcell.planned {
+      color: var(--sage);
+      border-color: rgba(139,168,136,0.55);
+      background: var(--sage-soft);
+    }
+    .qcell.inherited {
+      color: var(--sage);
+      border-color: rgba(139,168,136,0.3);
+      background: rgba(139,168,136,0.06);
+    }
+    .qcell.selected {
+      outline: 1px solid var(--sage);
+      outline-offset: 1px;
+      color: var(--text);
+    }
+    .qcell .qnum {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .qcell .qmark {
+      display: block;
+      margin-top: 3px;
+      font-size: 8px;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .qcell.planned .qmark   { color: var(--sage); }
+    .qcell.inherited .qmark { color: var(--sage); opacity: 0.75; }
+    .qcell .qedit {
+      position: absolute;
+      top: 2px;
+      right: 4px;
+      font-size: 8px;
+      color: var(--amber);
+      letter-spacing: 0;
+    }
+
+    /* ─── Charts row (3 cols: Alloc | Carbon | NAV) ─── */
+    .charts-row {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.05fr) minmax(0, 1.05fr);
+      gap: 12px;
+    }
+    .chart-box { height: 248px; }
+    canvas { width: 100% !important; height: 100% !important; }
+    .legend-strip {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .legend-strip .swatch {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 1px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    /* ─── Reasoning (sage-highlighted because this is the model's voice) ─── */
+    .reasoning {
+      background: linear-gradient(180deg, rgba(139,168,136,0.11), rgba(139,168,136,0.04) 65%, var(--panel-3));
+      border: 1px solid rgba(139,168,136,0.28);
+      border-left: 3px solid var(--sage);
+      border-radius: 4px;
+      padding: 12px 14px 12px 16px;
+      max-height: 180px;
+      overflow: auto;
+      white-space: pre-wrap;
+      line-height: 1.55;
+      font-size: 13px;
+      color: #d8d4c9;
+      font-family: var(--font-ui);
+      box-shadow: 0 0 0 1px rgba(139,168,136,0.05) inset;
+    }
+    .reasoning.empty {
+      color: var(--text-muted);
+      font-style: italic;
+      background: var(--panel-3);
+      border: 1px dashed var(--line-2);
+      border-left: 3px solid rgba(139,168,136,0.35);
+      box-shadow: none;
+    }
+
+    /* ─── Side rail components ─── */
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px 14px;
+    }
+    .stat-card .label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .stat-card .value {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.1;
+      letter-spacing: 0.005em;
+    }
+    .stat-card .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+    .progress-bar {
+      height: 3px;
+      background: var(--line);
+      border-radius: 1px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .progress-bar > div {
+      height: 100%;
+      width: 0;
+      background: var(--sage);
+      transition: width 0.3s;
+    }
+
+    /* ─── Carbon thermometer (dual-info: this quarter + entire run) ─── */
+    .thermo {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px 14px;
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+    .thermo .tube {
+      position: relative;
+      width: 26px;
+      justify-self: center;
+      height: 240px;
+      border: 1px solid var(--line-2);
+      border-radius: 13px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #1c1916 0%, #1a1c19 50%, #18201a 100%);
+    }
+    .thermo .tube::after {
+      /* tick marks at 25%, 50%, 75% of cap */
+      content: '';
+      position: absolute;
+      left: 0; right: 0; top: 0; bottom: 0;
+      background-image:
+        linear-gradient(0deg, transparent calc(25% - 0.5px), rgba(184,123,111,0.35) 25%, transparent calc(25% + 0.5px)),
+        linear-gradient(0deg, transparent calc(50% - 0.5px), rgba(196,163,115,0.35) 50%, transparent calc(50% + 0.5px)),
+        linear-gradient(0deg, transparent calc(75% - 0.5px), rgba(139,168,136,0.35) 75%, transparent calc(75% + 0.5px));
+      pointer-events: none;
+    }
+    .thermo .fill {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 0%;
+      background: linear-gradient(180deg, var(--clay), var(--amber) 55%, var(--sage) 100%);
+      transition: height 0.4s ease;
+    }
+    .thermo .body {
+      display: grid;
+      grid-template-rows: auto auto auto 1fr;
+      gap: 6px;
+    }
+    .thermo .body .label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .thermo .row {
+      display: grid;
+      gap: 1px;
+    }
+    .thermo .row .l {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .thermo .row .v {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      color: var(--text);
+      letter-spacing: 0.005em;
+      line-height: 1.1;
+    }
+    .thermo .row .v .unit { color: var(--text-muted); font-size: 10px; margin-left: 4px; letter-spacing: 0; }
+    .thermo .row .v.good { color: var(--sage); }
+    .thermo .row .v.bad  { color: var(--clay); }
+    .thermo .row .v.warn { color: var(--amber); }
+    .thermo .delta { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); align-self: end; }
+    .thermo .delta.good { color: var(--sage); }
+    .thermo .delta.bad  { color: var(--clay); }
+
+    /* ─── Allocation panel (in 3-col charts row, narrow) ─── */
+    .alloc-block {
+      display: grid;
+      grid-template-rows: 144px 1fr;
+      gap: 12px;
+    }
+    .alloc-block .ring-wrap {
+      position: relative;
+      width: 144px;
+      height: 144px;
+      justify-self: center;
+    }
+    .alloc-block canvas { width: 144px !important; height: 144px !important; }
+    .alloc-block .ring-center {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      text-align: center;
+    }
+    .alloc-block .ring-center .label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .alloc-block .ring-center .top-asset {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--text);
+      margin-top: 2px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .alloc-block .ring-center .top-pct {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-top: 1px;
+    }
+    .alloc-bars { display: grid; gap: 4px; }
+    .alloc-bar-row {
+      display: grid;
+      grid-template-columns: 9px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 4px 6px;
+      border-radius: 3px;
+      transition: background 0.15s;
+      font-size: 11.5px;
+    }
+    .alloc-bar-row:hover { background: var(--panel-3); }
+    .alloc-bar-row .swatch {
+      width: 8px; height: 8px; border-radius: 1px;
+    }
+    .alloc-bar-row .name { color: var(--text); font-family: var(--font-ui); }
+    .alloc-bar-row .ticker { color: var(--text-muted); font-size: 10px; margin-left: 6px; font-family: var(--font-mono); letter-spacing: 0.06em; }
+    .alloc-bar-row .pct {
+      color: var(--text);
+      font-family: var(--font-mono);
+      text-align: right;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    .alloc-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 12px;
+      padding: 24px 0;
+      text-align: center;
+    }
+
+    /* ─── Reward breakdown panel ─── */
+    .reward-list { display: grid; gap: 8px; }
+    .reward-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .reward-row .l {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .reward-row .v {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+      letter-spacing: 0.005em;
+    }
+    .reward-row .v.good { color: var(--sage); }
+    .reward-row .v.bad  { color: var(--clay); }
+    .reward-row .v.warn { color: var(--amber); }
+    .reward-bar {
+      grid-column: 1 / -1;
+      height: 3px;
+      background: var(--panel-3);
+      border: 1px solid var(--line);
+      border-radius: 1px;
+      overflow: hidden;
+      margin-top: -2px;
+      position: relative;
+    }
+    .reward-bar > .rb-pos { position: absolute; left: 50%; top: 0; bottom: 0; background: var(--sage); }
+    .reward-bar > .rb-neg { position: absolute; right: 50%; top: 0; bottom: 0; background: var(--clay); }
+    .reward-bar > .rb-mid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--line-2); }
+
+    /* ─── Raw model response & comparison panel ─── */
+    .raw-response {
+      background: var(--panel-3);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 12px 14px;
+      max-height: 320px;
+      overflow: auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--text-soft);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .raw-response.empty { font-style: italic; color: var(--text-muted); }
+
+    .comparison {
+      grid-column: 1 / -1;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 14px;
+    }
+    .comparison h2 {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .comparison h2 .sub {
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--text-muted);
+      font-weight: 400;
+      font-size: 11px;
+      margin-left: 6px;
+      font-family: var(--font-ui);
+    }
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 1100px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+    .badge-cream-soft  { background: rgba(214,201,168,0.10); color: var(--cream); border: 1px solid rgba(214,201,168,0.4); font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; font-weight: 700; }
+    .comparison-col { display: grid; gap: 8px; min-width: 0; }
+    .comparison-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 2px;
+    }
+    .comparison-head .badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-weight: 700;
+    }
+    .badge-sage  { background: var(--sage-soft); color: var(--sage); border: 1px solid rgba(139,168,136,0.45); }
+    .badge-slate { background: var(--slate-soft); color: var(--slate); border: 1px solid rgba(138,150,163,0.45); }
+    .comparison-head .lbl { font-size: 11px; color: var(--text-muted); }
+    .comparison-head .ind {
+      margin-left: auto;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--line-2);
+    }
+    .comparison-head .ind.streaming { background: var(--amber); animation: ind-pulse 1s ease-in-out infinite; }
+    .comparison-head .ind.done       { background: var(--sage); }
+    @keyframes ind-pulse { 0%,100% { opacity: 0.45; } 50% { opacity: 1; } }
+
+    /* ─── Judge panel (DeepSeek verdict, full width below the comparison) ─── */
+    .judge-row {
+      grid-column: 1 / -1;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+    .judge-head {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    }
+    .badge-cream { background: rgba(214,201,168,0.10); color: var(--cream); border: 1px solid rgba(214,201,168,0.4); font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; font-weight: 700; }
+    .judge-head .lbl { font-size: 11px; color: var(--text-muted); }
+    .judge-head .judge-model { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-left: 6px; letter-spacing: 0.06em; }
+    .judge-head .ind {
+      margin-left: auto;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--line-2);
+    }
+    .judge-head .ind.streaming { background: var(--amber); animation: ind-pulse 1s ease-in-out infinite; }
+    .judge-head .ind.done      { background: var(--cream); }
+    .judge-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    .judge-verdict {
+      background: var(--panel-3);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 16px;
+      display: grid;
+      gap: 8px;
+    }
+    .judge-verdict .who-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .judge-verdict .who {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+    .judge-verdict .who.A   { color: var(--sage); }
+    .judge-verdict .who.B   { color: var(--cream); }
+    .judge-verdict .who.C   { color: var(--slate); }
+    .judge-verdict .who.TIE { color: var(--amber); }
+    .judge-verdict .verdict-line {
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.45;
+      padding-top: 4px;
+      border-top: 1px solid var(--line);
+    }
+    .judge-stream {
+      background: var(--panel-3);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 12px 14px;
+      min-height: 220px;
+      max-height: 360px;
+      overflow: auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--text-soft);
+    }
+    .judge-stream.empty { font-style: italic; color: var(--text-muted); }
+    .judge-stream .judge-loading {
+      display: flex; align-items: center; gap: 12px;
+      padding: 32px 8px; color: var(--text-muted);
+    }
+    .judge-stream .judge-loading .spin {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid var(--line-2); border-top-color: var(--cream);
+      animation: spin 0.85s linear infinite;
+    }
+    .judge-criteria { display: grid; gap: 12px; }
+    .judge-criterion {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 8px 10px;
+      background: rgba(20,23,26,0.5);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+    }
+    .judge-criterion .cri-head {
+      display: grid; gap: 4px;
+    }
+    .judge-criterion .cri-key {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+    .judge-criterion .pick {
+      display: inline-block;
+      min-width: 32px;
+      padding: 1px 6px;
+      border-radius: 2px;
+      font-weight: 700;
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+    }
+    .pick.A   { background: var(--sage-soft);  color: var(--sage);  border: 1px solid rgba(139,168,136,0.4); }
+    .pick.B   { background: rgba(214,201,168,0.10); color: var(--cream); border: 1px solid rgba(214,201,168,0.4); }
+    .pick.C   { background: var(--slate-soft); color: var(--slate); border: 1px solid rgba(138,150,163,0.4); }
+    .pick.TIE { background: rgba(196,163,115,0.15); color: var(--amber); border: 1px solid rgba(196,163,115,0.4); }
+    .cri-body { display: grid; gap: 6px; min-width: 0; }
+    .score-row {
+      display: grid;
+      grid-template-columns: 16px 1fr 26px;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
+    }
+    .score-row .who { font-family: var(--font-mono); font-weight: 700; font-size: 10px; letter-spacing: 0.04em; }
+    .score-row.a .who { color: var(--sage); }
+    .score-row.b .who { color: var(--cream); }
+    .score-row.c .who { color: var(--slate); }
+    .score-bar {
+      height: 5px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 1px;
+      overflow: hidden;
+      position: relative;
+    }
+    .score-bar > .fill { height: 100%; transition: width 0.4s ease; }
+    .score-row.a .fill { background: var(--sage); }
+    .score-row.b .fill { background: var(--cream); }
+    .score-row.c .fill { background: var(--slate); }
+    .score-row .num { font-family: var(--font-mono); font-size: 10.5px; color: var(--text); text-align: right; }
+    .cri-reason {
+      font-size: 11px; color: var(--text-soft); line-height: 1.45;
+      padding-top: 4px; border-top: 1px dashed var(--line);
+    }
+
+    /* Confidence pill on the verdict card */
+    .judge-verdict .conf {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-top: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .judge-verdict .conf .num {
+      font-size: 14px; font-weight: 700; color: var(--cream);
+      letter-spacing: 0.02em;
+    }
+    .judge-verdict .conf-bar {
+      height: 3px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 1px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .judge-verdict .conf-bar > .fill { height: 100%; background: var(--cream); transition: width 0.4s ease; }
+    @media (max-width: 900px) { .judge-grid { grid-template-columns: 1fr; } }
+
+    /* ─── Streaming word animation + section-pulse highlight ─── */
+    .streamed-word {
+      animation: word-in 0.45s ease-out;
+    }
+    @keyframes word-in {
+      0%   { background: rgba(139,168,136,0.55); color: var(--sage); border-radius: 2px; }
+      55%  { background: rgba(139,168,136,0.18); color: var(--sage); }
+      100% { background: transparent; color: inherit; }
+    }
+    .reasoning.completed {
+      animation: section-pulse 1.1s ease-out;
+    }
+    @keyframes section-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(139,168,136,0.55), 0 0 0 1px rgba(139,168,136,0.05) inset; }
+      55%  { box-shadow: 0 0 0 10px rgba(139,168,136,0.0), 0 0 0 1px rgba(139,168,136,0.05) inset; }
+      100% { box-shadow: 0 0 0 0 rgba(139,168,136,0), 0 0 0 1px rgba(139,168,136,0.05) inset; }
+    }
+
+    /* ─── Levers ─── */
+    .levers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .lever {
+      background: var(--panel-3);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 8px 10px;
+    }
+    .lever .l { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .lever .v { font-family: var(--font-mono); font-size: 13px; font-weight: 500; color: var(--text); margin-top: 2px; }
+
+    /* ─── Loader overlay ─── */
+    .loader-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(22, 24, 26, 0.78);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .loader-backdrop.show { display: flex; }
+    .loader-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 28px 36px;
+      display: grid;
+      gap: 14px;
+      justify-items: center;
+      min-width: 320px;
+    }
+    .loader-spinner {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2.5px solid var(--line-2);
+      border-top-color: var(--sage);
+      animation: spin 0.85s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-card .title-x {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      color: var(--text);
+    }
+    .loader-card .sub-x {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── Toast / status line ─── */
+    .status-line {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .status-line.error { color: var(--clay); }
+
+    @media (max-width: 1100px) {
+      .app { grid-template-columns: 1fr; }
+      .charts-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .news-band { grid-template-columns: 1fr; }
+      .news-actions { grid-template-rows: auto auto; }
+      .verdict { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <h1 class="title">Carbon<em>Alpha</em></h1>
+    <div class="brand-tagline">teaching a 7B model to manage a <em>carbon-budgeted</em> portfolio through macro shocks</div>
+    <div class="title-divider"></div>
+    <span class="meta-tag" id="modelTag">Qwen 2.5 · 7B · SFT → GRPO p1·100</span>
+    <button class="meta-tag" id="exportBtn" title="Download JSON of all quarters' news, allocations, both model completions, and judge verdicts">Export ⤓</button>
+  </div>
+  <p class="subtitle">
+    <strong>From a macro headline, CarbonAlpha plans a 3-year ETF allocation</strong> —
+    engineered to <strong>lift portfolio returns</strong> and <strong>cut portfolio carbon</strong>
+    at the same time, both measured against an equal-weight benchmark. You can re-plan any quarter
+    by editing its headline. Backtest window: <strong>Q1 2022 – Q4 2024</strong>.
+  </p>
+
+  <section class="how-it-works">
+    <div class="hiw-card">
+      <div class="hiw-num">01 · LOCK</div>
+      <div class="hiw-title">One decision, 3 years out</div>
+      <div class="hiw-body">A single allocation that holds for all <em>12 quarters</em>. No rebalancing. The model must reason at the macro-cycle level, not quarter-by-quarter.</div>
+    </div>
+    <div class="hiw-card">
+      <div class="hiw-num">02 · CARBON</div>
+      <div class="hiw-title">Hard 25 kg cap</div>
+      <div class="hiw-body">Cumulative kg over 12 quarters can't exceed 25. <em>OIL</em> emits 2.5 kg/$/q; <em>GREEN</em> ~zero. Returns and carbon are co-equal objectives.</div>
+    </div>
+    <div class="hiw-card">
+      <div class="hiw-num">03 · ETFs</div>
+      <div class="hiw-title">5 real-world ETFs</div>
+      <div class="hiw-body">Backtested against actual <code>IXN</code>, <code>DBO</code>, <code>ICLN</code>, <code>VNQI</code>, <code>BNDW</code> returns — Q1 2022 to Q4 2024.</div>
+    </div>
+    <div class="hiw-card">
+      <div class="hiw-num">04 · SHOCKS</div>
+      <div class="hiw-title">17 macro shocks · 4 categories</div>
+      <div class="hiw-body">Physical (hurricanes, droughts), transition (CBAM, methane fees), geopolitical (rare-earth, sanctions), monetary (Fed pivots). The model never knows the schedule.</div>
+    </div>
+    <div class="hiw-card">
+      <div class="hiw-num">05 · LEVERS</div>
+      <div class="hiw-title">4 intervention levers</div>
+      <div class="hiw-body"><code>infra_commit</code>, <code>carbon_offset_buy</code>, <code>put_hedge</code>, <code>tech_bet</code>. Use only when news justifies — misuse <em>bleeds</em> reward.</div>
+    </div>
+  </section>
+
+  <div class="ribbon" id="ribbon">
+    <div class="cell"><span class="l">QUARTER</span><span class="v" id="rbQ">—</span></div>
+    <div class="cell"><span class="l">PORTFOLIO</span><span class="v" id="rbReturn">—</span></div>
+    <div class="cell"><span class="l">VS BMK</span><span class="v" id="rbLead">—</span></div>
+    <div class="cell"><span class="l">CARBON</span><span class="v" id="rbCarbon">—</span></div>
+    <div class="cell"><span class="l">CAP USED</span><span class="v" id="rbCapPct">—</span></div>
+    <div class="cell"><span class="l">VS BMK CO₂</span><span class="v" id="rbCarbonLead">—</span></div>
+    <div class="cell"><span class="l">PLANS</span><span class="v" id="rbPlans">0</span></div>
+  </div>
+</header>
+
+<main class="app">
+
+  <div class="main-col">
+
+    <section class="news-band">
+      <div class="news-input">
+        <label for="news"><span id="newsLabel">Headline for Q1</span></label>
+        <textarea id="news" placeholder="A macro scenario for CarbonAlpha to react to..."></textarea>
+        <div class="news-helpers" id="newsHelpers" hidden>
+          → <a id="genNewsLink">generate news</a>
+          <span class="sep">·</span> or
+          <a id="writeOwnLink">write a case scenario for the quarter</a>
+        </div>
+        <div class="status-line" id="status">Ready.</div>
+      </div>
+      <div class="news-actions">
+        <button id="plan" class="btn-plan">Plan Portfolio</button>
+        <button id="shuffle" class="btn-shuffle">Shuffle headline</button>
+      </div>
+    </section>
+
+    <section class="verdict">
+      <div class="verdict-text" id="verdict">
+        Press <strong>Plan Portfolio</strong> to see how CarbonAlpha allocates against the equal-weight benchmark over 12 quarters.
+      </div>
+      <div class="verdict-pills" id="verdictPills"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Model Reasoning <span class="sub" id="reasoningSub">— pending</span></h2>
+      <div class="reasoning empty" id="reasoning">Plan a quarter and the model's macro-cycle reasoning will appear here.</div>
+    </section>
+
+    <section class="qstrip-panel">
+      <div class="qstrip-head">
+        <h2>Quarters · click to navigate · edit headline · re-plan</h2>
+        <div class="legend">
+          <span><i style="background:var(--sage-soft);border:1px solid rgba(139,168,136,0.55)"></i>planned</span>
+          <span><i style="background:rgba(139,168,136,0.06);border:1px solid rgba(139,168,136,0.3)"></i>inherited</span>
+          <span><i style="background:var(--panel-3);border:1px solid var(--line)"></i>open</span>
+        </div>
+      </div>
+      <div class="qstrip" id="qstrip"></div>
+    </section>
+
+    <section class="charts-row">
+      <div class="panel">
+        <h2>Locked Allocation <span class="sub" id="allocSub">— no plan yet</span></h2>
+        <div id="allocBlock" class="alloc-block">
+          <div class="ring-wrap">
+            <canvas id="allocPie"></canvas>
+            <div class="ring-center">
+              <div class="label">Top weight</div>
+              <div class="top-asset" id="allocTopAsset">—</div>
+              <div class="top-pct" id="allocTopPct">—</div>
+            </div>
+          </div>
+          <div class="alloc-bars" id="allocBars"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2 id="carbonTitle">Portfolio Carbon vs Benchmark <span class="sub">— cumulative kg</span></h2>
+        <div class="legend-strip" id="carbonLegend"></div>
+        <div class="chart-box"><canvas id="carbonChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <h2>Portfolio Value vs Benchmark <span class="sub" id="navSub"></span></h2>
+        <div class="legend-strip" id="navLegend"></div>
+        <div class="chart-box"><canvas id="navChart"></canvas></div>
+      </div>
+    </section>
+
+  </div>
+
+  <aside class="side-col">
+
+    <div class="thermo">
+      <div class="tube"><div class="fill" id="thermoFill"></div></div>
+      <div class="body">
+        <div class="label">Carbon Budget · 25 kg cap</div>
+        <div class="row">
+          <span class="l">This Run (cumulative)</span>
+          <span class="v" id="thermoRun">0.00<span class="unit">kg</span></span>
+        </div>
+        <div class="row">
+          <span class="l" id="thermoQLabel">This Quarter — Q1</span>
+          <span class="v" id="thermoQ">—<span class="unit">kg</span></span>
+        </div>
+        <div class="delta" id="carbonDelta">Awaiting plan.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Reward Breakdown <span class="sub">— vs benchmark</span></h2>
+      <div class="reward-list" id="rewardList">
+        <div class="reward-row"><span class="l">Plan a quarter</span><span class="v">—</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Policy Levers</h2>
+      <div class="levers">
+        <div class="lever"><div class="l">Tech bet</div><div class="v" id="techBet">—</div></div>
+        <div class="lever"><div class="l">Infra lock</div><div class="v" id="infra">—</div></div>
+        <div class="lever"><div class="l">Offsets</div><div class="v" id="offsets">—</div></div>
+        <div class="lever"><div class="l">Put hedge</div><div class="v" id="hedge">—</div></div>
+      </div>
+    </div>
+
+  </aside>
+
+  <section class="comparison" id="comparisonSection">
+    <h2>Training Progression · Same Prompt, Three Models, One Judge <span class="sub">— GRPO ⟵ SFT ⟵ base, scored by DeepSeek</span></h2>
+    <div class="comparison-grid">
+      <div class="comparison-col">
+        <div class="comparison-head">
+          <span class="badge badge-sage">A · GRPO</span>
+          <span class="lbl">SFT + GRPO p1·100 (RL-tuned)</span>
+          <span class="ind" id="trainedInd"></span>
+        </div>
+        <pre class="raw-response empty" id="rawTrained">Press Plan Portfolio. CarbonAlpha-GRPO streams here word-by-word.</pre>
+      </div>
+      <div class="comparison-col">
+        <div class="comparison-head">
+          <span class="badge badge-cream-soft">B · SFT</span>
+          <span class="lbl">curriculum SFT only · pre-RL</span>
+          <span class="ind" id="sftInd"></span>
+        </div>
+        <pre class="raw-response empty" id="rawSft">After GRPO finishes, the SFT-only adapter streams here.</pre>
+      </div>
+      <div class="comparison-col">
+        <div class="comparison-head">
+          <span class="badge badge-slate">C · base Qwen</span>
+          <span class="lbl">no fine-tuning · generic IT</span>
+          <span class="ind" id="baseInd"></span>
+        </div>
+        <pre class="raw-response empty" id="rawBase">After SFT finishes, the base model streams here.</pre>
+      </div>
+    </div>
+
+    <div class="judge-row">
+      <div class="judge-head">
+        <span class="badge badge-cream">JUDGE</span>
+        <span class="lbl">DeepSeek scores both responses on format · reasoning · allocation · carbon</span>
+        <span class="judge-model" id="judgeModelLabel"></span>
+        <span class="ind" id="judgeInd"></span>
+      </div>
+      <div class="judge-grid">
+        <div class="judge-verdict">
+          <div class="who-label">Winner</div>
+          <div class="who" id="judgeWho">—</div>
+          <div class="conf" id="judgeConf" style="display:none;">conf <span class="num" id="judgeConfNum">—</span></div>
+          <div class="conf-bar" id="judgeConfBar" style="display:none;"><div class="fill" id="judgeConfFill"></div></div>
+          <div class="verdict-line" id="judgeVerdictLine">DeepSeek will compare both responses once they finish streaming.</div>
+        </div>
+        <div class="judge-stream empty" id="judgeStream">Awaiting both model responses…</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="loader-backdrop" id="loader">
+  <div class="loader-card">
+    <div class="loader-spinner"></div>
+    <div class="title-x" id="loaderTitle">Planning the quarter…</div>
+    <div class="sub-x" id="loaderSub">CarbonAlpha is reasoning through the macro path.</div>
+  </div>
+</div>
+
+<script>
+const ASSET_COLORS = {
+  TECH: getCss('--c-tech'),
+  OIL: getCss('--c-oil'),
+  GREEN: getCss('--c-green'),
+  REAL_ESTATE: getCss('--c-re'),
+  BONDS: getCss('--c-bonds'),
+};
+const ASSET_ORDER = ['TECH', 'OIL', 'GREEN', 'REAL_ESTATE', 'BONDS'];
+const charts = {};
+let isPlanning = false;
+
+// Per-quarter state. `action` is null until a plan is locked for that quarter
+// (or any earlier quarter — quarters inherit from the most recent planned one).
+// `news` is editable per quarter. `dirty` flags an edited-but-not-yet-planned
+// state so the UI can mark the cell.
+const quarters = Array.from({length: 12}, () => ({ news: '', action: null, dirty: false, reasoning: '', completion: '', sftCompletion: '', baseCompletion: '' }));
+let selectedQ = 0;
+let baselineData = null;          // { quarterly_returns_pct, carbon_intensity, counterfactuals, etf_tickers, carbon_cap, backtest_window }
+let lastReasoning = '';
+
+const $ = id => document.getElementById(id);
+function getCss(varName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+}
+function fmt(x, d = 2) {
+  return Number.isFinite(Number(x)) ? Number(x).toFixed(d) : '—';
+}
+function pct(x, d = 1) {
+  return Number.isFinite(Number(x)) ? (Number(x) * 100).toFixed(d) + '%' : '—';
+}
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+function makeChart(id, config) {
+  destroyChart(id);
+  charts[id] = new Chart($(id), config);
+}
+
+function chartBaseOpts({ legend = false } = {}) {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 240 },
+    interaction: { intersect: false, mode: 'index' },
+    plugins: {
+      legend: legend ? { labels: { color: getCss('--text-muted'), boxWidth: 10, font: { size: 11 } } } : { display: false },
+      tooltip: {
+        backgroundColor: getCss('--panel-3'),
+        borderColor: getCss('--line-2'),
+        borderWidth: 1,
+        titleColor: getCss('--text'),
+        bodyColor: getCss('--text-soft'),
+        padding: 10,
+      },
+    },
+    scales: {
+      x: {
+        grid: { color: 'rgba(58,63,67,0.35)' },
+        ticks: { color: getCss('--text-muted'), font: { size: 11 } },
+      },
+      y: {
+        grid: { color: 'rgba(58,63,67,0.35)' },
+        ticks: { color: getCss('--text-muted'), font: { size: 11 } },
+      },
+    },
+  };
+}
+
+function buildLegend(elementId, items) {
+  const el = $(elementId);
+  if (!el) return;
+  el.innerHTML = '';
+  items.forEach(({ label, color, dashed }) => {
+    const span = document.createElement('span');
+    const sw = document.createElement('span');
+    sw.className = 'swatch';
+    sw.style.background = dashed
+      ? `repeating-linear-gradient(90deg, ${color} 0 4px, transparent 4px 7px)`
+      : color;
+    span.appendChild(sw);
+    span.appendChild(document.createTextNode(label));
+    el.appendChild(span);
+  });
+}
+
+// ───────── Per-quarter trajectory ─────────
+function effectiveAction(qIdx) {
+  // Returns the action that applies to quarter qIdx — the most recently
+  // planned action at quarter <= qIdx, or null if none.
+  for (let i = qIdx; i >= 0; i--) {
+    if (quarters[i].action) return quarters[i].action;
+  }
+  return null;
+}
+
+function firstPlannedQuarter() {
+  for (let i = 0; i < 12; i++) {
+    if (quarters[i].action) return i;
+  }
+  return -1;
+}
+
+function computeCombinedTrajectory() {
+  // Walk Q0 → Q12. At each quarter use the effective action (latest set ≤ q).
+  // Quarters before any plan: NAV stays at 1.0 (no exposure yet).
+  if (!baselineData) return null;
+  const QR = baselineData.quarterly_returns_pct;
+  const INT = baselineData.carbon_intensity;
+  const navSeries = [1.0];
+  const carbonSeries = [0.0];
+  const carbonByAsset = Object.fromEntries(ASSET_ORDER.map(a => [a, [0.0]]));
+  const assetCum = Object.fromEntries(ASSET_ORDER.map(a => [a, 0.0]));
+  let nav = 1.0, carbon = 0.0;
+
+  for (let q = 0; q < 12; q++) {
+    const action = effectiveAction(q);
+    if (!action) {
+      // No allocation yet for this quarter — flat-line.
+      navSeries.push(nav);
+      carbonSeries.push(carbon);
+      ASSET_ORDER.forEach(a => carbonByAsset[a].push(assetCum[a]));
+      continue;
+    }
+    const w = action.weights || ASSET_ORDER.map(() => 0);
+    const portRet = ASSET_ORDER.reduce((s, a, i) => s + (w[i] || 0) * (QR[a][q] / 100), 0);
+    nav *= (1 + portRet);
+    let qC = 0;
+    ASSET_ORDER.forEach((a, i) => {
+      const c = (w[i] || 0) * INT[a] * nav;
+      qC += c;
+      assetCum[a] += c;
+      carbonByAsset[a].push(assetCum[a]);
+    });
+    carbon += qC;
+    navSeries.push(nav);
+    carbonSeries.push(carbon);
+  }
+  return {
+    navSeries: navSeries.map(v => Number(v.toFixed(4))),
+    carbonSeries: carbonSeries.map(v => Number(v.toFixed(4))),
+    carbonByAsset: Object.fromEntries(Object.entries(carbonByAsset).map(([a, s]) => [a, s.map(v => Number(v.toFixed(4)))])),
+    finalNav: nav,
+    finalCarbon: carbon,
+    realReturnPct: (nav - 1.0) * 100,
+    overCap: carbon > (baselineData.carbon_cap || 25),
+  };
+}
+
+// ───────── Quarter strip ─────────
+function renderQuarterStrip() {
+  const strip = $('qstrip');
+  strip.innerHTML = '';
+  for (let q = 0; q < 12; q++) {
+    const directlyPlanned = !!quarters[q].action;
+    const inherited = !directlyPlanned && !!effectiveAction(q);
+    const cell = document.createElement('div');
+    cell.className = 'qcell';
+    if (directlyPlanned) cell.classList.add('planned');
+    else if (inherited) cell.classList.add('inherited');
+    if (q === selectedQ) cell.classList.add('selected');
+
+    const num = document.createElement('span');
+    num.className = 'qnum';
+    num.textContent = `Q${q + 1}`;
+    const mark = document.createElement('span');
+    mark.className = 'qmark';
+    mark.textContent = directlyPlanned ? 'PLANNED' : (inherited ? 'INHERITED' : 'OPEN');
+    cell.appendChild(num);
+    cell.appendChild(mark);
+    if (quarters[q].dirty) {
+      const dot = document.createElement('span');
+      dot.className = 'qedit';
+      dot.textContent = '●';
+      dot.title = 'Edited — re-plan to apply';
+      cell.appendChild(dot);
+    }
+    cell.onclick = () => selectQuarter(q);
+    strip.appendChild(cell);
+  }
+}
+
+function selectQuarter(q) {
+  // Save any in-flight edits to the previously selected quarter.
+  quarters[selectedQ].news = $('news').value;
+  selectedQ = q;
+  $('news').value = quarters[q].news;
+  $('newsLabel').textContent = `Headline for Q${q + 1}` + (quarters[q].action ? ' · re-plan to override' : '');
+
+  // Show news helpers when the selected quarter has no plan of its own
+  // (either inherited from an earlier plan, or completely open).
+  const directlyPlanned = !!quarters[q].action;
+  $('newsHelpers').hidden = directlyPlanned;
+
+  // Reasoning panel reflects the OWNING quarter (the most-recent directly-
+  // planned quarter ≤ q). An "INHERITED" cell still shows the reasoning
+  // that produced the allocation it inherits.
+  let owningQ = -1;
+  for (let i = q; i >= 0; i--) { if (quarters[i].action) { owningQ = i; break; } }
+  if (owningQ >= 0) {
+    renderReasoning(quarters[owningQ].reasoning, quarters[owningQ].completion, quarters[owningQ].news);
+    setComparison(quarters[owningQ].completion || '', quarters[owningQ].sftCompletion || '', quarters[owningQ].baseCompletion || '');
+    if (quarters[owningQ].judgeCompletion || quarters[owningQ].judgeParsed) {
+      $('judgeModelLabel').textContent = quarters[owningQ].judgeModel ? `· ${quarters[owningQ].judgeModel}` : '';
+      setIndicator('judgeInd', 'done');
+      if (quarters[owningQ].judgeParsed) {
+        renderJudgeStructured(quarters[owningQ].judgeParsed, quarters[owningQ].judgeModel || '');
+      } else {
+        renderJudgeFromJson(quarters[owningQ].judgeCompletion, quarters[owningQ].judgeModel || '');
+      }
+    } else {
+      resetJudge();
+    }
+  } else {
+    renderReasoning('', '', '');
+    setComparison('', '', '');
+    resetJudge();
+  }
+  renderAll();
+}
+
+// ───────── Loader ─────────
+function showLoader(title = 'Planning the quarter…', sub = 'CarbonAlpha is reasoning through the macro path.') {
+  $('loaderTitle').textContent = title;
+  $('loaderSub').textContent = sub;
+  $('loader').classList.add('show');
+}
+function hideLoader() {
+  $('loader').classList.remove('show');
+}
+
+// ───────── Render ─────────
+function renderNavChart(traj) {
+  const labels = Array.from({length: 13}, (_, i) => i);
+  const benchmark = baselineData?.counterfactuals?.benchmark;
+  const hasModel = firstPlannedQuarter() >= 0;
+
+  // Selected quarter's marker is bumped up so users see exactly where they
+  // are on the NAV trajectory. Index in the series corresponds to the
+  // *end* of that quarter (Q1 ends at index 1, etc.). Using selectedQ + 1.
+  const selectedIdx = selectedQ + 1;
+  const ptRadius = (idx) => idx === selectedIdx ? 7 : 3;
+  const ptBorderWidth = (idx) => idx === selectedIdx ? 3 : 0;
+  const ptBorderColor = (idx) => idx === selectedIdx ? getCss('--cream') : 'transparent';
+
+  const datasets = [];
+  if (hasModel && traj) {
+    datasets.push({
+      label: 'Portfolio Value',
+      data: traj.navSeries,
+      borderColor: getCss('--sage'),
+      backgroundColor: getCss('--sage-soft'),
+      borderWidth: 2.5,
+      tension: 0.28,
+      pointRadius: traj.navSeries.map((_, i) => ptRadius(i)),
+      pointHoverRadius: traj.navSeries.map((_, i) => ptRadius(i) + 2),
+      pointBackgroundColor: getCss('--sage'),
+      pointBorderColor: traj.navSeries.map((_, i) => ptBorderColor(i)),
+      pointBorderWidth: traj.navSeries.map((_, i) => ptBorderWidth(i)),
+      fill: true,
+    });
+  }
+  if (benchmark) {
+    datasets.push({
+      label: 'Benchmark',
+      data: benchmark.nav_real,
+      borderColor: getCss('--slate'),
+      borderWidth: 1.6,
+      borderDash: [5, 4],
+      tension: 0.28,
+      pointRadius: benchmark.nav_real.map((_, i) => i === selectedIdx ? 5 : 0),
+      pointHoverRadius: benchmark.nav_real.map((_, i) => i === selectedIdx ? 7 : 0),
+      pointBackgroundColor: getCss('--slate'),
+      pointBorderColor: benchmark.nav_real.map((_, i) => i === selectedIdx ? getCss('--cream') : 'transparent'),
+      pointBorderWidth: benchmark.nav_real.map((_, i) => i === selectedIdx ? 2 : 0),
+      fill: false,
+    });
+  }
+  makeChart('navChart', { type: 'line', data: { labels, datasets }, options: chartBaseOpts() });
+  buildLegend('navLegend', [
+    ...(hasModel ? [{ label: 'Portfolio Value (CarbonAlpha)', color: getCss('--sage') }] : []),
+    ...(benchmark ? [{ label: 'Benchmark — equal-weight 5-ETF', color: getCss('--slate'), dashed: true }] : []),
+  ]);
+  $('navSub').textContent = baselineData?.backtest_window ? `· ${baselineData.backtest_window}` : '';
+}
+
+function renderCarbonChart(traj) {
+  const labels = Array.from({length: 13}, (_, i) => i);
+  const cap = baselineData?.carbon_cap || 25;
+  const benchmark = baselineData?.counterfactuals?.benchmark;
+  const hasModel = firstPlannedQuarter() >= 0;
+
+  const datasets = [];
+  if (hasModel && traj) {
+    datasets.push({
+      label: 'CarbonAlpha portfolio',
+      data: traj.carbonSeries,
+      borderColor: getCss('--sage'),
+      backgroundColor: getCss('--sage-soft'),
+      borderWidth: 2.5,
+      tension: 0.25,
+      pointRadius: 3,
+      pointBackgroundColor: getCss('--sage'),
+      fill: true,
+    });
+  }
+  if (benchmark) {
+    datasets.push({
+      label: 'Benchmark — normal emissions',
+      data: benchmark.carbon,
+      borderColor: getCss('--slate'),
+      borderWidth: 1.6,
+      borderDash: [5, 4],
+      tension: 0.25,
+      pointRadius: 0,
+      fill: false,
+    });
+  }
+  // Cap line — always visible reference
+  datasets.push({
+    label: `Cap ${cap} kg`,
+    data: labels.map(() => cap),
+    borderColor: getCss('--clay'),
+    borderWidth: 1.4,
+    borderDash: [6, 5],
+    tension: 0,
+    pointRadius: 0,
+    fill: false,
+  });
+
+  // Tight scale so the gap between portfolio and benchmark reads at a glance,
+  // expanding only if either trajectory exceeds the cap.
+  const maxObs = Math.max(cap, traj?.finalCarbon || 0, benchmark?.final_carbon || 0);
+  const yMax = maxObs > cap ? Math.ceil(maxObs * 1.15) : Math.ceil(cap * 1.25);
+  const opts = chartBaseOpts({ legend: false });
+  opts.scales.y = {
+    ...opts.scales.y,
+    beginAtZero: true,
+    suggestedMax: yMax,
+    title: { display: true, text: 'cumulative kg CO₂', color: getCss('--text-muted'), font: { size: 11 } },
+  };
+
+  makeChart('carbonChart', {
+    type: 'line',
+    data: { labels, datasets },
+    options: opts,
+  });
+
+  buildLegend('carbonLegend', [
+    ...(hasModel ? [{ label: 'CarbonAlpha portfolio', color: getCss('--sage') }] : []),
+    ...(benchmark ? [{ label: 'Benchmark — normal emissions', color: getCss('--slate'), dashed: true }] : []),
+    { label: `Cap ${cap} kg`, color: getCss('--clay'), dashed: true },
+  ]);
+
+  $('carbonTitle').innerHTML = hasModel
+    ? `Portfolio Carbon vs Benchmark <span class="sub">— cumulative kg over 12 quarters</span>`
+    : `Portfolio Carbon vs Benchmark <span class="sub">— benchmark loaded · plan to add CarbonAlpha</span>`;
+}
+
+function renderAllocation() {
+  const action = effectiveAction(selectedQ);
+  const tickers = baselineData?.etf_tickers || {};
+  const weights = action?.weights || ASSET_ORDER.map(() => 0);
+  const total = weights.reduce((s, x) => s + (x || 0), 0);
+  const planned = !!action;
+
+  // Sub-label tells you which quarter's plan you're seeing.
+  const sourceQ = (() => {
+    for (let i = selectedQ; i >= 0; i--) if (quarters[i].action) return i;
+    return -1;
+  })();
+  $('allocSub').textContent = planned
+    ? `— planned at Q${sourceQ + 1}, effective from Q${sourceQ + 1}`
+    : '— no plan yet';
+
+  // Doughnut
+  const data = planned ? weights : [1, 1, 1, 1, 1];
+  const colors = planned
+    ? ASSET_ORDER.map(a => ASSET_COLORS[a])
+    : ASSET_ORDER.map(a => 'rgba(141,145,138,0.18)');
+  makeChart('allocPie', {
+    type: 'doughnut',
+    data: {
+      labels: ASSET_ORDER,
+      datasets: [{
+        data,
+        backgroundColor: colors,
+        borderColor: getCss('--panel'),
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '64%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          enabled: planned,
+          backgroundColor: getCss('--panel-3'),
+          borderColor: getCss('--line-2'),
+          borderWidth: 1,
+          titleColor: getCss('--text'),
+          bodyColor: getCss('--text-soft'),
+          padding: 10,
+          callbacks: {
+            label: ctx => {
+              const a = ASSET_ORDER[ctx.dataIndex];
+              const ticker = tickers[a] ? ` · ${tickers[a]}` : '';
+              return `${a}${ticker}: ${(ctx.parsed * 100).toFixed(1)}%`;
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // Center label — top-weighted asset
+  if (planned) {
+    let topI = 0, topV = -1;
+    weights.forEach((w, i) => { if (w > topV) { topV = w; topI = i; } });
+    $('allocTopAsset').textContent = ASSET_ORDER[topI];
+    $('allocTopPct').textContent = `${(topV * 100).toFixed(0)}% · ${tickers[ASSET_ORDER[topI]] || ''}`;
+  } else {
+    $('allocTopAsset').textContent = '—';
+    $('allocTopPct').textContent = 'awaiting plan';
+  }
+
+  // Horizontal bars
+  const bars = $('allocBars');
+  bars.innerHTML = '';
+  if (!planned) {
+    const empty = document.createElement('div');
+    empty.className = 'alloc-empty';
+    empty.textContent = 'No allocation locked yet for this quarter — press Plan Portfolio to assign one.';
+    bars.appendChild(empty);
+    return;
+  }
+  // Sort descending by weight so highest exposure is at the top — easier to scan.
+  const indices = ASSET_ORDER.map((_, i) => i).sort((a, b) => (weights[b] || 0) - (weights[a] || 0));
+  indices.forEach(i => {
+    const asset = ASSET_ORDER[i];
+    const w = weights[i] || 0;
+    const widthPct = total > 0 ? (w / total) * 100 : 0;
+    const row = document.createElement('div');
+    row.className = 'alloc-bar-row';
+    row.innerHTML = `
+      <span class="swatch" style="background:${ASSET_COLORS[asset]}"></span>
+      <span class="name">${asset}<span class="ticker">${tickers[asset] || ''}</span></span>
+      <span class="alloc-bar-track"><span class="alloc-bar-fill" style="width:${widthPct.toFixed(1)}%;background:${ASSET_COLORS[asset]}"></span></span>
+      <span class="pct">${(w * 100).toFixed(1)}%</span>
+    `;
+    bars.appendChild(row);
+  });
+}
+
+function renderRewardBreakdown(traj) {
+  const list = $('rewardList');
+  list.innerHTML = '';
+  const benchmark = baselineData?.counterfactuals?.benchmark;
+  if (!traj || firstPlannedQuarter() < 0 || !benchmark) {
+    const r = document.createElement('div');
+    r.className = 'reward-row';
+    r.innerHTML = '<span class="l">Plan a quarter to see breakdown</span><span class="v">—</span>';
+    list.appendChild(r);
+    return;
+  }
+  const cap = baselineData.carbon_cap || 25;
+
+  // Real return %
+  const ret = traj.realReturnPct;
+  const benchRet = benchmark.real_return_pct;
+  const retLead = ret - benchRet;
+  // Regret (log-relative): positive = model wins
+  const regret = Math.log(traj.finalNav / benchmark.final_nav_real);
+  // Max drawdown on combined trajectory
+  let peak = traj.navSeries[0], maxDD = 0;
+  traj.navSeries.forEach(v => { if (v > peak) peak = v; const dd = (peak - v) / peak; if (dd > maxDD) maxDD = dd; });
+  // Per-quarter return std (sharpe-ish)
+  const per = traj.navSeries.slice(1).map((v, i) => (v - traj.navSeries[i]) / Math.max(traj.navSeries[i], 1e-9));
+  const mean = per.reduce((a, b) => a + b, 0) / per.length;
+  const variance = per.reduce((a, b) => a + (b - mean) ** 2, 0) / per.length;
+  const sharpe = variance > 0 ? mean / Math.sqrt(variance) : 0;
+  // Carbon penalty (0 if under cap, fraction over otherwise)
+  const carbonOverCap = Math.max(0, traj.finalCarbon - cap) / cap;
+  const carbonPctOfCap = (traj.finalCarbon / cap) * 100;
+  const carbonLead = benchmark.final_carbon - traj.finalCarbon; // +ve = model emits less
+
+  const row = (label, value, cls = '', barPosNeg = null) => {
+    const r = document.createElement('div');
+    r.className = 'reward-row';
+    r.innerHTML = `<span class="l">${label}</span><span class="v ${cls}">${value}</span>`;
+    if (barPosNeg !== null) {
+      const bar = document.createElement('div');
+      bar.className = 'reward-bar';
+      const mid = document.createElement('div'); mid.className = 'rb-mid'; bar.appendChild(mid);
+      if (barPosNeg >= 0) {
+        const pos = document.createElement('div'); pos.className = 'rb-pos';
+        pos.style.width = `${Math.min(50, Math.abs(barPosNeg) * 50)}%`;
+        bar.appendChild(pos);
+      } else {
+        const neg = document.createElement('div'); neg.className = 'rb-neg';
+        neg.style.width = `${Math.min(50, Math.abs(barPosNeg) * 50)}%`;
+        bar.appendChild(neg);
+      }
+      r.appendChild(bar);
+    }
+    list.appendChild(r);
+  };
+
+  row('Real return',
+      `${ret >= 0 ? '+' : ''}${ret.toFixed(2)}%`,
+      ret >= 0 ? 'good' : 'bad');
+  row('Lead vs benchmark',
+      `${retLead >= 0 ? '+' : ''}${retLead.toFixed(2)}%`,
+      retLead >= 0 ? 'good' : 'bad',
+      retLead / 20);
+  row('Regret (log)',
+      `${regret >= 0 ? '+' : ''}${regret.toFixed(3)}`,
+      regret >= 0 ? 'good' : 'bad',
+      regret * 4);
+  row('Sharpe-ish (per-Q)',
+      sharpe.toFixed(2),
+      sharpe >= 0 ? 'good' : 'bad');
+  row('Max drawdown',
+      `−${(maxDD * 100).toFixed(1)}%`,
+      maxDD < 0.05 ? 'good' : (maxDD < 0.15 ? 'warn' : 'bad'));
+  row('Carbon vs cap',
+      `${carbonPctOfCap.toFixed(0)}% of 25 kg`,
+      carbonOverCap > 0 ? 'bad' : (carbonPctOfCap < 50 ? 'good' : 'warn'));
+  row('Carbon vs benchmark',
+      `${carbonLead >= 0 ? '−' : '+'}${Math.abs(carbonLead).toFixed(2)} kg`,
+      carbonLead >= 0 ? 'good' : 'bad',
+      carbonLead / 5);
+}
+
+function renderThermometer(traj) {
+  const cap = baselineData?.carbon_cap || 25;
+  const final = traj?.finalCarbon ?? 0;
+  const benchmarkFinal = baselineData?.counterfactuals?.benchmark?.final_carbon ?? null;
+  const hasModel = firstPlannedQuarter() >= 0;
+  const fillPct = Math.max(0, Math.min(100, (final / cap) * 100));
+  $('thermoFill').style.height = fillPct + '%';
+
+  // Cumulative for the entire run.
+  const runEl = $('thermoRun');
+  runEl.innerHTML = `${Number(final).toFixed(2)}<span class="unit">kg / ${cap}</span>`;
+  if (final > cap)             runEl.className = 'v bad';
+  else if (final > cap * 0.6)  runEl.className = 'v warn';
+  else                         runEl.className = 'v good';
+
+  // Just the selected quarter's contribution.
+  const qLabel = $('thermoQLabel');
+  const qVal = $('thermoQ');
+  qLabel.textContent = `This Quarter — Q${selectedQ + 1}`;
+  if (traj && hasModel) {
+    const c0 = traj.carbonSeries[selectedQ] || 0;
+    const c1 = traj.carbonSeries[selectedQ + 1] || c0;
+    const dq = c1 - c0;
+    qVal.innerHTML = `+${dq.toFixed(2)}<span class="unit">kg</span>`;
+    qVal.className = 'v';
+  } else {
+    qVal.innerHTML = `—<span class="unit">kg</span>`;
+    qVal.className = 'v';
+  }
+
+  const delta = $('carbonDelta');
+  if (hasModel && benchmarkFinal != null) {
+    const diff = final - benchmarkFinal;
+    if (diff <= 0) {
+      delta.textContent = `↓ ${Math.abs(diff).toFixed(2)} kg under benchmark`;
+      delta.className = 'delta good';
+    } else {
+      delta.textContent = `↑ ${diff.toFixed(2)} kg over benchmark`;
+      delta.className = 'delta bad';
+    }
+  } else if (benchmarkFinal != null) {
+    delta.textContent = `Benchmark would use ${benchmarkFinal.toFixed(2)} kg.`;
+    delta.className = 'delta';
+  } else {
+    delta.textContent = 'Awaiting plan.';
+    delta.className = 'delta';
+  }
+}
+
+function renderRibbon(traj) {
+  const benchmark = baselineData?.counterfactuals?.benchmark;
+  const cap = baselineData?.carbon_cap || 25;
+  const hasModel = firstPlannedQuarter() >= 0;
+  const planned = quarters.filter(q => q.action).length;
+  $('rbQ').textContent = `Q${selectedQ + 1} / 12`;
+  $('rbPlans').textContent = `${planned} / 12`;
+  if (!hasModel || !traj) {
+    ['rbReturn','rbLead','rbCarbon','rbCapPct','rbCarbonLead'].forEach(id => {
+      const el = $(id);
+      el.textContent = '—';
+      el.className = 'v';
+    });
+    return;
+  }
+  const ret = traj.realReturnPct;
+  const lead = ret - (benchmark?.real_return_pct ?? 0);
+  const carbon = traj.finalCarbon;
+  const carbonLead = (benchmark?.final_carbon ?? 0) - carbon;  // +ve = model emits less
+  const capPct = (carbon / cap) * 100;
+
+  const setVal = (id, text, sentiment) => {
+    const el = $(id);
+    el.textContent = text;
+    el.className = 'v ' + sentiment;
+  };
+  setVal('rbReturn', `${ret >= 0 ? '+' : ''}${ret.toFixed(2)}%`, ret >= 0 ? 'up' : 'down');
+  setVal('rbLead',   `${lead >= 0 ? '+' : ''}${lead.toFixed(2)}%`, lead >= 0 ? 'up' : 'down');
+  setVal('rbCarbon', `${carbon.toFixed(2)} kg`, traj.overCap ? 'down' : (capPct < 50 ? 'up' : 'warn'));
+  setVal('rbCapPct', `${capPct.toFixed(0)}%`, traj.overCap ? 'down' : (capPct < 50 ? 'up' : 'warn'));
+  setVal('rbCarbonLead', `${carbonLead >= 0 ? '−' : '+'}${Math.abs(carbonLead).toFixed(2)} kg`, carbonLead >= 0 ? 'up' : 'down');
+}
+
+function renderLevers(action) {
+  $('techBet').textContent = action?.tech_bet || '—';
+  $('infra').textContent = action?.infra_commit ? pct(action.infra_commit) : '—';
+  $('offsets').textContent = action?.carbon_offset_buy ? pct(action.carbon_offset_buy) : '—';
+  $('hedge').textContent = action?.put_hedge ? pct(action.put_hedge) : '—';
+}
+
+
+function renderVerdict(traj) {
+  const text = $('verdict');
+  const pills = $('verdictPills');
+  pills.innerHTML = '';
+  const benchmark = baselineData?.counterfactuals?.benchmark;
+  const win = baselineData?.backtest_window || 'the backtest window';
+  const hasModel = firstPlannedQuarter() >= 0;
+
+  if (!benchmark) {
+    text.innerHTML = 'Press <strong>Plan Portfolio</strong> to see how CarbonAlpha allocates against the equal-weight benchmark over 12 quarters.';
+    return;
+  }
+  if (!hasModel || !traj) {
+    text.innerHTML = `Benchmark over <strong>${win}</strong>: <strong>${benchmark.real_return_pct.toFixed(1)}%</strong> return · <strong>${benchmark.final_carbon.toFixed(1)} kg</strong> carbon. <span class="sage">Plan a quarter to add CarbonAlpha.</span>`;
+    return;
+  }
+  const ret = traj.realReturnPct;
+  const carbon = traj.finalCarbon;
+  const overCap = traj.overCap;
+  const retLead = ret - benchmark.real_return_pct;
+  const carbonLead = benchmark.final_carbon - carbon;
+
+  let line;
+  if (overCap) {
+    line = `<span class="clay">Carbon cap busted</span> at <strong>${carbon.toFixed(2)} kg</strong> / 25 kg. Portfolio return <strong>${ret.toFixed(2)}%</strong> vs benchmark ${benchmark.real_return_pct.toFixed(2)}%.`;
+  } else {
+    const retCls  = retLead >= 0 ? 'sage' : 'clay';
+    const carCls  = carbonLead >= 0 ? 'sage' : 'clay';
+    const retSign = retLead >= 0 ? '+' : '';
+    const carSign = carbonLead >= 0 ? '−' : '+';
+    line = `Portfolio return <strong>${ret.toFixed(2)}%</strong> <span class="${retCls}">(${retSign}${retLead.toFixed(2)}% vs benchmark)</span>. ` +
+           `Carbon <strong>${carbon.toFixed(2)} kg</strong> <span class="${carCls}">(${carSign}${Math.abs(carbonLead).toFixed(2)} kg vs benchmark)</span>.`;
+  }
+  text.innerHTML = line;
+
+  const mkPill = (label, cls = '') => {
+    const span = document.createElement('span');
+    span.className = 'pill' + (cls ? ' ' + cls : '');
+    span.textContent = label;
+    pills.appendChild(span);
+  };
+  const retCls = overCap ? 'bad' : (retLead >= 0 ? 'good' : 'warn');
+  const carCls = overCap ? 'bad' : (carbonLead >= 0 ? 'good' : 'warn');
+  mkPill(`return ${ret.toFixed(1)}%  ${retLead >= 0 ? '+' : ''}${retLead.toFixed(1)}`, retCls);
+  mkPill(`carbon ${carbon.toFixed(1)} kg`, carCls);
+}
+
+function renderReasoning(reasoning, completion, news) {
+  const el = $('reasoning');
+  if (reasoning) {
+    el.classList.remove('empty');
+    el.textContent = reasoning;
+    $('reasoningSub').textContent = `— ${reasoning.length} chars`;
+  } else if (completion) {
+    el.classList.remove('empty');
+    el.textContent = completion;
+    $('reasoningSub').textContent = '— raw completion';
+  } else {
+    el.classList.add('empty');
+    el.textContent = 'Plan a quarter and the model\'s macro-cycle reasoning will appear here.';
+    $('reasoningSub').textContent = '— pending';
+  }
+}
+
+function setComparison(trainedText, sftText, baseText) {
+  const tr = $('rawTrained');
+  const sf = $('rawSft');
+  const ba = $('rawBase');
+  if (trainedText) { tr.textContent = trainedText; tr.classList.remove('empty'); }
+  else { tr.textContent = 'Press Plan Portfolio. CarbonAlpha-GRPO streams here word-by-word.'; tr.classList.add('empty'); }
+  if (sftText) { sf.textContent = sftText; sf.classList.remove('empty'); }
+  else { sf.textContent = 'After GRPO finishes, the SFT-only adapter streams here.'; sf.classList.add('empty'); }
+  if (baseText) { ba.textContent = baseText; ba.classList.remove('empty'); }
+  else { ba.textContent = 'After SFT finishes, the base model streams here.'; ba.classList.add('empty'); }
+  setIndicator('trainedInd', trainedText ? 'done' : '');
+  setIndicator('sftInd', sftText ? 'done' : '');
+  setIndicator('baseInd', baseText ? 'done' : '');
+}
+
+function setIndicator(id, state) {
+  const el = $(id);
+  if (!el) return;
+  el.classList.remove('streaming', 'done');
+  if (state) el.classList.add(state);
+}
+
+const CRITERIA_ORDER = ['format', 'reasoning', 'allocation', 'carbon'];
+
+function resetJudge() {
+  $('judgeWho').textContent = '—';
+  $('judgeWho').className = 'who';
+  $('judgeConf').style.display = 'none';
+  $('judgeConfBar').style.display = 'none';
+  $('judgeConfFill').style.width = '0%';
+  $('judgeVerdictLine').textContent = 'DeepSeek will compare both responses once they finish streaming.';
+  $('judgeStream').innerHTML = 'Awaiting both model responses…';
+  $('judgeStream').classList.add('empty');
+  $('judgeModelLabel').textContent = '';
+  setIndicator('judgeInd', '');
+}
+
+// During streaming, just show a spinner + a char counter — the JSON
+// chars themselves aren't useful to display mid-flight.
+function renderJudgeProgress(charsReceived, modelLabel = '') {
+  const stream = $('judgeStream');
+  stream.classList.remove('empty');
+  stream.innerHTML = `
+    <div class="judge-loading">
+      <div class="spin"></div>
+      <div>
+        <div>DeepSeek analysing…${modelLabel ? ' <span style="color:var(--text-soft)">' + modelLabel + '</span>' : ''}</div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:3px;letter-spacing:0.06em;">
+          ${charsReceived} chars received · enforced JSON schema
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function safeJsonParse(text) {
+  // Strip code fences / leading prose if any provider misbehaves.
+  let t = (text || '').trim();
+  if (t.startsWith('```')) {
+    t = t.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '');
+  }
+  // Find first { … last } slice as a recovery hack.
+  const first = t.indexOf('{');
+  const last = t.lastIndexOf('}');
+  if (first >= 0 && last > first) t = t.slice(first, last + 1);
+  try { return JSON.parse(t); } catch (_) { return null; }
+}
+
+function clampScore(n) {
+  const x = Math.max(0, Math.min(10, Number(n) || 0));
+  return Math.round(x);
+}
+function clampConf(n) {
+  const x = Math.max(0, Math.min(100, Number(n) || 0));
+  return Math.round(x);
+}
+
+function renderJudgeFromJson(text, modelLabel = '') {
+  const obj = safeJsonParse(text);
+  if (!obj) {
+    const stream = $('judgeStream');
+    stream.classList.remove('empty');
+    stream.innerHTML = `<div style="color:var(--clay);font-style:italic;margin-bottom:6px;">Judge returned non-JSON; showing raw output.</div><pre style="white-space:pre-wrap;font-size:11px;color:var(--text-soft);margin:0;">${(text || '').replace(/[<&]/g, c => c === '<' ? '&lt;' : '&amp;')}</pre>`;
+    return;
+  }
+  renderJudgeStructured(obj, modelLabel);
+}
+
+function renderJudgeStructured(obj, modelLabel = '') {
+  // Verdict card
+  const winner = (obj.winner || 'TIE').toString().toUpperCase();
+  const safeWinner = ['A', 'B', 'C', 'TIE'].includes(winner) ? winner : 'TIE';
+  $('judgeWho').textContent = safeWinner === 'A' ? 'A · GRPO'
+                            : safeWinner === 'B' ? 'B · SFT'
+                            : safeWinner === 'C' ? 'C · base'
+                            : 'TIE';
+  $('judgeWho').className = 'who ' + safeWinner;
+  $('judgeVerdictLine').textContent = (obj.verdict || '').trim() || '—';
+  if (obj.confidence != null) {
+    const conf = clampConf(obj.confidence);
+    $('judgeConf').style.display = '';
+    $('judgeConfBar').style.display = '';
+    $('judgeConfNum').textContent = `${conf}`;
+    $('judgeConfFill').style.width = `${conf}%`;
+  }
+
+  // Criteria block
+  const stream = $('judgeStream');
+  stream.classList.remove('empty');
+  stream.innerHTML = '';
+  const grid = document.createElement('div');
+  grid.className = 'judge-criteria';
+  CRITERIA_ORDER.forEach(key => {
+    const c = (obj.criteria || {})[key] || {};
+    const pick = (c.pick || 'TIE').toString().toUpperCase();
+    const safePick = ['A', 'B', 'C', 'TIE'].includes(pick) ? pick : 'TIE';
+    const sa = clampScore(c.score_a);
+    const sb = clampScore(c.score_b);
+    const sc = clampScore(c.score_c);
+    const reason = (c.reason || '').toString().trim();
+
+    const row = document.createElement('div');
+    row.className = 'judge-criterion';
+    row.innerHTML = `
+      <div class="cri-head">
+        <span class="cri-key">${key}</span>
+        <span class="pick ${safePick}">${safePick}</span>
+      </div>
+      <div class="cri-body">
+        <div class="score-row a">
+          <span class="who">A · GRPO</span>
+          <span class="score-bar"><span class="fill" style="width:${sa * 10}%"></span></span>
+          <span class="num">${sa}/10</span>
+        </div>
+        <div class="score-row b">
+          <span class="who">B · SFT</span>
+          <span class="score-bar"><span class="fill" style="width:${sb * 10}%"></span></span>
+          <span class="num">${sb}/10</span>
+        </div>
+        <div class="score-row c">
+          <span class="who">C · base</span>
+          <span class="score-bar"><span class="fill" style="width:${sc * 10}%"></span></span>
+          <span class="num">${sc}/10</span>
+        </div>
+        <div class="cri-reason">${reason || '—'}</div>
+      </div>
+    `;
+    grid.appendChild(row);
+  });
+  stream.appendChild(grid);
+}
+
+// Append a chunk of streamed text as one or more inline spans so the
+// word-in animation can fire per word/whitespace block.
+function appendStreamedChunk(targetEl, chunk) {
+  targetEl.classList.remove('empty');
+  // Split into word + whitespace segments so each visible word gets its own span.
+  const parts = chunk.split(/(\s+)/);
+  for (const p of parts) {
+    if (!p) continue;
+    const span = document.createElement('span');
+    span.className = 'streamed-word';
+    span.textContent = p;
+    targetEl.appendChild(span);
+  }
+  targetEl.scrollTop = targetEl.scrollHeight;
+}
+
+function renderAll() {
+  const traj = computeCombinedTrajectory();
+  renderNavChart(traj);
+  renderCarbonChart(traj);
+  renderAllocation();
+  renderThermometer(traj);
+  renderRewardBreakdown(traj);
+  renderLevers(effectiveAction(selectedQ));
+  renderVerdict(traj);
+  renderRibbon(traj);
+  renderQuarterStrip();
+}
+
+// ───────── Networking ─────────
+async function loadBaselines() {
+  try {
+    const res = await fetch('/api/baselines');
+    if (!res.ok) throw new Error(await res.text());
+    const b = await res.json();
+    baselineData = {
+      counterfactuals: b.counterfactuals,
+      etf_tickers: b.etf_tickers,
+      backtest_window: b.backtest_window,
+      carbon_cap: b.carbon_cap,
+      quarterly_returns_pct: b.quarterly_returns_pct,
+      carbon_intensity: b.carbon_intensity,
+      preview_attribution_by_asset: b.preview_attribution?.cumulative_by_asset
+        || Object.fromEntries(ASSET_ORDER.map(a => [a, Array(13).fill(0)])),
+    };
+  } catch (e) {
+    console.warn('baselines load failed:', e);
+  }
+}
+
+async function seedQuartersWithNews() {
+  // Pre-fill all 12 quarter slots with 12 unique random headlines from the pool.
+  try {
+    const res = await fetch('/api/random-news-batch?n=12');
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    data.items.forEach((item, i) => {
+      if (i < 12) quarters[i].news = item.news;
+    });
+    $('status').textContent = `Loaded 12 unique headlines from the pool of ${data.pool_size}.`;
+    $('status').className = 'status-line';
+  } catch (e) {
+    $('status').textContent = `Couldn't seed headlines: ${e.message}`;
+    $('status').className = 'status-line error';
+  }
+}
+
+async function shuffleNews() {
+  // Replace ONLY the currently selected quarter's headline with a fresh one.
+  try {
+    const res = await fetch('/api/random-news');
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    quarters[selectedQ].news = data.news;
+    quarters[selectedQ].dirty = true;
+    $('news').value = data.news;
+    $('status').textContent = `Q${selectedQ + 1}: new headline ${data.index + 1} of ${data.pool_size}.`;
+    $('status').className = 'status-line';
+    renderQuarterStrip();
+  } catch (e) {
+    $('status').textContent = `Couldn't load a fresh headline: ${e.message}`;
+    $('status').className = 'status-line error';
+  }
+}
+
+async function planQuarter() {
+  if (isPlanning) return;
+  quarters[selectedQ].news = $('news').value;
+  isPlanning = true;
+  $('plan').disabled = true;
+  $('shuffle').disabled = true;
+  showLoader('Planning portfolio…', `CarbonAlpha is reasoning across the 12-quarter horizon from Q${selectedQ + 1}.`);
+  $('status').textContent = `CarbonAlpha is planning the portfolio from Q${selectedQ + 1}…`;
+  $('status').className = 'status-line';
+
+  // Reset streaming displays for this run.
+  const reasonEl = $('reasoning');
+  reasonEl.classList.remove('empty', 'completed');
+  reasonEl.textContent = '';
+  $('reasoningSub').textContent = '— streaming…';
+  $('rawTrained').textContent = ''; $('rawTrained').classList.remove('empty');
+  $('rawSft').textContent = '';     $('rawSft').classList.remove('empty');
+  $('rawBase').textContent = '';    $('rawBase').classList.remove('empty');
+  setIndicator('trainedInd', 'streaming');
+  setIndicator('sftInd', '');
+  setIndicator('baseInd', '');
+
+  let trainedFull = '';
+  let sftFull = '';
+  let baseFull = '';
+  let judgeFull = '';
+  let inThink = false;
+  resetJudge();
+
+  try {
+    const res = await fetch('/api/plan-stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ news: quarters[selectedQ].news }),
+    });
+    if (!res.ok) throw new Error(await res.text());
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const events = buffer.split('\n\n');
+      buffer = events.pop();
+      for (const evt of events) {
+        if (!evt.startsWith('data:')) continue;
+        const raw = evt.replace(/^data:\s*/, '');
+        let data;
+        try { data = JSON.parse(raw); } catch (_) { continue; }
+        await handleStreamEvent(data, {
+          reasonEl,
+          getTrained: () => trainedFull, addTrained: t => { trainedFull += t; },
+          getSft:     () => sftFull,     addSft:     t => { sftFull += t; },
+          getBase:    () => baseFull,    addBase:    t => { baseFull += t; },
+          getJudge:   () => judgeFull,   addJudge:   t => { judgeFull += t; },
+          getInThink: () => inThink,     setInThink: v => { inThink = v; },
+        });
+      }
+    }
+  } catch (e) {
+    $('status').textContent = 'Stream failed: ' + e.message;
+    $('status').className = 'status-line error';
+    setIndicator('trainedInd', '');
+    setIndicator('baseInd', '');
+  } finally {
+    hideLoader();
+    isPlanning = false;
+    $('plan').disabled = false;
+    $('shuffle').disabled = false;
+  }
+}
+
+async function handleStreamEvent(data, ctx) {
+  switch (data.phase) {
+    case 'trained_start':
+      // Reasoning panel starts empty; we'll only push words while inside <think>.
+      break;
+
+    case 'trained_token': {
+      ctx.addTrained(data.token);
+      // Stream raw to the comparison panel as raw text (no animation there).
+      $('rawTrained').textContent += data.token;
+      $('rawTrained').scrollTop = $('rawTrained').scrollHeight;
+      // Detect <think>…</think> boundaries on the running buffer and
+      // animate only the inner text into the reasoning panel.
+      const full = ctx.getTrained();
+      // Decide what to show: parse out current <think> contents.
+      const m = full.match(/<think>([\s\S]*?)(<\/think>|$)/);
+      if (m) {
+        const innerSoFar = m[1];
+        const reasonEl = ctx.reasonEl;
+        // What's already rendered (innerText excluding hidden chars).
+        const rendered = reasonEl.textContent;
+        if (innerSoFar.length > rendered.length) {
+          const newPart = innerSoFar.slice(rendered.length);
+          appendStreamedChunk(reasonEl, newPart);
+        }
+      }
+      break;
+    }
+
+    case 'trained_done': {
+      // Hide loader as soon as CarbonAlpha is done — base model continues in background.
+      hideLoader();
+      setIndicator('trainedInd', 'done');
+      $('reasoningSub').textContent = `— ${(data.reasoning || '').length} chars`;
+      // Pulse the reasoning section to mark completion.
+      const reasonEl = ctx.reasonEl;
+      reasonEl.classList.add('completed');
+      setTimeout(() => reasonEl.classList.remove('completed'), 1200);
+
+      // Persist for this quarter and re-render charts.
+      quarters[selectedQ].action = data.action;
+      quarters[selectedQ].reasoning = data.reasoning || '';
+      quarters[selectedQ].completion = data.completion || '';
+      quarters[selectedQ].dirty = false;
+      renderReasoning(data.reasoning, data.completion, data.news);
+      $('rawTrained').textContent = data.completion || '';
+      $('newsHelpers').hidden = true;
+      renderAll();
+      $('status').textContent = `Plan locked. Now streaming base Qwen 2.5 7B Instruct for comparison…`;
+      $('status').className = 'status-line';
+      break;
+    }
+
+    case 'sft_start':
+      setIndicator('sftInd', 'streaming');
+      break;
+
+    case 'sft_token':
+      ctx.addSft(data.token);
+      $('rawSft').textContent += data.token;
+      $('rawSft').scrollTop = $('rawSft').scrollHeight;
+      break;
+
+    case 'sft_done':
+      setIndicator('sftInd', 'done');
+      $('rawSft').textContent = data.completion || $('rawSft').textContent;
+      quarters[selectedQ].sftCompletion = data.completion || '';
+      break;
+
+    case 'sft_unavailable':
+      setIndicator('sftInd', '');
+      $('rawSft').textContent = 'SFT adapter not loaded on this Space (set SFT_SUBFOLDER env var to enable).';
+      $('rawSft').classList.add('empty');
+      break;
+
+    case 'base_start':
+      setIndicator('baseInd', 'streaming');
+      break;
+
+    case 'base_token':
+      ctx.addBase(data.token);
+      $('rawBase').textContent += data.token;
+      $('rawBase').scrollTop = $('rawBase').scrollHeight;
+      break;
+
+    case 'base_done':
+      setIndicator('baseInd', 'done');
+      $('rawBase').textContent = data.completion || $('rawBase').textContent;
+      quarters[selectedQ].baseCompletion = data.completion || '';
+      $('status').textContent = `All three responses in. Calling DeepSeek as the judge…`;
+      $('status').className = 'status-line';
+      break;
+
+    case 'judge_start':
+      setIndicator('judgeInd', 'streaming');
+      $('judgeModelLabel').textContent = data.model ? `· ${data.model}` : '';
+      renderJudgeProgress(0, data.model || '');
+      break;
+
+    case 'judge_retry':
+      // A model in the fallback chain failed; the server is trying the next one.
+      $('judgeModelLabel').textContent = `· retrying (last attempt: ${data.model || 'unknown'})`;
+      renderJudgeProgress(0, `retrying after ${data.model || 'unknown'}…`);
+      break;
+
+    case 'judge_token':
+      ctx.addJudge(data.token);
+      renderJudgeProgress((ctx.getJudge() || '').length, data.model || $('judgeModelLabel').textContent);
+      break;
+
+    case 'judge_done':
+      setIndicator('judgeInd', 'done');
+      quarters[selectedQ].judgeCompletion = data.completion || '';
+      quarters[selectedQ].judgeModel = data.model || '';
+      quarters[selectedQ].judgeParsed = data.parsed || null;
+      // Server-side parsed object preferred; raw completion is a safety net.
+      if (data.parsed) {
+        renderJudgeStructured(data.parsed, data.model || '');
+      } else {
+        renderJudgeFromJson(data.completion || ctx.getJudge(), data.model || '');
+      }
+      $('status').textContent = `Verdict in from ${data.model || 'judge'}.`;
+      $('status').className = 'status-line';
+      break;
+
+    case 'judge_error':
+      setIndicator('judgeInd', '');
+      $('judgeStream').textContent = `Judge unavailable: ${data.error || 'unknown error'}`;
+      $('judgeStream').classList.remove('empty');
+      $('status').textContent = `Judge call failed — comparison still loaded.`;
+      $('status').className = 'status-line error';
+      break;
+
+    case 'error':
+      $('status').textContent = 'Model error: ' + (data.error || 'unknown');
+      $('status').className = 'status-line error';
+      setIndicator('trainedInd', '');
+      setIndicator('baseInd', '');
+      hideLoader();
+      break;
+  }
+}
+
+$('plan').onclick = planQuarter;
+$('shuffle').onclick = shuffleNews;
+$('exportBtn').onclick = exportRun;
+
+function exportRun() {
+  // Snapshot the live in-flight news edit too.
+  if (selectedQ >= 0) quarters[selectedQ].news = $('news').value;
+
+  const traj = computeCombinedTrajectory();
+  const benchmark = baselineData?.counterfactuals?.benchmark || null;
+
+  const payload = {
+    schema_version: 1,
+    exported_at: new Date().toISOString(),
+    backtest_window: baselineData?.backtest_window || null,
+    carbon_cap_kg: baselineData?.carbon_cap || 25,
+    etf_tickers: baselineData?.etf_tickers || null,
+    quarterly_returns_pct: baselineData?.quarterly_returns_pct || null,
+    selected_quarter: selectedQ + 1,
+    quarters: quarters.map((q, i) => ({
+      q: i + 1,
+      news: q.news || '',
+      directly_planned: !!q.action,
+      effective_action: effectiveAction(i) || null,
+      reasoning: q.reasoning || '',
+      grpo_completion: q.completion || '',
+      sft_completion: q.sftCompletion || '',
+      base_completion: q.baseCompletion || '',
+      judge: (q.judgeCompletion || q.judgeParsed) ? {
+        model: q.judgeModel || null,
+        completion: q.judgeCompletion || '',
+        parsed: q.judgeParsed || null,
+      } : null,
+    })),
+    combined_trajectory: traj ? {
+      nav_real: traj.navSeries,
+      carbon_kg: traj.carbonSeries,
+      carbon_by_asset_kg: traj.carbonByAsset,
+      final_nav_real: traj.finalNav,
+      final_carbon_kg: traj.finalCarbon,
+      real_return_pct: traj.realReturnPct,
+      over_cap: traj.overCap,
+    } : null,
+    benchmark: benchmark ? {
+      label: benchmark.label || 'Benchmark',
+      nav_real: benchmark.nav_real,
+      carbon_kg: benchmark.carbon,
+      final_nav_real: benchmark.final_nav_real,
+      final_carbon_kg: benchmark.final_carbon,
+      real_return_pct: benchmark.real_return_pct,
+    } : null,
+  };
+
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const planned = quarters.filter(q => q.action).length;
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `carbonalpha-run_${ts}_q${planned}of12.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+  $('status').textContent = `Exported ${planned}/12 planned quarters → ${a.download}`;
+  $('status').className = 'status-line';
+}
+$('genNewsLink').onclick = (e) => { e.preventDefault(); shuffleNews(); };
+$('writeOwnLink').onclick = (e) => {
+  e.preventDefault();
+  $('news').value = '';
+  quarters[selectedQ].news = '';
+  quarters[selectedQ].dirty = true;
+  $('news').focus();
+  $('status').textContent = `Q${selectedQ + 1}: write a custom scenario, then press Plan Portfolio.`;
+  $('status').className = 'status-line';
+  renderQuarterStrip();
+};
+// Save edits back to the per-quarter slot as the user types.
+$('news').addEventListener('input', () => {
+  quarters[selectedQ].news = $('news').value;
+  if (quarters[selectedQ].action) {
+    // Edit on a planned quarter — flag as dirty so the cell shows it.
+    quarters[selectedQ].dirty = true;
+    renderQuarterStrip();
+  }
+});
+
+// Boot: load baselines + 12 unique headlines in parallel, then render.
+Promise.all([loadBaselines(), seedQuartersWithNews()]).then(() => {
+  selectQuarter(0);
+  renderAll();
+});
+</script>
+</body>
+</html>

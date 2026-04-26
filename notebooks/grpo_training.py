@@ -50,9 +50,9 @@ from portfolio_env.constants import (
 # Config
 # ══════════════════════════════════════════════════════════════════════
 
-MODEL_NAME = 'unsloth/Qwen3-4B-Instruct-2507-unsloth-bnb-4bit'
+MODEL_NAME = 'unsloth/Qwen3-4B-Instruct-2507'
 MAX_SEQ_LEN = 4096
-OUTPUT_DIR = Path('/workspace/checkpoints')
+OUTPUT_DIR = Path(os.environ.get('CARBON_ALPHA_OUTPUT_DIR', '/workspace/checkpoints'))
 
 PHASE_CONFIG = {
     1: dict(
@@ -226,7 +226,8 @@ def run_sft_warmstart(model, tokenizer, sft_path: Path, max_steps: int = 150):
         save_strategy='steps',
         save_steps=max_steps,         # one save at end so we can inspect adapters
         save_total_limit=1,
-        bf16=False, fp16=True,        # align with Unsloth LoRA kernel autocast
+        bf16=is_bfloat16_supported(),
+        fp16=not is_bfloat16_supported(),
         dataset_text_field='text',
         max_length=MAX_SEQ_LEN,
     )
@@ -274,7 +275,9 @@ def run_grpo_phase(model, tokenizer, phase: int):
         top_p=0.95,
         loss_type='dapo',              # v1.0 default but explicit for clarity
         beta=0.0,                      # KL-free (DAPO / R1-Zero)
-        bf16=False, fp16=True,         # align with Unsloth LoRA kernel autocast
+        bf16=is_bfloat16_supported(),
+        fp16=not is_bfloat16_supported(),
+        use_vllm=True,                 # rollout via vLLM (Unsloth canonical)
     )
 
     FastLanguageModel.for_training(model)
@@ -349,32 +352,29 @@ def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     print(f'Loading {MODEL_NAME}...')
-    # Use fp16 (Half) throughout — Unsloth's fast LoRA kernel wraps every
-    # call in torch.amp.autocast.decorate_fwd which allocates Half buffers
-    # for the matmul. With bf16 LoRA adapters, this caused a hard crash:
-    #   "self and mat2 must have the same dtype, but got Half and BFloat16"
-    # on Phase 1 GRPO iter 0 across multiple checkpointing variants.
-    # Going fp16 everywhere aligns with what autocast wants.
-    model, tokenizer = FastLanguageModel.from_pretrained(
+    # vLLM is only needed for GRPO rollout. SFT-only mode skips it entirely
+    # — vllm 0.19.x has a torch.compile bug (split_graph: "Tried to erase
+    # Node size_1 but it still had 2 users") that fires before SFT/GRPO can
+    # even start. Conditional load_args avoids the init unless we'll use it.
+    use_vllm_for_rollout = args.phase != 'sft-only'
+    load_kwargs = dict(
         model_name=MODEL_NAME,
         max_seq_length=MAX_SEQ_LEN,
-        load_in_4bit=True,
-        dtype=torch.float16,
+        load_in_4bit=False,                  # Unsloth GRPO recipe uses 16-bit LoRA
     )
-    # Add LoRA adapters for efficient training.
-    # use_gradient_checkpointing=False (was 'unsloth') — Unsloth's variant
-    # wraps the kernel in autocast that allocates Half (fp16) output buffers
-    # while the bf16 LoRA adapters cause dtype-mismatch crashes during
-    # GRPO's rollout forward passes on Blackwell. We have VRAM headroom
-    # (4B model = 4GB, pod has 32GB+), so disabling checkpointing is fine.
+    if use_vllm_for_rollout:
+        load_kwargs['fast_inference'] = True
+        load_kwargs['max_lora_rank'] = 16
+        load_kwargs['gpu_memory_utilization'] = 0.9   # Unsloth recipe default
+    model, tokenizer = FastLanguageModel.from_pretrained(**load_kwargs)
     model = FastLanguageModel.get_peft_model(
         model,
-        r=16, lora_alpha=16,
+        r=16, lora_alpha=16,                 # alpha=r (1x scaling); alpha=2r overshot SFT
         target_modules=['q_proj', 'k_proj', 'v_proj', 'o_proj',
                         'gate_proj', 'up_proj', 'down_proj'],
         lora_dropout=0.0,
         bias='none',
-        use_gradient_checkpointing=False,
+        use_gradient_checkpointing=False,    # avoids autocast dtype issues with vLLM model load
         random_state=42,
     )
     print(f'VRAM allocated: {torch.cuda.memory_allocated()/1e9:.2f} GB')
@@ -388,7 +388,9 @@ def main():
 
     # GRPO phases
     if args.phase == 'sft-only':
-        print('SFT-only mode. Done.')
+        sft_only_path = OUTPUT_DIR / 'final_merged'
+        model.save_pretrained_merged(str(sft_only_path), tokenizer, save_method='lora')
+        print(f'SFT-only mode. Saved LoRA adapters to {sft_only_path}')
         return
     if args.phase == 'all':
         phases = [1, 2, 3]
