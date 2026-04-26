@@ -381,6 +381,17 @@
       padding: 12px 14px;
       display: grid;
       gap: 6px;
+      animation: news-glow 3.4s ease-in-out infinite;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .news-band .news-input:focus-within {
+      animation: none;
+      border-color: rgba(139,168,136,0.55);
+      box-shadow: 0 0 14px rgba(139,168,136,0.22);
+    }
+    @keyframes news-glow {
+      0%, 100% { box-shadow: 0 0 6px rgba(139,168,136,0.06);  border-color: var(--line); }
+      50%      { box-shadow: 0 0 14px rgba(139,168,136,0.18); border-color: rgba(139,168,136,0.30); }
     }
     .news-input label {
       font-family: var(--font-mono);
@@ -685,8 +696,49 @@
       grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.05fr) minmax(0, 1.05fr);
       gap: 12px;
     }
-    .chart-box { height: 248px; }
+    .chart-box { height: 248px; position: relative; }
     canvas { width: 100% !important; height: 100% !important; }
+
+    /* Skeleton/shimmer for chart-box and alloc-block while baselines fetch. */
+    .is-loading { position: relative; pointer-events: none; min-height: 100px; }
+    .is-loading > * { visibility: hidden; }
+    .is-loading::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent 0%, rgba(214,201,168,0.10) 50%, transparent 100%) 0 0 / 200% 100% no-repeat,
+        var(--panel-3);
+      border: 1px dashed var(--line-2);
+      border-radius: 4px;
+      animation: skeleton-shimmer 1.4s ease-in-out infinite;
+      z-index: 1;
+      transition: opacity 0.35s ease;
+    }
+    .is-loading::after {
+      content: 'Loading…';
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      z-index: 2;
+      animation: skeleton-pulse 1.2s ease-in-out infinite;
+      transition: opacity 0.35s ease;
+    }
+    .is-loading.fading::before, .is-loading.fading::after { opacity: 0; }
+    @keyframes skeleton-shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    @keyframes skeleton-pulse {
+      0%, 100% { opacity: 0.45; }
+      50%      { opacity: 1; }
+    }
     .legend-strip {
       display: flex;
       gap: 12px;
@@ -1202,7 +1254,7 @@
     <section class="charts-row">
       <div class="panel">
         <h2>Locked Allocation <span class="sub" id="allocSub">— no plan yet</span></h2>
-        <div id="allocBlock" class="alloc-block">
+        <div id="allocBlock" class="alloc-block is-loading">
           <div class="ring-wrap">
             <canvas id="allocPie"></canvas>
             <div class="ring-center">
@@ -1217,12 +1269,12 @@
       <div class="panel">
         <h2 id="carbonTitle">Portfolio Carbon vs Benchmark <span class="sub">— cumulative kg</span></h2>
         <div class="legend-strip" id="carbonLegend"></div>
-        <div class="chart-box"><canvas id="carbonChart"></canvas></div>
+        <div class="chart-box is-loading"><canvas id="carbonChart"></canvas></div>
       </div>
       <div class="panel">
         <h2>Portfolio Value as per last 3 years Historical Equal-Weighted Benchmark <span class="sub" id="navSub"></span></h2>
         <div class="legend-strip" id="navLegend"></div>
-        <div class="chart-box"><canvas id="navChart"></canvas></div>
+        <div class="chart-box is-loading"><canvas id="navChart"></canvas></div>
         <div class="nav-disclaimer">*Portfolio performance on historical benchmark is not a guarantee of future performance.</div>
       </div>
     </section>
@@ -1594,6 +1646,19 @@ function resetLoaderSteps() {
   setLoaderStep('grpo', 'pending');
   setLoaderStep('sft',  'pending');
   setLoaderStep('base', 'pending');
+}
+
+// ───────── Chart skeleton helpers (used both at boot and during planning) ─────────
+function showChartSkeletons() {
+  document.querySelectorAll('#allocBlock, .chart-box').forEach(el => {
+    el.classList.remove('fading');
+    el.classList.add('is-loading');
+  });
+}
+function hideChartSkeletons() {
+  const els = document.querySelectorAll('.is-loading');
+  els.forEach(el => el.classList.add('fading'));
+  setTimeout(() => els.forEach(el => el.classList.remove('is-loading', 'fading')), 360);
 }
 
 // ───────── Render ─────────
@@ -2178,6 +2243,8 @@ async function planQuarter() {
   $('shuffle').disabled = true;
   resetLoaderSteps();
   showLoader('Planning portfolio…', `Same headline through three models — running from Q${selectedQ + 1}.`);
+  // Show the chart skeletons while CarbonAlpha reasons. They lift on trained_done.
+  showChartSkeletons();
   $('status').textContent = `CarbonAlpha is planning the portfolio from Q${selectedQ + 1}…`;
   $('status').className = 'status-line';
 
@@ -2235,6 +2302,7 @@ async function planQuarter() {
     $('status').className = 'status-line error';
     setIndicator('trainedInd', '');
     setIndicator('baseInd', '');
+    hideChartSkeletons();
   } finally {
     hideLoader();
     isPlanning = false;
@@ -2294,6 +2362,8 @@ async function handleStreamEvent(data, ctx) {
       $('rawTrained').textContent = data.completion || '';
       updateNewsHelperVisibility();
       renderAll();
+      // Charts have fresh data — fade the skeletons out.
+      hideChartSkeletons();
       $('status').textContent = `GRPO locked. Now streaming SFT for the comparison…`;
       $('status').className = 'status-line';
       break;
@@ -2349,6 +2419,7 @@ async function handleStreamEvent(data, ctx) {
       setIndicator('trainedInd', '');
       setIndicator('baseInd', '');
       hideLoader();
+      hideChartSkeletons();
       break;
   }
 }
@@ -2507,8 +2578,17 @@ $('news').addEventListener('input', () => {
 });
 
 // Boot: load baselines + 12 unique headlines + 2 suggestion samples, then render.
+// Skeleton stays visible for at least MIN_SKELETON_MS so the load → reveal
+// transition reads smoothly even on a warm Space where the fetch takes <100ms.
+const MIN_SKELETON_MS = 700;
+const _bootStart = performance.now();
 Promise.all([loadBaselines(), seedQuartersWithNews(), fetchSuggestionPair()]).then(() => {
-  selectQuarter(0);
+  const elapsed = performance.now() - _bootStart;
+  const wait = Math.max(0, MIN_SKELETON_MS - elapsed);
+  setTimeout(() => {
+    hideChartSkeletons();
+    selectQuarter(0);
+  }, wait);
   renderAll();
 });
 </script>
