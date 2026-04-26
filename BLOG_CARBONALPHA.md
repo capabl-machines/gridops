@@ -545,6 +545,10 @@ The demo is designed to make the training delta visible.
 
 You can choose or edit a macro headline, then click **Plan Portfolio**. CarbonAlpha reasons live and produces an allocation.
 
+![Live CarbonAlpha demo dashboard showing a Q7 macro headline, model reasoning, locked allocation, carbon timeline, NAV versus benchmark, and reward breakdown](assets/blog/carbonalpha-demo-live-screenshot.jpg)
+
+*A live demo run: the user edits a quarter headline, replans from that point, and watches the allocation, carbon path, NAV, and reward components update together.*
+
 The interface shows:
 
 - model reasoning;
