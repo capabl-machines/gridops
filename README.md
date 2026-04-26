@@ -17,7 +17,8 @@ An OpenEnv environment that trains LLMs to reason about **competing constraints 
 | 2 | OpenEnv `Environment` base class + `openenv.yaml` | [portfolio_env/env.py](portfolio_env/env.py) (PortfolioEnv inherits from `openenv.core.env_server.interfaces.Environment`) · [openenv.yaml](openenv.yaml) |
 | 3 | Loss curve + reward curve as committed PNGs | [assets/loss_curve.png](assets/loss_curve.png) · [assets/reward_curve.png](assets/reward_curve.png) |
 | 4 | Runnable training script (Colab preferred) | [Open final Colab](https://colab.research.google.com/github/capabl-machines/gridops/blob/round-2/notebooks/carbonalpha_final_pipeline.ipynb) · [notebooks/carbonalpha_final_pipeline.ipynb](notebooks/carbonalpha_final_pipeline.ipynb) |
-| 5 | README with inline plots + every-deliverable links | this file |
+| 5 | Short writeup / mini-blog | [BLOG_CARBONALPHA.md](BLOG_CARBONALPHA.md) |
+| 6 | README with inline plots + every-deliverable links | this file |
 
 ### Loss curve
 
@@ -43,6 +44,7 @@ A 12-quarter (3-year bull-bear cycle) portfolio environment where the LLM reads 
 | Path | What it is |
 |---|---|
 | **[MASTER_UNDERSTANDING.md](MASTER_UNDERSTANDING.md)** | **Read this first.** Single canonical narrative — what we're building in OpenEnv terms + every design decision with its rationale |
+| [BLOG_CARBONALPHA.md](BLOG_CARBONALPHA.md) | Submission mini-blog: problem, environment, dataset curriculum, GRPO, evals |
 | [MODEL_CARD.md](MODEL_CARD.md) | Model lineage, real training evidence, plots, metrics, limitations |
 | [portfolio_env/](portfolio_env/) | The OpenEnv package |
 | └── [env.py](portfolio_env/env.py) | `PortfolioEnv(Environment)` — reset/step/state/get_metadata |
@@ -142,28 +144,30 @@ Per FAQ #57 ("don't optimize a reward you haven't tried to break yourself first"
 
 After fixes, no degenerate policy beats the equal-weighted baseline. Concentration policies (`all_tech`, +0.08) marginally beat baseline because TECH has highest base return — this is the **target** for the trained agent, not a bug.
 
-### 3. Empirical model selection on the Blackwell pod
-Tested Qwen3-4B-Thinking-2507 vs Qwen3-4B-Instruct-2507 on RTX 5090. Thinking variant generated 2000+ tokens of reasoning before ever closing `</think>` — token budget overshoots, JSON never emitted. Instruct variant responds to explicit `<think>...</think>` prompting and is bounded. Locked Instruct.
+### 3. Model selection became empirical, not ideological
+We tried multiple branches. Qwen3/vLLM GRPO matched the official-looking recipe, but rollout health failed repeatedly: one-token completions, zero reward variance, and no useful policy learning. Qwen3-4B-Base later passed a smoke run, but did not beat the Qwen2.5 result.
 
-### 4. SFT format mismatch caused 0/5 holdout valid on first try
-Initial SFT on plain `prompt + '\n' + completion` text → 0/5 valid completions on holdout. Root cause: training-eval format mismatch — eval used `tokenizer.apply_chat_template([{role: user, ...}])` which produces `<|im_start|>user ... <|im_end|><|im_start|>assistant`, but training never saw that structure. Fixed by pre-applying chat template to text field. SFT v3: 3.94 → 1.46 loss, **3/5 holdout valid with mean regret +0.020**.
+The best validated lineage is Qwen2.5-7B-Instruct: SFT on the 400-trace curriculum, then 100 Phase-1 GRPO steps from that adapter.
+
+### 4. Prompt/template alignment was non-negotiable
+Early SFT runs taught us that prompt mismatch is enough to destroy validity. The model must see the same schema during trace generation, SFT, GRPO, holdout eval, and demo inference. `portfolio_env/prompt.py` became the single source of truth.
 
 ---
 
 ## Demo arc (silent + captions, 2 min)
 
-1. **0:00–0:20** *"LLMs pattern-match when signals are clear. They fail when objectives conflict and shocks are ambiguous. We trained past that."*
-2. **0:20–0:45** Untrained Qwen3-4B-Instruct on a 12-quarter episode. Q3 hurricane → dumps OIL (wrong). Q6 rare-earth → buys GREEN (wrong). Q7 stagflation → piles into BONDS (real return -2.5%/yr). Final NAV: -12%.
-3. **0:45–1:15** GRPO-trained model on identical seed. `<think>` streams. Q3 keeps OIL citing supply chain. Q6 sees rare-earth → GREEN supply collapse before buying. Q7 stagflation rotates into OIL + REAL_ESTATE. Final NAV: +18%.
-4. **1:15–1:40** *"Real returns matter. The trained model read 'PCE core 5.8%' and rotated. That's economic reasoning, not pattern matching."*
-5. **1:40–2:00** All 5 reward curves rising over training. Carbon respected. Hold-out eval: trained beats baseline. *"48 hours. Single GPU. Open-source env."*
+1. **0:00–0:20** *"Carbon-aware investing is not just prefer-green. It is macro reasoning under a hard carbon budget."*
+2. **0:20–0:45** Pick a macro headline. Show base Qwen producing plausible prose but weaker/noisier allocation behavior.
+3. **0:45–1:15** Run the GRPO model. `<think>` streams, then the model emits valid JSON weights and interventions.
+4. **1:15–1:40** Advance the environment. NAV vs benchmark, carbon budget, and reward breakdown update quarter by quarter.
+5. **1:40–2:00** Show evidence: 100-step GRPO loss/reward plots, 5/5 holdout valid, mean regret `+0.1058`, beats baseline on 5/5 seeds.
 
 ---
 
 ## Acknowledgments
 
-- **Unsloth team** — Advanced Qwen3 4B GRPO recipe (§59.1)
-- **Hugging Face TRL v1.0** — stable GRPO with DAPO default
+- **Unsloth team** — efficient QLoRA model loading and fine-tuning recipes
+- **Hugging Face TRL** — GRPOTrainer and reward-function training loop
 - **DeepSeek-R1** — the CoT+GRPO recipe we build on
 - **DAPO paper** (arXiv 2503.14476) — overlong reward shaping
 - **Gemini 3.1 Pro** with Google grounding — caught the MDP-bandit mismatch before we burned compute on it

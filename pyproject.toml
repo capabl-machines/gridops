@@ -8,6 +8,7 @@ version = "0.6.0"
 description = "Reasoning-Under-Constraints OpenEnv — Meta PyTorch Hackathon Round 2"
 requires-python = ">=3.10"
 dependencies = [
+    "openenv-core>=0.2.3",
     "pydantic>=2.5",
     "numpy>=1.26",
 ]
