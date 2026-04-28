@@ -1,0 +1,4 @@
+interface:
+  display_name: "Train Custom Model"
+  short_description: "Plan and execute reproducible SFT/RL model training pipelines."
+  default_prompt: "Use this skill to plan and implement a new model-training pipeline for my project, including data curriculum, SFT, RL rewards, evals, artifacts, and submission docs."
