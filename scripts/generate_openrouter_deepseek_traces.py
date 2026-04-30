@@ -201,6 +201,8 @@ def main() -> None:
     parser.add_argument("--api-base-url", default=os.environ.get("API_BASE_URL", "https://openrouter.ai/api/v1"))
     parser.add_argument("--api-key", default=os.environ.get("OPENROUTER_API_KEY") or os.environ.get("HF_TOKEN") or os.environ.get("API_KEY"))
     parser.add_argument("--batch-size", type=int, default=10)
+    parser.add_argument("--max-tokens", type=int, default=1800)
+    parser.add_argument("--request-timeout", type=float, default=180.0)
     parser.add_argument("--seed-start", type=int, default=5000)
     parser.add_argument("--sleep", type=float, default=0.5)
     parser.add_argument("--max-retries", type=int, default=3)
@@ -218,7 +220,7 @@ def main() -> None:
         "task_3_crisis": args.task_3,
     }
     candidates = collect_observations(targets, args.seed_start)
-    client = OpenAI(base_url=args.api_base_url, api_key=args.api_key)
+    client = OpenAI(base_url=args.api_base_url, api_key=args.api_key, timeout=args.request_timeout)
 
     output = Path(args.output)
     rejected_output = Path(args.rejected_output)
@@ -234,6 +236,18 @@ def main() -> None:
             parsed: list[dict[str, Any]] = []
             for attempt in range(1, args.max_retries + 1):
                 try:
+                    print(
+                        json.dumps(
+                            {
+                                "batch_start": start,
+                                "batch_size": len(batch),
+                                "attempt": attempt,
+                                "accepted": accepted,
+                                "rejected": rejected,
+                            }
+                        ),
+                        flush=True,
+                    )
                     completion = client.chat.completions.create(
                         model=args.model,
                         messages=[
@@ -241,7 +255,7 @@ def main() -> None:
                             {"role": "user", "content": batch_prompt(batch)},
                         ],
                         temperature=0.2,
-                        max_tokens=1800,
+                        max_tokens=args.max_tokens,
                     )
                     reply = completion.choices[0].message.content or ""
                     parsed = extract_array(reply)
