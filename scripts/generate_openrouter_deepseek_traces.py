@@ -151,6 +151,23 @@ def extract_array(text: str) -> list[dict[str, Any]]:
     return [x for x in parsed if isinstance(x, dict)]
 
 
+def existing_ids(path: Path) -> set[str]:
+    ids: set[str] = set()
+    if not path.exists():
+        return ids
+    for line in path.read_text().splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        row_id = row.get("id")
+        if isinstance(row_id, str):
+            ids.add(row_id)
+    return ids
+
+
 def make_trace(row: dict[str, Any], action_text: str, model: str, raw_reply: str) -> tuple[dict[str, Any], dict[str, Any] | None]:
     action = parse_action(action_text, default=None)
     valid, reason = validate_completion(action_text)
@@ -206,6 +223,7 @@ def main() -> None:
     parser.add_argument("--seed-start", type=int, default=5000)
     parser.add_argument("--sleep", type=float, default=0.5)
     parser.add_argument("--max-retries", type=int, default=3)
+    parser.add_argument("--resume", action="store_true")
     parser.add_argument("--task-1", type=int, default=TASK_TARGETS["task_1_normal"])
     parser.add_argument("--task-2", type=int, default=TASK_TARGETS["task_2_heatwave"])
     parser.add_argument("--task-3", type=int, default=TASK_TARGETS["task_3_crisis"])
@@ -219,7 +237,6 @@ def main() -> None:
         "task_2_heatwave": args.task_2,
         "task_3_crisis": args.task_3,
     }
-    candidates = collect_observations(targets, args.seed_start)
     client = OpenAI(base_url=args.api_base_url, api_key=args.api_key, timeout=args.request_timeout)
 
     output = Path(args.output)
@@ -227,13 +244,20 @@ def main() -> None:
     output.parent.mkdir(parents=True, exist_ok=True)
     rejected_output.parent.mkdir(parents=True, exist_ok=True)
 
-    accepted = 0
-    rejected = 0
-    with output.open("w") as good, rejected_output.open("w") as bad:
+    # Resume keeps successful traces and retries previous failures; provider
+    # failures are often transient on frontier routes.
+    seen_ids = existing_ids(output) if args.resume else set()
+    candidates = [row for row in collect_observations(targets, args.seed_start) if row["id"] not in seen_ids]
+
+    accepted = len(existing_ids(output)) if args.resume else 0
+    rejected = len(existing_ids(rejected_output)) if args.resume else 0
+    mode = "a" if args.resume else "w"
+    with output.open(mode) as good, rejected_output.open(mode) as bad:
         for start in range(0, len(candidates), args.batch_size):
             batch = candidates[start : start + args.batch_size]
             reply = ""
             parsed: list[dict[str, Any]] = []
+            api_failed = False
             for attempt in range(1, args.max_retries + 1):
                 try:
                     print(
@@ -275,8 +299,23 @@ def main() -> None:
                                 + "\n"
                             )
                             rejected += 1
+                        api_failed = True
                     else:
                         time.sleep(args.sleep * attempt)
+            if api_failed:
+                print(
+                    json.dumps(
+                        {
+                            "processed": len(seen_ids) + min(start + len(batch), len(candidates)),
+                            "accepted": accepted,
+                            "rejected": rejected,
+                            "batch_failed": True,
+                        }
+                    ),
+                    flush=True,
+                )
+                time.sleep(args.sleep)
+                continue
             by_id = {str(item.get("id")): item for item in parsed}
             for row in batch:
                 item = by_id.get(row["id"])
@@ -299,7 +338,16 @@ def main() -> None:
                 else:
                     good.write(json.dumps(trace, separators=(",", ":")) + "\n")
                     accepted += 1
-            print(json.dumps({"processed": min(start + len(batch), len(candidates)), "accepted": accepted, "rejected": rejected}), flush=True)
+            print(
+                json.dumps(
+                    {
+                        "processed": len(seen_ids) + min(start + len(batch), len(candidates)),
+                        "accepted": accepted,
+                        "rejected": rejected,
+                    }
+                ),
+                flush=True,
+            )
             time.sleep(args.sleep)
 
     print(json.dumps({"output": str(output), "rejected_output": str(rejected_output), "accepted": accepted, "rejected": rejected}, indent=2))
