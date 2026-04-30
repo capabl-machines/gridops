@@ -37,6 +37,48 @@ tags:
 
 ---
 
+## SFT Training Pipeline Upgrade
+
+This branch adds a CarbonAlpha-style training harness around the original GridOps environment without changing the public OpenEnv API.
+
+| Artifact | Link |
+|---|---|
+| Shared prompt/action contract | [`gridops/prompting.py`](gridops/prompting.py) |
+| Reusable oracle + adversarial policies | [`gridops/policies.py`](gridops/policies.py) |
+| 1,200-row curriculum dataset | [`sft_traces/gridops_curriculum_1200.jsonl`](sft_traces/gridops_curriculum_1200.jsonl) |
+| Trace generator | [`scripts/generate_sft_traces.py`](scripts/generate_sft_traces.py) |
+| Trace validator | [`scripts/validate_traces.py`](scripts/validate_traces.py) |
+| Holdout/adversarial evaluator | [`scripts/evaluate_gridops_model.py`](scripts/evaluate_gridops_model.py) |
+| Guarded SFT script | [`scripts/hf_sft_gridops.py`](scripts/hf_sft_gridops.py) |
+| Colab-ready notebook | [`notebooks/gridops_sft_pipeline.ipynb`](notebooks/gridops_sft_pipeline.ipynb) |
+| Model card | [`GRIDOPS_MODEL_CARD.md`](GRIDOPS_MODEL_CARD.md) |
+
+The first milestone is intentionally **SFT only**: teach a compact model to emit valid JSON actions for each hourly observation. RL/GRPO is deferred until SFT passes the gates below.
+
+| Gate | Target |
+|---|---:|
+| Valid JSON action rate | >= 98% |
+| Average holdout score | >= 0.65 |
+| No task below do-nothing baseline | required |
+| Task 3 crisis score | >= 0.55 |
+| Fixed-seed determinism | stable |
+
+Initial model target:
+
+```text
+Qwen/Qwen2.5-3B-Instruct -> QLoRA SFT on sft_traces/gridops_curriculum_1200.jsonl
+```
+
+Fallback for smaller GPUs:
+
+```text
+Qwen/Qwen2.5-1.5B-Instruct
+```
+
+The existing leaderboard remains historical. New trained-model results should be reported separately as **GridOps SFT** once the adapter has been trained and evaluated.
+
+---
+
 ## Why This Environment Exists
 
 Community microgrid operation is a **real job** in India under the [RDSS](https://rdss.gov.in/) (Revamped Distribution Sector Scheme). IEX prosumer bidding is live. Over 50 million Indian homes will have rooftop solar by 2030, and someone — or some agent — needs to manage the battery-grid-diesel tradeoff in real time.
@@ -227,6 +269,19 @@ open http://localhost:8000/dashboard/
 
 # Validate oracle + determinism
 python scripts/oracle_test.py
+
+# Generate and validate the SFT curriculum
+python scripts/generate_sft_traces.py
+python scripts/validate_traces.py sft_traces/gridops_curriculum_1200.jsonl
+
+# Evaluate reusable policies on holdout seeds
+python scripts/evaluate_gridops_model.py --policy oracle
+python scripts/evaluate_gridops_model.py --policy do_nothing
+
+# Evaluate an API-hosted or HF-router model with the SFT prompt contract
+export HF_API_TOKEN="your-token"
+export MODEL_NAME="your-gridops-sft-endpoint-or-model"
+python scripts/evaluate_gridops_model.py --model-name "$MODEL_NAME"
 
 # Run LLM baseline
 export API_BASE_URL="https://router.huggingface.co/v1"
