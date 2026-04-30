@@ -47,6 +47,7 @@ This branch adds a CarbonAlpha-style training harness around the original GridOp
 | Reusable oracle + adversarial policies | [`gridops/policies.py`](gridops/policies.py) |
 | 1,200-row curriculum dataset | [`sft_traces/gridops_curriculum_1200.jsonl`](sft_traces/gridops_curriculum_1200.jsonl) |
 | Trace generator | [`scripts/generate_sft_traces.py`](scripts/generate_sft_traces.py) |
+| OpenRouter/DeepSeek trace generator | [`scripts/generate_openrouter_deepseek_traces.py`](scripts/generate_openrouter_deepseek_traces.py) |
 | Trace validator | [`scripts/validate_traces.py`](scripts/validate_traces.py) |
 | Holdout/adversarial evaluator | [`scripts/evaluate_gridops_model.py`](scripts/evaluate_gridops_model.py) |
 | Guarded SFT script | [`scripts/hf_sft_gridops.py`](scripts/hf_sft_gridops.py) |
@@ -273,6 +274,11 @@ python scripts/oracle_test.py
 # Generate and validate the SFT curriculum
 python scripts/generate_sft_traces.py
 python scripts/validate_traces.py sft_traces/gridops_curriculum_1200.jsonl
+
+# Optional: generate 10-at-a-time teacher traces with DeepSeek on OpenRouter
+export API_BASE_URL="https://openrouter.ai/api/v1"
+export OPENROUTER_API_KEY="your-token"
+python scripts/generate_openrouter_deepseek_traces.py --model deepseek/deepseek-v4-pro
 
 # Evaluate reusable policies on holdout seeds
 python scripts/evaluate_gridops_model.py --policy oracle
