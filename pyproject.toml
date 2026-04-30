@@ -22,6 +22,10 @@ inference = ["openai"]
 [project.scripts]
 server = "server.app:main"
 
+[tool.setuptools.packages.find]
+include = ["gridops*", "server*"]
+exclude = ["notebooks*", "sft_traces*", "tests*", "round_1*", "portfolio_env*"]
+
 [build-system]
 requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
