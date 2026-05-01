@@ -1,0 +1,89 @@
+{
+  "do_nothing": {
+    "average_score": 0.5133,
+    "valid_action_rate": 1.0,
+    "by_task": {
+      "task_1_normal": {
+        "score": 0.582,
+        "battery_throughput_kwh": 0.0,
+        "blackout_kwh": 298.85,
+        "diesel_kwh": 0.0,
+        "cost": 72200.57
+      },
+      "task_2_heatwave": {
+        "score": 0.5057,
+        "battery_throughput_kwh": 0.0,
+        "blackout_kwh": 895.0,
+        "diesel_kwh": 0.0,
+        "cost": 185916.24
+      },
+      "task_3_crisis": {
+        "score": 0.4522,
+        "battery_throughput_kwh": 0.0,
+        "blackout_kwh": 2425.76,
+        "diesel_kwh": 0.0,
+        "cost": 478392.31
+      }
+    }
+  },
+  "sft": {
+    "average_score": 0.6854,
+    "valid_action_rate": 0.9985,
+    "by_task": {
+      "task_1_normal": {
+        "score": 0.6615,
+        "battery_throughput_kwh": 577.97,
+        "blackout_kwh": 177.57,
+        "diesel_kwh": 0.0,
+        "cost": 58685.13
+      },
+      "task_2_heatwave": {
+        "score": 0.73,
+        "battery_throughput_kwh": 1721.05,
+        "blackout_kwh": 258.3,
+        "diesel_kwh": 48.89,
+        "cost": 103310.54
+      },
+      "task_3_crisis": {
+        "score": 0.6648,
+        "battery_throughput_kwh": 2898.1,
+        "blackout_kwh": 978.99,
+        "diesel_kwh": 275.29,
+        "cost": 297079.42
+      }
+    }
+  },
+  "oracle": {
+    "average_score": 0.7688,
+    "valid_action_rate": 1.0,
+    "by_task": {
+      "task_1_normal": {
+        "score": 0.7932,
+        "battery_throughput_kwh": 970.62,
+        "blackout_kwh": 15.24,
+        "diesel_kwh": 0.0,
+        "cost": 36369.09
+      },
+      "task_2_heatwave": {
+        "score": 0.8087,
+        "battery_throughput_kwh": 2075.75,
+        "blackout_kwh": 41.25,
+        "diesel_kwh": 86.2,
+        "cost": 74089.62
+      },
+      "task_3_crisis": {
+        "score": 0.7046,
+        "battery_throughput_kwh": 3170.6,
+        "blackout_kwh": 699.56,
+        "diesel_kwh": 416.56,
+        "cost": 261602.58
+      }
+    }
+  },
+  "training": {
+    "logged_points": 30,
+    "first_loss": 1.53,
+    "final_loss": 0.1478,
+    "final_mean_token_accuracy": 0.9486
+  }
+}

@@ -50,11 +50,19 @@ This branch adds a CarbonAlpha-style training harness around the original GridOp
 | OpenRouter/DeepSeek trace generator | [`scripts/generate_openrouter_deepseek_traces.py`](scripts/generate_openrouter_deepseek_traces.py) |
 | Trace validator | [`scripts/validate_traces.py`](scripts/validate_traces.py) |
 | Holdout/adversarial evaluator | [`scripts/evaluate_gridops_model.py`](scripts/evaluate_gridops_model.py) |
+| Local adapter evaluator | [`scripts/evaluate_gridops_adapter.py`](scripts/evaluate_gridops_adapter.py) |
 | Guarded SFT script | [`scripts/hf_sft_gridops.py`](scripts/hf_sft_gridops.py) |
+| Eval plotter | [`scripts/plot_gridops_evals.py`](scripts/plot_gridops_evals.py) |
 | Colab-ready notebook | [`notebooks/gridops_sft_pipeline.ipynb`](notebooks/gridops_sft_pipeline.ipynb) |
 | Model card | [`GRIDOPS_MODEL_CARD.md`](GRIDOPS_MODEL_CARD.md) |
 
-The first milestone is intentionally **SFT only**: teach a compact model to emit valid JSON actions for each hourly observation. RL/GRPO is deferred until SFT passes the gates below.
+The first milestone is **SFT only**: teach a compact model to emit valid JSON actions for each hourly observation. The first adapter passed the SFT gate on held-out seeds `7001,7002,7003`.
+
+| Model | Avg score | Valid JSON | Task 1 | Task 2 | Task 3 |
+|---|---:|---:|---:|---:|---:|
+| Do-nothing | 0.5133 | 100.00% | 0.5820 | 0.5057 | 0.4522 |
+| GridOps SFT v1 | 0.6854 | 99.85% | 0.6615 | 0.7300 | 0.6648 |
+| Oracle | 0.7688 | 100.00% | 0.7932 | 0.8087 | 0.7046 |
 
 | Gate | Target |
 |---|---:|
@@ -64,19 +72,22 @@ The first milestone is intentionally **SFT only**: teach a compact model to emit
 | Task 3 crisis score | >= 0.55 |
 | Fixed-seed determinism | stable |
 
-Initial model target:
+Final SFT v1 artifact:
 
 ```text
-Qwen/Qwen2.5-3B-Instruct -> QLoRA SFT on sft_traces/gridops_curriculum_1200.jsonl
+Qwen/Qwen2.5-3B-Instruct -> QLoRA SFT adapter:
+77ethers/gridops-models/sft_qwen25_3b_gridops_mixed1418_v1
 ```
 
-Fallback for smaller GPUs:
+Evidence:
 
-```text
-Qwen/Qwen2.5-1.5B-Instruct
-```
+- [SFT training curve](evals/plots/gridops_sft_training_curve.png)
+- [Holdout scores](evals/plots/gridops_holdout_scores.png)
+- [Battery throughput](evals/plots/gridops_battery_throughput.png)
+- [Blackout reduction](evals/plots/gridops_blackout_kwh.png)
+- [Holdout summary JSON](evals/plots/gridops_holdout_summary.json)
 
-The existing leaderboard remains historical. New trained-model results should be reported separately as **GridOps SFT** once the adapter has been trained and evaluated.
+The existing leaderboard remains historical. The table above is reported separately as **GridOps SFT v1**.
 
 ---
 
