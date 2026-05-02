@@ -8,6 +8,7 @@ Adds custom STATEFUL /reset and /step endpoints for the dashboard (HTTP).
 from __future__ import annotations
 
 import os
+import mimetypes
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +22,9 @@ from openenv.core.env_server.http_server import create_app
 from gridops.models import GridOpsAction, GridOpsObservation
 from gridops.server.environment import GridOpsEnvironment
 from gridops.tasks.definitions import TASKS
+
+mimetypes.add_type("image/webp", ".webp")
+mimetypes.add_type("image/svg+xml", ".svg")
 
 # Create the OpenEnv app (provides /ws, /health, /schema, /web, /docs)
 app = create_app(
