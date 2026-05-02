@@ -3,21 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GridOps Case Study | Capabl Machines</title>
-  <meta name="description" content="How Capabl Machines built GridOps: an OpenEnv microgrid environment, curriculum traces, and a small SFT model for operational grid decisions.">
+  <title>GridOps India Case Study | Capabl Machines</title>
+  <meta name="description" content="GridOps is a Capabl Machines case study on AI-managed community microgrids for India's fast-growing rooftop solar future.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111827'/%3E%3Cpath d='M34 8 14 34h17l-3 22 22-30H33z' fill='%238ef2c3'/%3E%3C/svg%3E">
   <style>
     :root {
-      --ink: #17202a;
-      --muted: #5c6674;
-      --line: #d9e2ea;
-      --paper: #f7f8f5;
+      --ink: #15202b;
+      --muted: #5e6974;
+      --paper: #f7f7f1;
       --white: #ffffff;
-      --green: #1d8f63;
-      --cyan: #0b7f97;
-      --amber: #b56f1a;
-      --coal: #111827;
-      --shadow: 0 18px 55px rgba(23, 32, 42, 0.12);
+      --line: #dce3e3;
+      --green: #138a62;
+      --mint: #86efac;
+      --teal: #0f7f8c;
+      --sun: #d9841f;
+      --indigo: #253b73;
+      --coal: #101923;
+      --shadow: 0 18px 60px rgba(21, 32, 43, 0.14);
     }
 
     * { box-sizing: border-box; }
@@ -32,6 +34,13 @@
 
     a { color: inherit; text-decoration: none; }
     img { display: block; max-width: 100%; }
+    code {
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #074b3a;
+      background: #e8f7ef;
+      font-size: 0.9em;
+    }
 
     .nav {
       position: fixed;
@@ -50,7 +59,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
@@ -58,11 +67,11 @@
     .brand-mark {
       width: 28px;
       height: 28px;
-      border: 2px solid rgba(255, 255, 255, 0.88);
+      border: 2px solid rgba(255, 255, 255, 0.92);
       border-radius: 7px;
       display: grid;
       place-items: center;
-      color: #8ef2c3;
+      color: var(--mint);
       font-size: 18px;
       line-height: 1;
     }
@@ -74,26 +83,26 @@
       flex-wrap: wrap;
       justify-content: flex-end;
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 800;
     }
 
     .nav-links a {
       padding: 9px 12px;
       border: 1px solid rgba(255, 255, 255, 0.28);
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(8px);
     }
 
     .hero {
       position: relative;
-      min-height: 88vh;
+      min-height: 92vh;
       display: grid;
       align-items: end;
-      padding: 108px clamp(18px, 5vw, 72px) 64px;
+      padding: 112px clamp(18px, 5vw, 72px) 64px;
       overflow: hidden;
       color: #f8fafc;
-      background: #111827;
+      background: var(--coal);
     }
 
     .hero::before {
@@ -101,39 +110,39 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(90deg, rgba(5, 9, 14, 0.92), rgba(5, 9, 14, 0.42) 52%, rgba(5, 9, 14, 0.18)),
-        linear-gradient(0deg, rgba(5, 9, 14, 0.86), rgba(5, 9, 14, 0) 38%),
-        url("/assets/case_study/gridops_hero_microgrid.webp") center / cover no-repeat;
+        linear-gradient(90deg, rgba(7, 13, 19, 0.93), rgba(7, 13, 19, 0.48) 52%, rgba(7, 13, 19, 0.12)),
+        linear-gradient(0deg, rgba(7, 13, 19, 0.86), rgba(7, 13, 19, 0.06) 44%),
+        url("/assets/case_study/india_solar_society_hero.webp") center / cover no-repeat;
       transform: scale(1.01);
     }
 
     .hero-content {
       position: relative;
-      max-width: 900px;
+      max-width: 980px;
     }
 
     .eyebrow {
-      margin: 0 0 18px;
-      color: #8ef2c3;
-      font-size: 13px;
-      font-weight: 800;
+      margin: 0 0 16px;
+      color: var(--mint);
+      font-size: 12px;
+      font-weight: 900;
       letter-spacing: 0.16em;
       text-transform: uppercase;
     }
 
     h1, h2, h3, p { margin-top: 0; }
     h1 {
-      max-width: 820px;
-      margin-bottom: 20px;
-      font-size: clamp(44px, 7vw, 92px);
+      max-width: 900px;
+      margin-bottom: 18px;
+      font-size: clamp(43px, 7.4vw, 96px);
       line-height: 0.96;
       letter-spacing: 0;
     }
 
     .hero-subtitle {
-      max-width: 760px;
+      max-width: 790px;
       margin-bottom: 28px;
-      color: rgba(248, 250, 252, 0.86);
+      color: rgba(248, 250, 252, 0.88);
       font-size: clamp(18px, 2vw, 24px);
     }
 
@@ -147,36 +156,34 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 44px;
+      min-height: 46px;
       padding: 12px 16px;
-      border-radius: 6px;
-      font-weight: 800;
+      border-radius: 7px;
+      font-weight: 900;
       border: 1px solid rgba(255, 255, 255, 0.28);
     }
 
     .button.primary {
       color: #062218;
-      background: #8ef2c3;
-      border-color: #8ef2c3;
+      background: var(--mint);
+      border-color: var(--mint);
     }
 
     .button.secondary {
       color: #f8fafc;
-      background: rgba(255, 255, 255, 0.09);
+      background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(8px);
     }
 
     .section {
-      padding: clamp(54px, 8vw, 98px) clamp(18px, 5vw, 72px);
+      padding: clamp(56px, 8vw, 98px) clamp(18px, 5vw, 72px);
     }
 
+    .section.light { background: #fbfbf7; }
+    .section.soft { background: #edf5ed; }
     .section.dark {
       color: #f8fafc;
-      background: #111827;
-    }
-
-    .section.soft {
-      background: #eef4ee;
+      background: #101923;
     }
 
     .wrap {
@@ -186,30 +193,69 @@
 
     .split {
       display: grid;
-      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
-      gap: clamp(28px, 5vw, 70px);
+      grid-template-columns: minmax(0, 0.92fr) minmax(320px, 1.08fr);
+      gap: clamp(28px, 5vw, 72px);
       align-items: center;
+    }
+
+    .split.reverse {
+      grid-template-columns: minmax(320px, 1.06fr) minmax(0, 0.94fr);
     }
 
     h2 {
       margin-bottom: 18px;
-      font-size: clamp(30px, 4vw, 52px);
+      font-size: clamp(31px, 4vw, 54px);
       line-height: 1.04;
       letter-spacing: 0;
     }
 
-    .lede {
-      color: var(--muted);
-      font-size: clamp(17px, 1.6vw, 20px);
+    h3 {
+      margin-bottom: 10px;
+      font-size: 21px;
+      line-height: 1.18;
     }
 
-    .dark .lede { color: rgba(248, 250, 252, 0.72); }
+    .lede {
+      color: var(--muted);
+      font-size: clamp(17px, 1.7vw, 20px);
+    }
+
+    .dark .lede { color: rgba(248, 250, 252, 0.74); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .stat {
+      min-height: 132px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+    }
+
+    .stat strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--teal);
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
 
     .image-frame {
-      border-radius: 10px;
       overflow: hidden;
+      border-radius: 12px;
+      background: #dfe8e6;
       box-shadow: var(--shadow);
-      background: #dce6eb;
     }
 
     .image-frame img {
@@ -218,67 +264,75 @@
       object-fit: cover;
     }
 
-    .kpis {
+    .idea-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 34px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 15px;
+      margin-top: 30px;
     }
 
-    .kpi {
-      min-height: 132px;
-      padding: 18px;
-      border: 1px solid var(--line);
+    .idea {
+      min-height: 186px;
+      padding: 24px;
+      border-top: 5px solid var(--green);
       border-radius: 8px;
       background: var(--white);
+      box-shadow: 0 10px 28px rgba(21, 32, 43, 0.06);
     }
 
-    .kpi strong {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--cyan);
-      font-size: clamp(26px, 4vw, 38px);
-      line-height: 1;
-    }
+    .idea:nth-child(2) { border-color: var(--sun); }
+    .idea:nth-child(3) { border-color: var(--indigo); }
 
-    .kpi span {
+    .idea p {
+      margin: 0;
       color: var(--muted);
-      font-size: 14px;
-      font-weight: 700;
     }
 
-    .steps {
+    .uses {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .use {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #284154;
+      background: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .flow {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 14px;
       margin-top: 34px;
     }
 
-    .step {
+    .flow-step {
       padding: 22px;
-      border-top: 4px solid var(--green);
+      border-top: 4px solid var(--mint);
       background: rgba(255, 255, 255, 0.08);
     }
 
-    .step:nth-child(2) { border-color: var(--cyan); }
-    .step:nth-child(3) { border-color: var(--amber); }
-    .step:nth-child(4) { border-color: #8ef2c3; }
+    .flow-step:nth-child(2) { border-color: #7dd3fc; }
+    .flow-step:nth-child(3) { border-color: #fbbf24; }
+    .flow-step:nth-child(4) { border-color: #c4b5fd; }
 
-    .step .num {
+    .flow-step span {
       display: block;
-      margin-bottom: 18px;
-      color: rgba(248, 250, 252, 0.55);
-      font-size: 13px;
+      margin-bottom: 16px;
+      color: rgba(248, 250, 252, 0.54);
+      font-size: 12px;
       font-weight: 900;
       letter-spacing: 0.12em;
     }
 
-    .step h3 {
-      margin-bottom: 10px;
-      font-size: 18px;
-    }
-
-    .step p {
+    .flow-step p {
       margin: 0;
       color: rgba(248, 250, 252, 0.72);
       font-size: 14px;
@@ -310,7 +364,7 @@
       font-size: 12px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      background: #f2f5f7;
+      background: #f0f4f4;
     }
 
     tr:last-child td { border-bottom: 0; }
@@ -341,7 +395,20 @@
       padding: 12px 14px 14px;
       color: var(--muted);
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 800;
+    }
+
+    .source-line {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .source-line a {
+      color: var(--teal);
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
 
     .ledger {
@@ -352,7 +419,7 @@
     }
 
     .ledger a {
-      min-height: 114px;
+      min-height: 118px;
       padding: 18px;
       border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 8px;
@@ -362,7 +429,7 @@
     .ledger strong {
       display: block;
       margin-bottom: 8px;
-      color: #8ef2c3;
+      color: var(--mint);
     }
 
     .ledger span {
@@ -373,7 +440,7 @@
     .footer {
       padding: 28px clamp(18px, 5vw, 72px);
       color: rgba(248, 250, 252, 0.64);
-      background: #080e16;
+      background: #070c12;
       font-size: 14px;
     }
 
@@ -384,115 +451,147 @@
       flex-wrap: wrap;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 920px) {
       .nav { position: absolute; align-items: flex-start; }
       .nav-links { display: none; }
       .hero { min-height: 92vh; padding-top: 90px; }
-      .split, .kpis, .steps, .ledger { grid-template-columns: 1fr; }
+      .split, .split.reverse, .stats, .idea-grid, .uses, .flow, .ledger { grid-template-columns: 1fr; }
       .plots { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 560px) {
       .hero-actions .button { width: 100%; }
-      .kpi { min-height: 112px; }
+      .stat { min-height: 112px; }
+      .use { border-radius: 8px; }
     }
   </style>
 </head>
 <body>
   <nav class="nav" aria-label="Project navigation">
-    <a class="brand" href="/case-study" aria-label="GridOps case study">
+    <a class="brand" href="/case-study" aria-label="GridOps India case study">
       <span class="brand-mark">G</span>
       <span>GridOps</span>
     </a>
     <div class="nav-links">
-      <a href="#method">Method</a>
+      <a href="#india">India context</a>
+      <a href="#machine">Capabl Machine</a>
       <a href="#results">Results</a>
       <a href="/dashboard/">Live demo</a>
-      <a href="https://huggingface.co/77ethers/gridops-models">Model</a>
     </div>
   </nav>
 
   <main>
     <section class="hero">
       <div class="hero-content">
-        <p class="eyebrow">Capabl Machines case study</p>
-        <h1>GridOps</h1>
-        <p class="hero-subtitle">An environment-first microgrid operator: train a small model to read hourly grid state, emit valid actions, and improve resilience across normal, heatwave, and crisis conditions.</p>
+        <p class="eyebrow">For India's next solar decade</p>
+        <h1>Every society can run like a smart power plant.</h1>
+        <p class="hero-subtitle">Solar has scaled. Now the hard problem is local dispatch: when to store, buy, shed, use backup, or sell flexibility so communities save money and keep the lights on.</p>
         <div class="hero-actions">
           <a class="button primary" href="/dashboard/">Open the live environment</a>
-          <a class="button secondary" href="#results">See measured results</a>
+          <a class="button secondary" href="#results">See the model evidence</a>
         </div>
+      </div>
+    </section>
+
+    <section class="section light" id="india">
+      <div class="wrap">
+        <p class="eyebrow">Why now</p>
+        <h2>India has already built the solar base. The next layer is intelligence.</h2>
+        <p class="lede">MNRE reports 150.26 GW of cumulative solar capacity as of March 31, 2026, including 25.73 GW of grid-connected rooftop solar. PIB's India Solar Momentum note shows how fast this moved: from 3 GW in 2014 to 129.92 GW by October 2025, with nearly 24 lakh PM Surya Ghar households already solarised by December 2025.</p>
+        <div class="stats">
+          <div class="stat"><strong>150.26 GW</strong><span>solar capacity reported by MNRE</span></div>
+          <div class="stat"><strong>25.73 GW</strong><span>grid-connected rooftop solar</span></div>
+          <div class="stat"><strong>24 lakh</strong><span>PM Surya Ghar households noted by PIB</span></div>
+          <div class="stat"><strong>1 crore</strong><span>national rooftop household ambition</span></div>
+        </div>
+        <p class="source-line">Context sources: <a href="https://mnre.gov.in/en/physical-progress/">MNRE Physical Achievements</a> and <a href="https://static.pib.gov.in/WriteReadData/specificdocs/documents/2025/dec/doc2025126720001.pdf">PIB India Solar Momentum</a>.</p>
       </div>
     </section>
 
     <section class="section soft">
       <div class="wrap split">
         <div>
-          <p class="eyebrow">The operating problem</p>
-          <h2>Microgrids are not text tasks. They are constrained control systems.</h2>
-          <p class="lede">A useful AI operator has to balance demand, solar, battery state of charge, diesel fuel, tariffs, and outage risk one hour at a time. The output cannot be a paragraph of advice. It must be a bounded action that the environment can execute and score.</p>
-          <p class="lede">GridOps turns that into a training harness: observations in, JSON action out, physics-based feedback, and holdout evaluation against do-nothing and oracle policies.</p>
+          <p class="eyebrow">The new operating problem</p>
+          <h2>A rooftop solar site is no longer just a bill reducer.</h2>
+          <p class="lede">An apartment society, campus, hospital, market, cold storage unit, EV hub, or rural microgrid is becoming a small energy business. It has solar, battery, grid tariffs, backup fuel, comfort expectations, outage risk, and sometimes export or demand-response opportunity.</p>
+          <p class="lede">Running that well usually needs a capable energy manager. GridOps asks a sharper question: can we turn that expertise into a Capabl Machine?</p>
+          <div class="uses" aria-label="Example users">
+            <span class="use">Apartment societies</span>
+            <span class="use">RWAs and townships</span>
+            <span class="use">Schools and campuses</span>
+            <span class="use">Hospitals and clinics</span>
+            <span class="use">EV charging hubs</span>
+            <span class="use">Rural microgrids</span>
+          </div>
         </div>
         <div class="image-frame">
-          <img src="/assets/case_study/gridops_control_room.webp" alt="Operator control room overseeing a community microgrid">
+          <img src="/assets/case_study/india_microgrid_operator_layer.webp" alt="Indian residential society office using an AI microgrid dashboard">
         </div>
       </div>
     </section>
 
-    <section class="section dark" id="method">
-      <div class="wrap">
-        <p class="eyebrow">How we built it</p>
-        <h2>Environment, curriculum, model, evals.</h2>
-        <p class="lede">We kept the OpenEnv contract stable and moved training into a separate harness. That made the demo lightweight while preserving a reproducible path from rollout data to a trained action model.</p>
-        <div class="steps">
-          <article class="step">
-            <span class="num">01</span>
-            <h3>OpenEnv runtime</h3>
-            <p>FastAPI and WebSocket endpoints expose reset, step, schema, and dashboard behavior without changing GridOps physics.</p>
-          </article>
-          <article class="step">
-            <span class="num">02</span>
-            <h3>Curriculum traces</h3>
-            <p>1,418 traces mix deterministic oracle rollouts with teacher-generated edge cases for normal, heatwave, and crisis tasks.</p>
-          </article>
-          <article class="step">
-            <span class="num">03</span>
-            <h3>SFT action model</h3>
-            <p>Qwen2.5-3B-Instruct was trained with QLoRA to emit only JSON actions for battery, diesel, and demand shedding.</p>
-          </article>
-          <article class="step">
-            <span class="num">04</span>
-            <h3>Holdout gates</h3>
-            <p>We measured valid action rate, score by task, blackout kWh, battery throughput, and comparison to baselines.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="wrap split">
+    <section class="section light" id="machine">
+      <div class="wrap split reverse">
         <div class="image-frame">
-          <img src="/assets/case_study/gridops_environment_loop.webp" alt="GridOps training loop from environment to dataset to model evaluation">
+          <img src="/assets/case_study/india_microgrid_value_flows.webp" alt="AI dispatch layer creating savings and earnings across Indian community microgrids">
         </div>
         <div>
-          <p class="eyebrow">Training contract</p>
-          <h2>The model learned an executable control language.</h2>
-          <p class="lede">The target completion is intentionally small: <code>{"battery_dispatch": ..., "diesel_dispatch": ..., "demand_shedding": ...}</code>. This keeps the first milestone focused on reliability and operational score before adding reinforcement learning.</p>
-          <div class="kpis">
-            <div class="kpi"><strong>1,418</strong><span>validated traces</span></div>
-            <div class="kpi"><strong>300</strong><span>SFT steps</span></div>
-            <div class="kpi"><strong>99.85%</strong><span>valid JSON rate</span></div>
-            <div class="kpi"><strong>0.685</strong><span>holdout average score</span></div>
+          <p class="eyebrow">What intelligence unlocks</p>
+          <h2>From solar asset to earning, resilient infrastructure.</h2>
+          <p class="lede">A model that understands local state can do more than answer questions. It can decide. Charge before a price spike. Save battery before an outage. Use diesel only when it protects critical load. Reduce peak demand. Export or shift load when the economics make sense.</p>
+          <div class="idea-grid">
+            <article class="idea">
+              <h3>Keep lights on</h3>
+              <p>Prioritise battery and backup for high-risk hours instead of wasting them early.</p>
+            </article>
+            <article class="idea">
+              <h3>Lower operating cost</h3>
+              <p>Buy less from the grid during expensive windows and avoid unnecessary diesel burn.</p>
+            </article>
+            <article class="idea">
+              <h3>Earn from flexibility</h3>
+              <p>Make solar, storage, EV chargers, and flexible loads act like a coordinated local power plant.</p>
+            </article>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark">
+      <div class="wrap">
+        <p class="eyebrow">How we built the Capabl Machine</p>
+        <h2>Environment first. Model second. Evidence always.</h2>
+        <p class="lede">GridOps is an OpenEnv microgrid environment with a stable API. The model sees hourly observations and must output one valid action: <code>{"battery_dispatch": ..., "diesel_dispatch": ..., "demand_shedding": ...}</code>. No vague prose. No fake expertise. The environment executes the action and scores the outcome.</p>
+        <div class="flow">
+          <article class="flow-step">
+            <span>01</span>
+            <h3>Simulate reality</h3>
+            <p>Demand, solar, price, battery, fuel, heatwave stress, and outage constraints.</p>
+          </article>
+          <article class="flow-step">
+            <span>02</span>
+            <h3>Teach the curriculum</h3>
+            <p>1,418 traces across normal, heatwave, crisis, and targeted edge cases.</p>
+          </article>
+          <article class="flow-step">
+            <span>03</span>
+            <h3>Train compactly</h3>
+            <p>Qwen2.5-3B-Instruct with QLoRA SFT to learn reliable JSON actions.</p>
+          </article>
+          <article class="flow-step">
+            <span>04</span>
+            <h3>Evaluate honestly</h3>
+            <p>Heldout seeds compare do-nothing, trained model, and oracle policy.</p>
+          </article>
         </div>
       </div>
     </section>
 
     <section class="section soft" id="results">
       <div class="wrap">
-        <p class="eyebrow">Measured evidence</p>
-        <h2>The trained model beats do-nothing across all tasks.</h2>
-        <p class="lede">Heldout seeds 7001, 7002, and 7003 were not used for trace generation. The SFT model is still below the oracle, which is exactly the useful gap for the next iteration.</p>
+        <p class="eyebrow">What changed after training</p>
+        <h2>The model learned useful battery behaviour, not a shortcut.</h2>
+        <p class="lede">Across heldout seeds, the SFT model beat the do-nothing baseline on every task, reached 99.85% valid JSON actions, reduced blackout energy, and used the battery heavily in the hardest crisis setting.</p>
         <div class="table-wrap" role="region" aria-label="GridOps holdout evaluation table" tabindex="0">
           <table>
             <thead>
@@ -502,7 +601,7 @@
                 <th>Heatwave</th>
                 <th>Crisis</th>
                 <th>Average</th>
-                <th>Notes</th>
+                <th>What it means</th>
               </tr>
             </thead>
             <tbody>
@@ -512,7 +611,7 @@
                 <td>0.5057</td>
                 <td>0.4522</td>
                 <td>0.5133</td>
-                <td>No battery or diesel control.</td>
+                <td>Solar exists, but no intelligent dispatch.</td>
               </tr>
               <tr>
                 <td><strong>SFT action model</strong></td>
@@ -520,7 +619,7 @@
                 <td><strong>0.7300</strong></td>
                 <td><strong>0.6648</strong></td>
                 <td><strong>0.6854</strong></td>
-                <td>Passes score, parse, and crisis gates.</td>
+                <td>Reliable actions, lower outage impact, better energy use.</td>
               </tr>
               <tr>
                 <td>Oracle policy</td>
@@ -528,10 +627,16 @@
                 <td>0.8087</td>
                 <td>0.7046</td>
                 <td>0.7688</td>
-                <td>Reference policy for remaining headroom.</td>
+                <td>Reference headroom for the next training phase.</td>
               </tr>
             </tbody>
           </table>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>+33%</strong><span>average score lift vs do-nothing</span></div>
+          <div class="stat"><strong>99.85%</strong><span>valid JSON action rate</span></div>
+          <div class="stat"><strong>2,898 kWh</strong><span>crisis battery throughput</span></div>
+          <div class="stat"><strong>979 kWh</strong><span>crisis blackout kWh vs 2,426 baseline</span></div>
         </div>
         <div class="plots">
           <figure class="plot">
@@ -539,49 +644,36 @@
             <figcaption>Holdout score by task.</figcaption>
           </figure>
           <figure class="plot">
-            <img src="/evals/plots/gridops_sft_training_curve.png" alt="SFT training loss and token accuracy curve">
-            <figcaption>Real training curve from the 300-step run.</figcaption>
-          </figure>
-          <figure class="plot">
             <img src="/evals/plots/gridops_battery_throughput.png" alt="Battery throughput by policy and task">
-            <figcaption>Battery throughput shows the model did not learn a do-nothing shortcut.</figcaption>
+            <figcaption>Battery throughput confirms active dispatch.</figcaption>
           </figure>
           <figure class="plot">
             <img src="/evals/plots/gridops_blackout_kwh.png" alt="Blackout kilowatt hours by policy and task">
-            <figcaption>Blackout kWh falls sharply versus the baseline.</figcaption>
+            <figcaption>Blackout energy falls sharply versus baseline.</figcaption>
           </figure>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="wrap split">
-        <div>
-          <p class="eyebrow">Impact lens</p>
-          <h2>This is a delivery pattern, not just a demo.</h2>
-          <p class="lede">For Capabl Machines, GridOps shows a repeatable way to approach operational AI: define the simulator, generate a curriculum, train a compact model, prove it with environment metrics, and keep the runtime deployable.</p>
-          <p class="lede">The current model is intentionally SFT-only. RL is the next phase once the action model is stable enough to optimize directly against cost, outage resilience, fuel discipline, and battery health.</p>
-        </div>
-        <div class="image-frame">
-          <img src="/assets/case_study/gridops_impact_split.webp" alt="Before and after operational impact view for a microgrid">
+          <figure class="plot">
+            <img src="/evals/plots/gridops_sft_training_curve.png" alt="SFT training loss and token accuracy curve">
+            <figcaption>Real training loss and token accuracy from the run.</figcaption>
+          </figure>
         </div>
       </div>
     </section>
 
     <section class="section dark">
       <div class="wrap">
-        <p class="eyebrow">Artifact ledger</p>
-        <h2>Everything important is inspectable.</h2>
+        <p class="eyebrow">The larger point</p>
+        <h2>Capable people will still matter. But every site should not need one full-time.</h2>
+        <p class="lede">The opportunity is to package operational judgement into a machine layer that local teams can trust: society managers, solar installers, facility operators, EV hub owners, campus admins, and microgrid developers. That is the Capabl Machines thesis in one working environment.</p>
         <div class="ledger">
           <a href="https://huggingface.co/spaces/77ethers/gridops">
-            <strong>Hugging Face Space</strong>
-            <span>Runnable OpenEnv dashboard and API surface.</span>
+            <strong>Live OpenEnv Space</strong>
+            <span>Runnable dashboard and API surface.</span>
           </a>
           <a href="https://huggingface.co/77ethers/gridops-models">
             <strong>Model repository</strong>
             <span>Adapter, model card, plots, and evaluation summary.</span>
           </a>
-          <a href="https://github.com/77ethers/gridops/tree/codex/gridops-sft-pipeline">
+          <a href="https://github.com/capabl-machines/gridops/tree/codex/gridops-sft-pipeline">
             <strong>Source branch</strong>
             <span>Training scripts, validation harness, notebook, and docs.</span>
           </a>
@@ -593,7 +685,7 @@
   <footer class="footer">
     <div class="wrap">
       <span>GridOps by Capabl Machines</span>
-      <span>Environment-first AI for real operational systems</span>
+      <span>Community energy intelligence for India's solar future</span>
     </div>
   </footer>
 </body>

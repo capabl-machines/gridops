@@ -53,6 +53,36 @@ ASSETS = [
             "but polished, Indian neighborhood context, no readable text, no logos, 16:9."
         ),
     },
+    {
+        "slug": "india_solar_society_hero",
+        "prompt": (
+            "A cinematic realistic hero image for a case study about AI-managed community microgrids in India. "
+            "A modern Indian apartment society and nearby homes at golden-hour evening, rooftops covered with "
+            "solar panels, a compact battery energy storage cabinet, EV chargers, a transformer, and warm lights "
+            "turning on across balconies. Subtle luminous energy-flow overlays show intelligent dispatch, but no "
+            "readable text, no brand logos, no sci-fi exaggeration. Inspirational, credible, high detail, 16:9."
+        ),
+    },
+    {
+        "slug": "india_microgrid_operator_layer",
+        "prompt": (
+            "A polished editorial image showing an Indian residential society office where a building manager, "
+            "not a specialist engineer, is supported by an AI microgrid intelligence layer on a clean dashboard. "
+            "The scene includes solar production, battery state, grid price, backup power and community load as "
+            "visual widgets, but avoid readable text. Human, practical, premium technology, warm daylight, "
+            "credible Indian urban context, 16:9."
+        ),
+    },
+    {
+        "slug": "india_microgrid_value_flows",
+        "prompt": (
+            "A sophisticated visual metaphor for how Indian apartments, campuses, markets, and neighbourhood "
+            "microgrids can earn and save money with an AI dispatch layer. Show rooftop solar, battery storage, "
+            "grid connection, reliable lights, EV charging, and clean abstract value flows moving between the "
+            "community and the grid. Optimistic but realistic, no readable text, no logos, enterprise case-study "
+            "quality, 16:9."
+        ),
+    },
 ]
 
 
