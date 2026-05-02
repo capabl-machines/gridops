@@ -34,5 +34,6 @@ Use the `.webp` versions in web pages. Keep the `.png` files as source-quality o
 | `capabl_rooftop_infrastructure.webp` | `capabl_rooftop_infrastructure.png` | Rooftop/courtyard infrastructure view showing solar, battery, transformer, and EV charging. |
 | `capabl_society_operator.webp` | `capabl_society_operator.png` | Society manager and solar installer using a practical intelligence layer. |
 | `capabl_neighbourhood_dispatch.webp` | `capabl_neighbourhood_dispatch.png` | Neighbourhood microgrid dispatch under evening grid stress. |
+| `capabl_energy_journey_infographic.svg` | n/a | Deterministic horizontal infographic showing the journey from India's solar scale to local microgrid intelligence and community outcomes. |
 
 These are editorial visuals for storytelling. For exact metrics and evidence, use the committed eval plots in `evals/plots/`.

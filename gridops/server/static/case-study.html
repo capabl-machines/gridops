@@ -278,6 +278,25 @@
       object-fit: cover;
     }
 
+    .infographic {
+      margin-top: 34px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #f7f7f1;
+      box-shadow: var(--shadow);
+    }
+
+    .infographic img {
+      width: 100%;
+      min-width: 980px;
+    }
+
+    .infographic-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
     .idea-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -522,6 +541,11 @@
           <img src="/assets/case_study/capabl_rooftop_infrastructure.webp" alt="Indian apartment society rooftop solar, battery storage, EV charging, and transformer infrastructure">
         </div>
         <p class="source-line">Context sources: <a href="https://mnre.gov.in/en/physical-progress/">MNRE Physical Achievements</a> and <a href="https://static.pib.gov.in/WriteReadData/specificdocs/documents/2025/dec/doc2025126720001.pdf">PIB India Solar Momentum</a>.</p>
+        <div class="infographic" id="journey" aria-label="GridOps India solar intelligence journey infographic">
+          <div class="infographic-scroll">
+            <img src="/assets/case_study/capabl_energy_journey_infographic.svg" alt="Journey from India's rooftop solar scale to local microgrid complexity, Capabl Machine dispatch, and community outcomes">
+          </div>
+        </div>
       </div>
     </section>
 

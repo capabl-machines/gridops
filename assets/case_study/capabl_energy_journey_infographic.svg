@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2200 900" role="img" aria-labelledby="title desc">
+  <title id="title">GridOps India solar intelligence journey</title>
+  <desc id="desc">A horizontal journey showing India's solar boom becoming local microgrid complexity, then a Capabl Machine dispatch layer, then community outcomes.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f7fbf3"/>
+      <stop offset="0.48" stop-color="#eaf6ef"/>
+      <stop offset="1" stop-color="#f7efe4"/>
+    </linearGradient>
+    <linearGradient id="dark" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#101923"/>
+      <stop offset="1" stop-color="#182a35"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#12202a" flood-opacity="0.16"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 14 14" refX="12" refY="7" markerWidth="10" markerHeight="10" orient="auto">
+      <path d="M1 1 L13 7 L1 13 Z" fill="#138a62"/>
+    </marker>
+    <style>
+      .bg { fill: url(#sky); }
+      .ink { fill: #15202b; font-family: Inter, Arial, sans-serif; }
+      .muted { fill: #5e6974; font-family: Inter, Arial, sans-serif; }
+      .white { fill: #ffffff; font-family: Inter, Arial, sans-serif; }
+      .label { font-size: 28px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; }
+      .title { font-size: 68px; font-weight: 900; }
+      .step-title { font-size: 42px; font-weight: 900; }
+      .body { font-size: 27px; font-weight: 700; }
+      .small { font-size: 22px; font-weight: 800; }
+      .metric { font-size: 58px; font-weight: 900; }
+      .card { fill: #ffffff; stroke: #dce3e3; stroke-width: 2; filter: url(#shadow); }
+      .pill { fill: #e8f7ef; stroke: #bfe8d1; stroke-width: 2; }
+      .line { fill: none; stroke: #138a62; stroke-width: 8; stroke-linecap: round; marker-end: url(#arrow); }
+      .thin { fill: none; stroke: #0f7f8c; stroke-width: 4; stroke-linecap: round; opacity: 0.62; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="2200" height="900" rx="36"/>
+  <circle cx="1990" cy="120" r="210" fill="#f7c46c" opacity="0.24"/>
+  <circle cx="120" cy="760" r="260" fill="#86efac" opacity="0.16"/>
+
+  <text x="90" y="90" class="muted label">GridOps journey</text>
+  <text x="90" y="165" class="ink title">From rooftop solar to a Capabl Machine</text>
+  <text x="92" y="215" class="muted body">The next Indian energy problem is not installing panels. It is operating thousands of small power plants intelligently.</text>
+
+  <path class="line" d="M420 490 C650 420, 760 420, 945 490"/>
+  <path class="line" d="M1235 490 C1435 420, 1545 420, 1738 490"/>
+
+  <g transform="translate(90 295)">
+    <rect class="card" width="455" height="420" rx="28"/>
+    <rect x="32" y="34" width="160" height="42" rx="21" class="pill"/>
+    <text x="52" y="64" class="ink small">01 SOLAR SCALE</text>
+    <text x="34" y="140" class="ink step-title">India builds</text>
+    <text x="34" y="190" class="ink step-title">the base</text>
+    <text x="34" y="278" class="ink metric">150.26 GW</text>
+    <text x="38" y="318" class="muted body">solar capacity reported</text>
+    <text x="38" y="356" class="muted body">by MNRE, Mar 31 2026</text>
+    <g transform="translate(312 64)">
+      <rect x="0" y="56" width="92" height="58" rx="6" fill="#253b73"/>
+      <rect x="12" y="66" width="68" height="38" fill="#7dd3fc" opacity="0.75"/>
+      <path d="M12 79 H80 M12 92 H80 M34 66 V104 M58 66 V104" stroke="#ffffff" stroke-width="3" opacity="0.75"/>
+      <circle cx="46" cy="8" r="34" fill="#f7b44c"/>
+      <path d="M46 -44 V-22 M46 38 V60 M-6 8 H16 M76 8 H98 M10 -28 L25 -14 M67 30 L82 45 M82 -28 L67 -14 M25 30 L10 45" stroke="#f7b44c" stroke-width="6" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <g transform="translate(610 295)">
+    <rect class="card" width="455" height="420" rx="28"/>
+    <rect x="32" y="34" width="205" height="42" rx="21" class="pill"/>
+    <text x="52" y="64" class="ink small">02 NEW COMPLEXITY</text>
+    <text x="34" y="140" class="ink step-title">Every site</text>
+    <text x="34" y="190" class="ink step-title">becomes a grid</text>
+    <text x="38" y="250" class="muted body">Solar, battery, grid price,</text>
+    <text x="38" y="288" class="muted body">diesel backup, EV charging,</text>
+    <text x="38" y="326" class="muted body">comfort, outage risk.</text>
+    <g transform="translate(322 245)">
+      <rect x="0" y="0" width="92" height="118" rx="12" fill="#e8f7ef" stroke="#138a62" stroke-width="5"/>
+      <rect x="22" y="18" width="48" height="12" rx="4" fill="#138a62"/>
+      <rect x="22" y="40" width="48" height="12" rx="4" fill="#138a62" opacity="0.8"/>
+      <rect x="22" y="62" width="48" height="12" rx="4" fill="#138a62" opacity="0.55"/>
+      <path d="M46 86 L34 110 H49 L43 132 L66 98 H51 Z" fill="#d9841f"/>
+    </g>
+  </g>
+
+  <g transform="translate(1130 255)">
+    <rect width="455" height="500" rx="34" fill="url(#dark)" filter="url(#shadow)"/>
+    <text x="34" y="82" class="white label">03 CAPABL MACHINE</text>
+    <text x="34" y="165" class="white step-title">The model</text>
+    <text x="34" y="215" class="white step-title">decides hourly</text>
+    <text x="38" y="282" class="white body" opacity="0.78">Observe state</text>
+    <text x="38" y="322" class="white body" opacity="0.78">Emit JSON action</text>
+    <text x="38" y="362" class="white body" opacity="0.78">Score in environment</text>
+    <rect x="38" y="402" width="378" height="58" rx="12" fill="#86efac"/>
+    <text x="65" y="441" class="ink body">battery + diesel + shed</text>
+    <g transform="translate(312 82)">
+      <circle cx="52" cy="52" r="52" fill="#0f7f8c"/>
+      <path d="M52 20 V84 M20 52 H84 M30 30 L74 74 M74 30 L30 74" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="52" cy="52" r="16" fill="#86efac"/>
+    </g>
+  </g>
+
+  <g transform="translate(1660 295)">
+    <rect class="card" width="455" height="420" rx="28"/>
+    <rect x="32" y="34" width="165" height="42" rx="21" class="pill"/>
+    <text x="52" y="64" class="ink small">04 OUTCOMES</text>
+    <text x="34" y="140" class="ink step-title">Save money.</text>
+    <text x="34" y="190" class="ink step-title">Keep lights on.</text>
+    <text x="34" y="240" class="ink step-title">Earn flexibility.</text>
+    <text x="38" y="304" class="muted body">Apartments, RWAs, campuses,</text>
+    <text x="38" y="342" class="muted body">hospitals, EV hubs, markets,</text>
+    <text x="38" y="380" class="muted body">and rural microgrids.</text>
+    <g transform="translate(330 68)">
+      <path d="M0 84 L52 24 L104 84 V158 H0 Z" fill="#e8f7ef" stroke="#138a62" stroke-width="5"/>
+      <rect x="36" y="98" width="32" height="60" fill="#138a62"/>
+      <circle cx="52" cy="24" r="20" fill="#f7b44c"/>
+      <path d="M-8 176 C30 148, 78 148, 118 176" class="thin"/>
+    </g>
+  </g>
+
+  <g transform="translate(142 790)">
+    <rect x="0" y="0" width="476" height="58" rx="29" fill="#ffffff" stroke="#dce3e3" stroke-width="2"/>
+    <text x="28" y="38" class="ink small">Rooftop solar is infrastructure</text>
+  </g>
+  <g transform="translate(662 790)">
+    <rect x="0" y="0" width="450" height="58" rx="29" fill="#ffffff" stroke="#dce3e3" stroke-width="2"/>
+    <text x="28" y="38" class="ink small">Operations decide the value</text>
+  </g>
+  <g transform="translate(1155 790)">
+    <rect x="0" y="0" width="440" height="58" rx="29" fill="#ffffff" stroke="#dce3e3" stroke-width="2"/>
+    <text x="28" y="38" class="ink small">Models become operators</text>
+  </g>
+  <g transform="translate(1638 790)">
+    <rect x="0" y="0" width="420" height="58" rx="29" fill="#ffffff" stroke="#dce3e3" stroke-width="2"/>
+    <text x="28" y="38" class="ink small">Communities gain leverage</text>
+  </g>
+</svg>
