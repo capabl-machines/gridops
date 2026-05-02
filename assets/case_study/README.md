@@ -16,11 +16,13 @@ Official Gemini image-generation docs used:
 
 ## Assets
 
-| File | Purpose |
+Use the `.webp` versions in web pages. Keep the `.png` files as source-quality originals.
+
+| Web asset | Source | Purpose |
 |---|---|
-| `gridops_hero_microgrid.png` | Case-study hero: Indian community microgrid, solar, battery, grid context. |
-| `gridops_control_room.png` | Operational expertise visual: engineers monitoring microgrid dispatch. |
-| `gridops_environment_loop.png` | Environment/model/action loop visual for architecture sections. |
-| `gridops_impact_split.png` | Impact visual contrasting do-nothing vs trained-model operation. |
+| `gridops_hero_microgrid.webp` | `gridops_hero_microgrid.png` | Case-study hero: Indian community microgrid, solar, battery, grid context. |
+| `gridops_control_room.webp` | `gridops_control_room.png` | Operational expertise visual: engineers monitoring microgrid dispatch. |
+| `gridops_environment_loop.webp` | `gridops_environment_loop.png` | Environment/model/action loop visual for architecture sections. |
+| `gridops_impact_split.webp` | `gridops_impact_split.png` | Impact visual contrasting do-nothing vs trained-model operation. |
 
 These are editorial visuals for storytelling. For exact metrics and evidence, use the committed eval plots in `evals/plots/`.
