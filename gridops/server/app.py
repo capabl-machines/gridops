@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -101,29 +101,42 @@ def list_tasks():
     }
 
 
-# ── Root redirect to dashboard ───────────────────────────────────────────
+# ── Root and project pages ───────────────────────────────────────────────
+
+STATIC_DIR = Path(__file__).parent / "static"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+ASSETS_DIR = REPO_ROOT / "assets"
+EVALS_DIR = REPO_ROOT / "evals"
 
 @app.get("/")
 def root_serve():
     """Serve dashboard directly at root so HF Space iframe shows the UI."""
-    from fastapi.responses import HTMLResponse
-    index = Path(__file__).parent / "static" / "index.html"
+    index = STATIC_DIR / "index.html"
     return HTMLResponse(content=index.read_text(), status_code=200)
 
 
 @app.get("/web")
 def web_serve():
     """Serve dashboard at /web (OpenEnv default web UI path)."""
-    from fastapi.responses import HTMLResponse
-    index = Path(__file__).parent / "static" / "index.html"
+    index = STATIC_DIR / "index.html"
+    return HTMLResponse(content=index.read_text(), status_code=200)
+
+
+@app.get("/case-study")
+def case_study_serve():
+    """Serve the Capabl Machines GridOps project case study."""
+    index = STATIC_DIR / "case-study.html"
     return HTMLResponse(content=index.read_text(), status_code=200)
 
 
 # ── Serve dashboard static files ────────────────────────────────────────
 
-STATIC_DIR = Path(__file__).parent / "static"
 if STATIC_DIR.exists():
     app.mount("/dashboard", StaticFiles(directory=str(STATIC_DIR), html=True), name="dashboard")
+if ASSETS_DIR.exists():
+    app.mount("/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
+if EVALS_DIR.exists():
+    app.mount("/evals", StaticFiles(directory=str(EVALS_DIR)), name="evals")
 
 
 def main(host: str = "0.0.0.0", port: int = 8000):
