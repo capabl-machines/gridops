@@ -35,6 +35,14 @@ app = create_app(
     max_concurrent_envs=int(os.environ.get("MAX_CONCURRENT_ENVS", "10")),
 )
 
+
+@app.middleware("http")
+async def add_static_cache_headers(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith(("/assets/", "/evals/")):
+        response.headers.setdefault("Cache-Control", "public, max-age=31536000, immutable")
+    return response
+
 # ── Shared stateful environment for HTTP dashboard ───────────────────────
 # OpenEnv HTTP /reset and /step are stateless (new env per request).
 # The dashboard needs persistent state between reset → step → step...
