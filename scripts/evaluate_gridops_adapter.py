@@ -21,8 +21,19 @@ from gridops.server.environment import GridOpsEnvironment
 from gridops.tasks.definitions import TASKS
 
 
+def model_path_kwargs(path: str) -> tuple[str, dict[str, str]]:
+    """Support local paths, normal Hub ids, and Hub repo subfolders."""
+    if Path(path).exists():
+        return path, {}
+    parts = path.split("/")
+    if len(parts) > 2:
+        return "/".join(parts[:2]), {"subfolder": "/".join(parts[2:])}
+    return path, {}
+
+
 def load_model(base_model: str, adapter_path: str, token: str | None, load_4bit: bool):
-    tokenizer = AutoTokenizer.from_pretrained(adapter_path, token=token)
+    adapter_id, adapter_kwargs = model_path_kwargs(adapter_path)
+    tokenizer = AutoTokenizer.from_pretrained(base_model, token=token)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
@@ -40,7 +51,7 @@ def load_model(base_model: str, adapter_path: str, token: str | None, load_4bit:
         device_map="auto",
         token=token,
     )
-    model = PeftModel.from_pretrained(model, adapter_path, token=token)
+    model = PeftModel.from_pretrained(model, adapter_id, token=token, **adapter_kwargs)
     model.eval()
     return tokenizer, model
 
