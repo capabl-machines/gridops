@@ -41,6 +41,15 @@ TRACE_PATH = os.environ.get("GRIDOPS_TRACE_PATH", "sft_traces/gridops_curriculum
 RUN_LABEL = os.environ.get("GRIDOPS_RUN_LABEL", "sft_qwen25_3b_gridops_curriculum1200_v1")
 MAX_STEPS = int(os.environ.get("GRIDOPS_SFT_STEPS", "300"))
 HF_TOKEN = os.environ.get("HF_API_TOKEN") or os.environ.get("HF_TOKEN")
+PER_DEVICE_BATCH_SIZE = int(os.environ.get("GRIDOPS_BATCH_SIZE", "2"))
+GRADIENT_ACCUMULATION_STEPS = int(os.environ.get("GRIDOPS_GRAD_ACCUM", "8"))
+MAX_LENGTH = int(os.environ.get("GRIDOPS_MAX_LENGTH", "1536"))
+LORA_R = int(os.environ.get("GRIDOPS_LORA_R", "16"))
+LORA_ALPHA = int(os.environ.get("GRIDOPS_LORA_ALPHA", str(LORA_R * 2)))
+LORA_DROPOUT = float(os.environ.get("GRIDOPS_LORA_DROPOUT", "0.05"))
+LEARNING_RATE = float(os.environ.get("GRIDOPS_LEARNING_RATE", "2e-4"))
+UPLOAD_TO_HF = os.environ.get("GRIDOPS_UPLOAD", "1").lower() not in {"0", "false", "no"}
+GRADIENT_CHECKPOINTING = os.environ.get("GRIDOPS_GRADIENT_CHECKPOINTING", "1").lower() not in {"0", "false", "no"}
 
 
 def load_rows(path: str) -> list[dict]:
@@ -79,11 +88,15 @@ def main() -> None:
         device_map="auto",
         token=HF_TOKEN,
     )
+    if GRADIENT_CHECKPOINTING and hasattr(model, "gradient_checkpointing_enable"):
+        model.gradient_checkpointing_enable()
+        if hasattr(model, "config"):
+            model.config.use_cache = False
 
     peft_config = LoraConfig(
-        r=16,
-        lora_alpha=32,
-        lora_dropout=0.05,
+        r=LORA_R,
+        lora_alpha=LORA_ALPHA,
+        lora_dropout=LORA_DROPOUT,
         bias="none",
         task_type="CAUSAL_LM",
         target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
@@ -92,9 +105,9 @@ def main() -> None:
     use_bf16 = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
     train_args = {
         "output_dir": str(out_dir),
-        "per_device_train_batch_size": 2,
-        "gradient_accumulation_steps": 8,
-        "learning_rate": 2e-4,
+        "per_device_train_batch_size": PER_DEVICE_BATCH_SIZE,
+        "gradient_accumulation_steps": GRADIENT_ACCUMULATION_STEPS,
+        "learning_rate": LEARNING_RATE,
         "max_steps": MAX_STEPS,
         "logging_steps": 10,
         "save_steps": max(50, MAX_STEPS),
@@ -109,9 +122,9 @@ def main() -> None:
         if "dataset_text_field" in config_params:
             train_args["dataset_text_field"] = "text"
         if "max_length" in config_params:
-            train_args["max_length"] = 1536
+            train_args["max_length"] = MAX_LENGTH
         elif "max_seq_length" in config_params:
-            train_args["max_seq_length"] = 1536
+            train_args["max_seq_length"] = MAX_LENGTH
         if "packing" in config_params:
             train_args["packing"] = False
         args = SFTConfig(**train_args)
@@ -129,7 +142,7 @@ def main() -> None:
             tokenizer=tokenizer,
             train_dataset=dataset,
             dataset_text_field="text",
-            max_seq_length=1536,
+            max_seq_length=MAX_LENGTH,
             peft_config=peft_config,
             args=args,
         )
@@ -143,20 +156,29 @@ def main() -> None:
         "run_label": RUN_LABEL,
         "sft_steps": MAX_STEPS,
         "dataset_rows": len(dataset),
+        "max_length": MAX_LENGTH,
+        "per_device_train_batch_size": PER_DEVICE_BATCH_SIZE,
+        "gradient_accumulation_steps": GRADIENT_ACCUMULATION_STEPS,
+        "lora_r": LORA_R,
+        "lora_alpha": LORA_ALPHA,
+        "learning_rate": LEARNING_RATE,
     }
     (out_dir / "gridops_sft_metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")
 
-    api = HfApi(token=HF_TOKEN)
-    api.create_repo(MODEL_REPO, repo_type="model", exist_ok=True, private=False)
-    upload_folder(
-        folder_path=str(out_dir),
-        repo_id=MODEL_REPO,
-        repo_type="model",
-        path_in_repo=RUN_LABEL,
-        token=HF_TOKEN,
-        commit_message=f"Upload GridOps SFT adapter {RUN_LABEL}",
-    )
-    print(json.dumps({"uploaded_to": f"{MODEL_REPO}/{RUN_LABEL}", **metrics}, indent=2))
+    upload_target = ""
+    if UPLOAD_TO_HF:
+        api = HfApi(token=HF_TOKEN)
+        api.create_repo(MODEL_REPO, repo_type="model", exist_ok=True, private=False)
+        upload_folder(
+            folder_path=str(out_dir),
+            repo_id=MODEL_REPO,
+            repo_type="model",
+            path_in_repo=RUN_LABEL,
+            token=HF_TOKEN,
+            commit_message=f"Upload GridOps SFT adapter {RUN_LABEL}",
+        )
+        upload_target = f"{MODEL_REPO}/{RUN_LABEL}"
+    print(json.dumps({"uploaded_to": upload_target, **metrics}, indent=2))
 
 
 if __name__ == "__main__":
