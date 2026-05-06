@@ -94,6 +94,21 @@ Every row includes:
 
 ## Training
 
+Optional Kimi K2.6 teacher rewrite:
+
+```bash
+python scripts/rewrite_v4_reasoning_with_teacher.py \
+  --model moonshotai/kimi-k2.6 \
+  --input sft_traces/gridops_curriculum_v4_reason_action.jsonl \
+  --accepted-output sft_traces/gridops_curriculum_v4_kimi_reason_action.jsonl \
+  --summary-output evals/gridops_curriculum_v4_kimi_reason_action_summary.json \
+  --batch-size 5 \
+  --append-original
+```
+
+This rewrites only the `<think>` block. The oracle/simulator-approved action is
+copied from the source trace and revalidated.
+
 Kaggle runner:
 
 ```bash
