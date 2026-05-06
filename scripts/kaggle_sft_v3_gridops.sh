@@ -23,6 +23,21 @@ export GRIDOPS_LORA_ALPHA="${GRIDOPS_LORA_ALPHA:-32}"
 export GRIDOPS_LEARNING_RATE="${GRIDOPS_LEARNING_RATE:-2e-4}"
 export GRIDOPS_GRADIENT_CHECKPOINTING="${GRIDOPS_GRADIENT_CHECKPOINTING:-1}"
 export GRIDOPS_UPLOAD="${GRIDOPS_UPLOAD:-1}"
+export GRIDOPS_SKIP_INSTALL="${GRIDOPS_SKIP_INSTALL:-0}"
+
+if [[ "${GRIDOPS_SKIP_INSTALL}" != "1" ]]; then
+  python -m pip install -q \
+    -e . \
+    "pytest" \
+    "huggingface_hub>=0.34,<1.0" \
+    "transformers>=4.56.2" \
+    "trl>=0.22.2" \
+    "peft>=0.17.1" \
+    "datasets>=4.0" \
+    "accelerate>=1.0" \
+    "bitsandbytes" \
+    "protobuf"
+fi
 
 python scripts/validate_traces.py "${GRIDOPS_TRACE_PATH}"
 python scripts/hf_sft_gridops.py
