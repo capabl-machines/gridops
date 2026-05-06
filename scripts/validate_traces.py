@@ -10,7 +10,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from gridops.prompting import SYSTEM_PROMPT, format_observation, validate_completion
+from gridops.prompting import (
+    REASON_ACTION_SYSTEM_PROMPT,
+    SYSTEM_PROMPT,
+    format_observation,
+    format_reason_action_observation,
+    validate_completion,
+    validate_reason_action_completion,
+)
 
 
 def validate_file(path: Path) -> dict:
@@ -30,16 +37,34 @@ def validate_file(path: Path) -> dict:
             failures.append({"line": line_no, "id": row_id, "reason": "duplicate_id"})
         seen_ids.add(row_id)
 
-        valid, reason = validate_completion(row.get("completion", ""))
+        raw = row.get("raw") or {}
+        prompt_mode = raw.get("prompt_mode", "json")
+        if prompt_mode == "reason_action":
+            valid, reason = validate_reason_action_completion(row.get("completion", ""))
+            expected_system_prompt = REASON_ACTION_SYSTEM_PROMPT
+        else:
+            valid, reason = validate_completion(row.get("completion", ""))
+            expected_system_prompt = SYSTEM_PROMPT
         if not valid:
             failures.append({"line": line_no, "id": row_id, "reason": reason})
 
         messages = row.get("messages") or []
-        if not messages or messages[0].get("content") != SYSTEM_PROMPT:
+        if not messages or messages[0].get("content") != expected_system_prompt:
             failures.append({"line": line_no, "id": row_id, "reason": "system_prompt_mismatch"})
 
-        obs = (row.get("raw") or {}).get("observation")
-        if obs and row.get("prompt") != format_observation(obs):
+        obs = raw.get("observation")
+        if prompt_mode == "reason_action" and obs:
+            expected_prompt = format_reason_action_observation(
+                obs,
+                raw.get("derived_context"),
+                raw.get("previous_action"),
+                raw.get("previous_outcome"),
+            )
+        elif obs:
+            expected_prompt = format_observation(obs)
+        else:
+            expected_prompt = None
+        if expected_prompt and row.get("prompt") != expected_prompt:
             failures.append({"line": line_no, "id": row_id, "reason": "prompt_mismatch"})
 
     return {"counts": dict(counts), "failures": failures}

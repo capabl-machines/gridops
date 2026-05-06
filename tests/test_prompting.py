@@ -1,7 +1,7 @@
 import json
 
 from gridops.models import GridOpsAction
-from gridops.prompting import action_to_json, parse_action, validate_completion
+from gridops.prompting import action_to_json, parse_action, validate_completion, validate_reason_action_completion
 
 
 def test_action_json_round_trip():
@@ -31,3 +31,19 @@ def test_completion_validation_accepts_json_only():
     valid, reason = validate_completion('{"battery_dispatch":0,"diesel_dispatch":0,"demand_shedding":0}')
     assert valid
     assert reason == "ok"
+
+
+def test_reason_action_completion_validates_and_parses_action_block():
+    text = """<think>
+time_context: Evening ramp with no solar.
+1st_order: Demand exceeds supply.
+2nd_order: Diesel prevents blackout.
+previous_action: Last action caused blackout.
+decision: Use backup supply.
+</think>
+<action>
+{"battery_dispatch":1.0,"diesel_dispatch":0.4,"demand_shedding":0.0}
+</action>"""
+    valid, reason = validate_reason_action_completion(text)
+    assert valid, reason
+    assert parse_action(text) == GridOpsAction(battery_dispatch=1.0, diesel_dispatch=0.4, demand_shedding=0.0)

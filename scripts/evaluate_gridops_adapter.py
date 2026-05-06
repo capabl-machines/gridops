@@ -16,9 +16,16 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from gridops.models import GridOpsAction
-from gridops.prompting import messages_for_observation, parse_action, validate_completion
+from gridops.prompting import (
+    messages_for_observation,
+    messages_for_reason_action_observation,
+    parse_action,
+    validate_completion,
+    validate_reason_action_completion,
+)
 from gridops.server.environment import GridOpsEnvironment
 from gridops.tasks.definitions import TASKS
+from scripts.build_gridops_v4_reasoning_traces import derive_context, previous_outcome_from_obs
 
 
 def model_path_kwargs(path: str) -> tuple[str, dict[str, str]]:
@@ -56,10 +63,36 @@ def load_model(base_model: str, adapter_path: str, token: str | None, load_4bit:
     return tokenizer, model
 
 
+def build_messages(
+    obs: dict[str, Any],
+    task_id: str,
+    prompt_mode: str,
+    previous_action: dict[str, Any] | None = None,
+    previous_outcome: dict[str, Any] | None = None,
+) -> list[dict[str, str]]:
+    if prompt_mode == "reason_action":
+        return messages_for_reason_action_observation(
+            obs,
+            derive_context(obs, task_id),
+            previous_action,
+            previous_outcome,
+        )
+    return messages_for_observation(obs)
+
+
 @torch.inference_mode()
-def generate_action(tokenizer, model, obs: dict[str, Any], max_new_tokens: int) -> tuple[str, GridOpsAction, bool, str]:
+def generate_action(
+    tokenizer,
+    model,
+    obs: dict[str, Any],
+    max_new_tokens: int,
+    task_id: str = "task_1_normal",
+    prompt_mode: str = "json",
+    previous_action: dict[str, Any] | None = None,
+    previous_outcome: dict[str, Any] | None = None,
+) -> tuple[str, GridOpsAction, bool, str]:
     prompt = tokenizer.apply_chat_template(
-        messages_for_observation(obs),
+        build_messages(obs, task_id, prompt_mode, previous_action, previous_outcome),
         tokenize=False,
         add_generation_prompt=True,
     )
@@ -73,22 +106,49 @@ def generate_action(tokenizer, model, obs: dict[str, Any], max_new_tokens: int) 
     )
     new_tokens = outputs[0, inputs["input_ids"].shape[-1] :]
     reply = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
-    valid, reason = validate_completion(reply)
+    if prompt_mode == "reason_action":
+        valid, reason = validate_reason_action_completion(reply)
+    else:
+        valid, reason = validate_completion(reply)
     action = parse_action(reply, default=GridOpsAction())
     return reply, action, valid, reason
 
 
-def rollout(tokenizer, model, task_id: str, seed: int, max_new_tokens: int, sample_limit: int) -> dict[str, Any]:
+def rollout(
+    tokenizer,
+    model,
+    task_id: str,
+    seed: int,
+    max_new_tokens: int,
+    sample_limit: int,
+    prompt_mode: str,
+) -> dict[str, Any]:
     env = GridOpsEnvironment()
     obs = env.reset(seed=seed, task_id=task_id)
     valid_actions = 0
     total_actions = 0
     invalid_examples: list[dict[str, Any]] = []
     samples: list[dict[str, Any]] = []
+    previous_action: dict[str, Any] | None = None
+    previous_outcome: dict[str, Any] | None = None
+    prior_obs: dict[str, Any] | None = None
+    prior_model_action: GridOpsAction | None = None
 
     for _ in range(72):
         obs_dict = obs.model_dump()
-        reply, action, valid, reason = generate_action(tokenizer, model, obs_dict, max_new_tokens)
+        if prior_obs is not None and prior_model_action is not None:
+            previous_outcome = previous_outcome_from_obs(obs_dict, prior_obs, prior_model_action)
+            previous_action = prior_model_action.model_dump()
+        reply, action, valid, reason = generate_action(
+            tokenizer,
+            model,
+            obs_dict,
+            max_new_tokens,
+            task_id=task_id,
+            prompt_mode=prompt_mode,
+            previous_action=previous_action,
+            previous_outcome=previous_outcome,
+        )
         valid_actions += int(valid)
         total_actions += 1
         if valid and len(samples) < sample_limit:
@@ -111,6 +171,8 @@ def rollout(tokenizer, model, task_id: str, seed: int, max_new_tokens: int, samp
                     "reply": reply[:500],
                 }
             )
+        prior_obs = obs_dict
+        prior_model_action = action
         obs = env.step(action)
         if obs.done:
             break
@@ -170,6 +232,7 @@ def main() -> None:
     parser.add_argument("--seeds", default="7001,7002,7003")
     parser.add_argument("--tasks", default=",".join(TASKS))
     parser.add_argument("--max-new-tokens", type=int, default=64)
+    parser.add_argument("--prompt-mode", choices=["json", "reason_action"], default=os.environ.get("GRIDOPS_PROMPT_MODE", "json"))
     parser.add_argument("--sample-limit", type=int, default=5)
     parser.add_argument("--output", default="evals/gridops_sft_adapter_eval.json")
     parser.add_argument("--no-4bit", action="store_true")
@@ -183,7 +246,7 @@ def main() -> None:
     rows = []
     for task_id in task_ids:
         for seed in seeds:
-            result = rollout(tokenizer, model, task_id, seed, args.max_new_tokens, args.sample_limit)
+            result = rollout(tokenizer, model, task_id, seed, args.max_new_tokens, args.sample_limit, args.prompt_mode)
             rows.append(result)
             print(
                 json.dumps(

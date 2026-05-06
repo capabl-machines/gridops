@@ -5,6 +5,9 @@ Use this when RunPod is unavailable and we need a near-free GPU.
 For the full teaching/process version of this workflow, see
 `docs/SLM_POST_TRAINING_BOOTCAMP.md`.
 
+For the v4 reasoning-action correction dataset and runner, see
+`docs/V4_REASONING_DATASET.md`.
+
 ## Kaggle Setup
 
 1. Create a Kaggle Notebook.
