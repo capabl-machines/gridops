@@ -1,386 +1,396 @@
-# Post-Training Small Language Models: GridOps Bootcamp Playbook
+# Build Your Own AI: Post-Training SLM Bootcamp Playbook
 
-This document captures the end-to-end process we used across CarbonAlpha and
-GridOps, shaped into a practical 1-2 day bootcamp for Indian AI students who
-want to post-train a small language model for a real decision environment.
+This bootcamp is not about fine-tuning a chatbot.
 
-The core lesson is simple: do not train a model on vibes. Build an environment,
-define the action contract, generate traces through a curriculum, train a small
-model to obey the contract, evaluate it against baselines, and publish enough
-evidence that someone else can reproduce the work.
+It is about enabling students, builders, founders, researchers, and operators to
+build their own domain AI systems for their own use cases: energy, water,
+gaming, sustainability, agriculture, robotics, rocketry, logistics,
+manufacturing, education, finance, and any other field where decisions can be
+defined, checked, improved, and deployed.
 
-## Why This Bootcamp Should Exist
-
-India is adding solar, batteries, EV charging, and distributed energy assets at
-neighbourhood scale. Apartments, societies, campuses, villages, industrial
-parks, and small microgrid operators increasingly face the same operational
-question every hour:
+GridOps and CarbonAlpha are case studies. The real lesson is the reusable
+process behind them.
 
 ```text
-How do we keep the lights on, use the battery wisely, avoid diesel overuse,
-and reduce cost without needing a full-time expert operator?
+Use case -> environment -> schema -> data curriculum -> SFT -> evals -> RL -> demo
 ```
 
-That is a strong AI training problem because it has:
+The bootcamp goal is to help each participant leave with a repeatable mental
+model and a working starter kit for building a small, useful, domain-trained AI.
 
-- a real environment with measurable outcomes;
-- a compact action schema;
-- obvious baselines to beat;
-- simulator feedback;
-- high social and commercial impact;
-- a path from model to usable operations tool.
+## The Core Belief
 
-The bootcamp goal is not to create a chatbot. The goal is to create a compact
-"capabl machine": a model-backed decision layer that can read structured state,
-emit valid actions, and improve an operational score.
+India does not only need people who can call an API. India needs builders who
+can turn local domain knowledge into capable machines.
 
-## Case Study: GridOps
+That might mean:
 
-GridOps is a community microgrid optimization environment. At each step the
-model receives an hourly observation and must output a JSON action:
+- a housing society AI that schedules solar battery usage;
+- a farmer-support AI that recommends irrigation actions under water scarcity;
+- a robotics AI that selects safe warehouse movement primitives;
+- a gaming AI that learns a custom NPC strategy policy;
+- a rocketry AI that validates test-stand procedures;
+- a factory AI that detects and responds to machine operating states;
+- a sustainability AI that manages carbon-aware procurement;
+- a logistics AI that allocates vehicles under fuel and route constraints.
+
+The common pattern is the same:
+
+```text
+The model must read state, choose an action, obey constraints, and improve a
+measurable outcome.
+```
+
+When students understand that pattern, they are no longer limited to copying
+notebooks. They can build their own AI for their own world.
+
+## What "Build Your Own AI" Means
+
+In this bootcamp, "from scratch" does not mean pretraining a foundation model
+from zero tokens. That is expensive and unnecessary for most teams.
+
+It means building the whole applied AI system from first principles:
+
+- define the problem;
+- create the environment or task harness;
+- define the input and output contract;
+- generate or collect domain traces;
+- validate every training example;
+- post-train a small language model;
+- evaluate it against baselines;
+- package the result as a model, dataset, demo, and model card.
+
+The model is only one part. The real product is the harness around the model.
+
+## The Universal Process
+
+### 1. Choose A Real Use Case
+
+Start with a problem where better decisions matter.
+
+Good bootcamp use cases have:
+
+- a clear user or operator;
+- a state that can be observed;
+- an action that can be taken;
+- constraints that must not be violated;
+- an objective that can be measured;
+- enough examples, simulations, logs, or expert rules to create traces.
+
+Weak use cases sound like:
+
+```text
+Make a general assistant for X.
+```
+
+Strong use cases sound like:
+
+```text
+Given this state of X, choose the next valid action that improves metric Y
+without violating constraint Z.
+```
+
+Examples:
+
+| Domain | State | Action | Objective |
+| --- | --- | --- | --- |
+| Energy | demand, solar, battery SOC, price | battery/diesel/shedding action | lower cost, avoid blackout |
+| Water | tank level, rainfall, demand, pump health | pump schedule | avoid shortage, reduce power cost |
+| Gaming | player state, enemy state, map | next move or strategy | win rate, fun, difficulty balance |
+| Robotics | sensors, pose, obstacle map | movement primitive | reach goal safely |
+| Rocketry | test readings, procedure stage | next checklist action | safe test progression |
+| Agriculture | crop, soil, weather, water | irrigation/fertilizer action | yield, water efficiency |
+| Logistics | orders, vehicles, traffic, fuel | dispatch route | on-time delivery, lower cost |
+| Sustainability | supplier, price, carbon, demand | procurement allocation | cost under carbon budget |
+
+### 2. Convert The Use Case Into A Contract
+
+Every serious training project needs a contract before it needs a model.
+
+Define:
+
+- input schema;
+- output schema;
+- valid action bounds;
+- invalid action behavior;
+- success metric;
+- failure modes;
+- baseline policies;
+- evaluation seeds or holdout set.
+
+Example output contracts:
 
 ```json
 {"battery_dispatch": 0.0, "diesel_dispatch": 0.0, "demand_shedding": 0.0}
 ```
 
-The environment then scores whether the action made sense. The model is not
-rewarded for sounding intelligent. It is rewarded for operational behavior:
+```json
+{"pump_1": "on", "pump_2": "off", "duration_minutes": 30}
+```
 
-- battery use aligned with solar, price, demand, and state of charge;
-- diesel used when necessary but not wasted;
-- demand shedding minimized and used only under stress;
-- blackout risk controlled;
-- cost controlled;
-- task score improved over do-nothing and weak policies.
+```json
+{"move": "advance", "speed": 0.4, "turn_degrees": -15}
+```
 
-The first milestone is SFT, not RL. The model must first become reliable at
-emitting valid JSON actions before any reinforcement learning is worth doing.
+Rule:
 
-## The End-To-End Process
+```text
+If the output cannot be parsed, validated, and scored, it is not ready for
+training.
+```
 
-### 1. Define The Environment Contract
+### 3. Build The Environment Or Harness
 
-Before training, write down the machine-readable contract:
+The harness is where the model meets reality.
 
-- observation schema;
-- action schema;
-- valid action bounds;
-- task IDs;
-- reset and step semantics;
-- scoring function;
-- baselines;
-- failure modes.
+Depending on the use case, the harness can be:
 
-For GridOps, the contract lives around:
+- a simulator;
+- a game engine;
+- a spreadsheet-like evaluator;
+- a Python rules engine;
+- a robotics sandbox;
+- a historical backtest;
+- an API wrapper around real tools;
+- a human review interface with validators.
 
-- `gridops.models.GridOpsObservation`
-- `gridops.models.GridOpsAction`
-- `/api/reset`
-- `/api/step`
-- `/ws`
-- the dashboard
-- the oracle and adversarial policies
+The harness should answer:
 
-Rule for students: if the output cannot be parsed and scored, it is not a
-training target yet.
+- did the action parse?
+- was it valid?
+- what happened after the action?
+- what score did it get?
+- which baseline did it beat or lose to?
 
-### 2. Build Baselines First
+This is why OpenEnv-style thinking is powerful. It forces the project to become
+an environment, not just a prompt.
 
-Baselines turn model performance into an honest comparison.
+### 4. Establish Baselines
+
+Never train without baselines.
 
 Minimum baselines:
 
-- do-nothing or grid-only policy;
-- simple heuristic or oracle policy;
+- do-nothing policy;
+- simple heuristic;
+- domain expert or oracle policy;
 - untouched base/instruct model;
 - SFT-only model;
-- later, RL-refined model if SFT passes gates.
+- later, RL-refined model if useful.
 
-For GridOps, adversarial policies are useful teaching tools:
+Baselines make the project honest. If a simple heuristic is better than the
+model, that is not failure. It is information. The next dataset should teach the
+model exactly where the heuristic wins.
 
-- always charge;
-- always discharge;
-- always diesel;
-- shed-farmer;
-- diesel-chatter;
-- blackout-acceptor;
-- price-greedy;
-- grid-only.
+### 5. Create A Curriculum Dataset
 
-These policies reveal what bad control looks like. Students can inspect why
-they fail before trusting a trained model.
+A good dataset is a teaching plan.
 
-### 3. Create A Curriculum Dataset
+Split traces into:
 
-A good post-training dataset is not just a pile of examples. It is a syllabus
-for the model.
+- easy: format, common cases, obvious actions;
+- medium: competing signals, partial ambiguity, timing tradeoffs;
+- hard: rare failures, counterintuitive moves, resource scarcity, edge cases.
 
-GridOps v3 curriculum shape:
+Each trace should contain:
 
-- format anchors: teach exact JSON output;
-- normal states: teach battery timing and cost control;
-- heatwave states: teach demand pressure and rebound behavior;
-- crisis states: teach outage, low SOC, diesel scarcity, and shedding tradeoffs;
-- failure replay: teach corrections from known bad policies;
-- tool-augmented traces: allow LLM proposers, but let the simulator decide.
-
-Difficulty tags:
-
-- easy: common states, obvious valid action, format learning;
-- medium: competing signals such as high demand but low price, or solar about to
-  arrive;
-- hard: outage, low SOC, diesel scarcity, rebound, or multiple risks at once.
-
-Every trace should include:
-
-- task;
-- seed;
-- hour;
-- observation snapshot;
-- chosen action;
-- oracle action;
+- trace ID;
+- domain/task;
+- seed or source;
+- observation;
+- target action;
+- baseline action;
 - score context;
 - difficulty;
 - focus tags;
 - validation status;
-- source policy or proposer model.
+- source of label.
 
-For this repo, the current v3 dataset is:
+Trace sources can include:
+
+- expert demonstrations;
+- rule-based oracle;
+- simulator search;
+- historical logs;
+- human annotation;
+- frontier model proposal;
+- failure replay from earlier model errors.
+
+The bootcamp should teach students this sentence:
 
 ```text
-sft_traces/gridops_curriculum_v3_tool_augmented.jsonl
+Do not just generate more data. Generate the next data your model needs.
 ```
 
-Current size:
+### 6. Use Frontier Models As Assistants, Not Judges
 
-```text
-2,111 traces
-```
+Large frontier models can help create candidate traces, explain failures, and
+suggest edge cases. They should not be treated as truth.
 
-### 4. Use Frontier Models As Proposers, Not Truth
+Recommended pattern:
 
-DeepSeek, Gemma, Gemini, Claude, GPT, or any other strong model can help propose
-candidate actions or edge cases. But the simulator remains the judge.
+1. sample states from the environment;
+2. ask a strong model for candidate actions in strict JSON;
+3. validate the JSON locally;
+4. score candidates in the environment;
+5. compare against baseline and oracle;
+6. accept useful candidates;
+7. store rejected candidates for failure analysis.
 
-The pattern:
+For our GridOps v3 work:
 
-1. sample observations from fixed seeds;
-2. send 10 observations per API call when practical;
-3. request strict JSON actions;
-4. validate through Pydantic;
-5. score in the simulator;
-6. compare against oracle and baselines;
-7. accept, reject, or store as failure replay.
+- DeepSeek V4 Flash proposed cheap candidate actions;
+- Gemma 4 26B A4B added diversity;
+- DeepSeek V4 Pro was reserved for harder judgments;
+- the Python simulator, not the LLM, decided what survived.
 
-For GridOps v3:
+This pattern generalizes to any domain.
 
-- primary proposer: DeepSeek V4 Flash through OpenRouter;
-- diversity proposer: Gemma 4 26B A4B through OpenRouter;
-- escalation judge: DeepSeek V4 Pro for hard or close cases;
-- storage: accepted and rejected JSONL files plus summary metrics.
+### 7. Validate Before Training
 
-Important rule: SFT completions remain JSON-only. Reasoning can be stored in
-metadata if useful, but the trained model should emit the exact action contract.
+Validation protects GPU time.
 
-### 5. Validate Before Training
+Check:
 
-Validation catches expensive mistakes before the GPU starts.
-
-Checklist:
-
-- every completion parses as JSON;
-- every action validates through `GridOpsAction`;
-- prompts match the inference prompt format;
+- prompts match inference format;
+- completions parse as JSON or required schema;
+- actions satisfy bounds;
 - no duplicate trace IDs;
 - task distribution is intentional;
-- hard examples are present;
-- rejected traces are preserved separately;
-- a small sample is manually inspected.
+- hard cases exist;
+- labels are not constant;
+- rejected examples are preserved separately;
+- small samples are manually inspected.
 
-Command:
+Validation is not paperwork. It is model quality.
 
-```bash
-python scripts/validate_traces.py sft_traces/gridops_curriculum_v3_tool_augmented.jsonl
-```
+### 8. Train With SFT First
 
-### 6. Train With SFT First
+SFT teaches:
 
-Recommended first model:
+- output format;
+- domain vocabulary;
+- common actions;
+- base-rate behavior;
+- schema discipline;
+- compact reasoning or no-reasoning style.
 
-```text
-Qwen/Qwen2.5-3B-Instruct
-```
+Recommended starting models:
 
-Fallback for tight GPUs:
-
-```text
-Qwen/Qwen2.5-1.5B-Instruct
-```
+- `Qwen/Qwen2.5-1.5B-Instruct` for low-cost experiments;
+- `Qwen/Qwen2.5-3B-Instruct` for stronger small-model performance;
+- 7B models only when GPU budget allows.
 
 Training style:
 
-- QLoRA adapter;
-- batch size 1;
+- LoRA or QLoRA;
+- small batch size;
 - gradient accumulation;
-- max length 1024-1280 on Kaggle T4;
-- gradient checkpointing on;
-- upload adapter to a new Hugging Face subfolder.
-
-Kaggle runner:
-
-```bash
-bash scripts/kaggle_sft_v3_gridops.sh
-```
-
-Kaggle notes:
-
-- T4 x2 means two 15 GB GPUs, not one 30 GB GPU;
-- assume one 15 GB GPU unless the training stack clearly uses both;
-- start with 100 steps as a smoke run;
-- scale only after loss and evals look healthy.
+- fixed run label;
+- no overwrite of previous artifacts;
+- upload to Hugging Face under a new subfolder.
 
 Healthy SFT signals:
 
-- loss decreases and stabilizes;
-- mean token accuracy rises;
-- grad norm is nonzero and not NaN;
-- samples remain valid JSON;
-- the model does not collapse to constant actions.
+- loss decreases;
+- token accuracy rises;
+- grad norm is nonzero;
+- samples remain valid;
+- model does not collapse to one constant answer.
 
-### 7. Evaluate The Model Like An Operator
+### 9. Evaluate Like The Real User
 
-Low loss is not enough. The model must operate the grid.
+Loss is not the final metric. The real metric is whether the model helps the
+domain.
 
-Evaluation metrics:
+Evaluation layers:
 
-- valid action rate;
-- average score by task;
-- score against do-nothing;
-- score against oracle;
-- blackout kWh;
-- diesel kWh;
-- demand shed kWh;
-- total cost;
-- battery dispatch behavior by SOC, solar, price, and outage status.
+- parse and validity rate;
+- task score;
+- cost, safety, regret, or domain metric;
+- performance by difficulty;
+- performance by scenario;
+- comparison against do-nothing;
+- comparison against heuristic/oracle;
+- manual challenge set;
+- demo behavior.
 
-Promotion gates:
+A strong eval names the next improvement:
 
-- valid action rate at least 99.5 percent;
-- task 1 keeps battery improvement;
-- task 2 handles heatwave and rebound;
-- task 3 recovers crisis performance;
-- average holdout beats v1 and v2;
-- no task falls below do-nothing baseline.
+```text
+The model handles normal cases, but fails under low-resource crisis states.
+Next data: crisis traces with low resource and rebound examples.
+```
 
-Manual challenge set:
+### 10. Use RL Only After SFT Is Stable
 
-- low SOC before outage;
-- excess solar at noon;
-- high price evening ramp;
-- heatwave demand spike;
-- diesel scarcity;
-- rebound after shedding;
-- cloudy day with limited solar;
-- normal night demand;
-- battery almost full;
-- grid outage with critical load.
+RL is not a magic first step. It is a refinement tool.
 
-### 8. Only Then Consider RL
+Use RL only when:
 
-RL is useful only after the model reliably emits valid actions.
+- the model already emits valid actions;
+- reward functions are executable;
+- there is reward variance;
+- holdout eval can catch regressions;
+- the SFT model remains preserved.
 
-Reward components should map to portfolio or grid reality, not abstract text
-quality:
+Reward components should map to the domain:
 
 - schema reward;
 - valid action reward;
 - task score reward;
-- regret against oracle;
-- blackout penalty;
-- diesel overuse penalty;
-- demand shedding penalty;
+- regret against baseline;
+- safety or constraint penalty;
 - cost penalty;
-- battery sanity reward.
+- resource-use penalty;
+- robustness reward.
 
-RL smoke gate:
+If RL hurts reliability, ship the SFT model and document RL as an experiment.
 
-- run 5-10 steps first;
-- completion length is not collapsed;
-- parse rate stays high;
-- grad norm is nonzero;
-- reward variance is nonzero;
-- at least one holdout metric improves.
+### 11. Package The AI System
 
-If RL breaks reliability, keep the SFT model. The safe model is an asset.
+A serious project should publish:
 
-## Bootcamp Format
-
-### One-Day Version
-
-Morning:
-
-- problem framing: from chatbot to decision machine;
-- GridOps environment walkthrough;
-- action schema and scoring;
-- baselines and adversarial policies;
-- trace format and curriculum design.
-
-Afternoon:
-
-- generate or inspect traces;
-- validate dataset;
-- launch QLoRA SFT on Kaggle or Colab;
-- inspect training logs;
-- run holdout eval;
-- package model card and demo notes.
-
-Outcome:
-
-- each student understands the full loop;
-- one shared model run completes or reaches a useful checkpoint;
-- students leave with a reproducible template.
-
-### Two-Day Version
-
-Day 1:
-
-- environment contract;
-- baselines;
-- oracle and adversarial policies;
-- curriculum dataset design;
-- OpenRouter or Gemini-based trace proposal;
-- validation and dataset ledger.
-
-Day 2:
-
-- SFT training;
-- evals and failure analysis;
+- dataset or dataset card;
+- training script;
+- notebook for Colab/Kaggle;
+- model or adapter;
 - model card;
-- Hugging Face upload;
-- demo/dashboard integration;
-- optional RL design discussion.
+- evaluation table;
+- plots from a real run;
+- demo or API;
+- README with links;
+- known limitations.
 
-Outcome:
+This is what separates a weekend experiment from a credible AI system.
 
-- students build a complete post-training project;
-- teams compare model behavior across tasks;
-- best teams submit a model card, eval table, and demo video.
+## Case Studies
 
-## Student Project Template
+### GridOps
 
-Every team should produce:
+Problem:
 
-- `README.md`: problem, environment, results, links;
-- `docs/process.md`: task contract and training process;
-- `sft_traces/*.jsonl`: validated curriculum;
-- `scripts/validate_traces.py`: parser and validator;
-- `scripts/train_sft.py`: reproducible SFT runner;
-- `scripts/evaluate_model.py`: holdout eval;
-- `notebooks/*.ipynb` or notebook-style `.py`: Colab/Kaggle run;
-- Hugging Face model card;
-- 5-10 failure examples and what they teach.
+```text
+Given hourly microgrid state, choose battery, diesel, and shedding actions.
+```
 
-## Artifact Ledger For GridOps
+Why it matters:
+
+India is rapidly adding solar, batteries, EV charging, and distributed energy
+assets. Apartments, societies, campuses, villages, and industrial parks will
+need intelligence layers that reduce cost and keep power reliable without
+requiring a full-time expert operator everywhere.
+
+What we built:
+
+- OpenEnv-compatible microgrid environment;
+- strict JSON action schema;
+- oracle and adversarial policies;
+- curriculum traces across normal, heatwave, and crisis tasks;
+- OpenRouter-assisted data factory;
+- Qwen2.5 SFT pipeline;
+- Kaggle training runner;
+- holdout evaluation plan.
 
 Current important files:
 
@@ -401,26 +411,144 @@ Current Hugging Face target:
 77ethers/gridops-models/sft_qwen25_3b_gridops_tool_augmented_v3
 ```
 
-## Teaching Philosophy
+### CarbonAlpha
 
-Students should leave with one deep mental model:
+Problem:
 
 ```text
-The model is only one component. The real product is the harness around it.
+Given macro news and portfolio state, allocate under return, risk, and carbon
+constraints.
 ```
 
-The harness includes:
+What it taught us:
 
-- environment;
-- schema;
-- data factory;
-- validators;
-- baselines;
-- rewards;
-- evals;
-- logs;
-- model card;
-- demo;
-- deployment path.
+- preserve a safe SFT model before RL;
+- make rewards match the domain;
+- keep model artifacts isolated;
+- use holdout regret and parseability as gates;
+- document training evidence with plots, logs, model cards, and demo links.
 
-That is the difference between a prompt experiment and a serious AI system.
+CarbonAlpha shows how the same process applies outside energy operations:
+environment, schema, traces, SFT, RL reward design, evals, model card, demo.
+
+## Bootcamp Formats
+
+### One-Day Bootcamp
+
+Morning:
+
+- mindset: from chatbot to domain AI system;
+- use-case selection;
+- environment and schema design;
+- baselines and validators;
+- case study walkthrough.
+
+Afternoon:
+
+- curriculum dataset design;
+- trace validation;
+- SFT launch on Kaggle/Colab;
+- reading training logs;
+- eval and model card template;
+- student use-case planning clinic.
+
+Outcome:
+
+- students understand the full loop;
+- each team has a problem contract and dataset plan;
+- one shared training run reaches a visible checkpoint.
+
+### Two-Day Bootcamp
+
+Day 1:
+
+- choose a domain problem;
+- define state, action, constraints, and metric;
+- build or adapt a small harness;
+- create baselines;
+- design easy/medium/hard traces;
+- generate or inspect a starter dataset.
+
+Day 2:
+
+- validate traces;
+- run SFT;
+- evaluate against baselines;
+- inspect failures;
+- design next data;
+- package model card and demo;
+- optional RL/reward design session.
+
+Outcome:
+
+- every team leaves with a reproducible project skeleton;
+- stronger teams leave with a trained adapter and eval table;
+- everyone understands how to continue improving the model after the bootcamp.
+
+## Student Deliverables
+
+Each team should produce:
+
+- problem statement;
+- input/output schema;
+- environment or evaluator;
+- baseline policies;
+- curriculum dataset plan;
+- at least 50-200 validated starter traces;
+- SFT training command or notebook;
+- eval table;
+- 5 failure cases;
+- next-data plan;
+- README or model card.
+
+Stretch deliverables:
+
+- 1,000+ trace curriculum;
+- trained LoRA adapter;
+- Hugging Face model card;
+- public demo;
+- RL reward design;
+- short video walkthrough.
+
+## Reusable Project Skeleton
+
+```text
+my-domain-ai/
+  README.md
+  pyproject.toml
+  domain_env/
+    models.py
+    env.py
+    scoring.py
+    prompting.py
+  scripts/
+    generate_traces.py
+    validate_traces.py
+    train_sft.py
+    evaluate_model.py
+  sft_traces/
+    curriculum_v1.jsonl
+  evals/
+    baseline_summary.json
+    model_holdout.json
+  notebooks/
+    train_on_kaggle.py
+  docs/
+    process.md
+    model_card.md
+```
+
+## The Bootcamp Promise
+
+By the end, students should be able to say:
+
+```text
+I know how to convert a domain problem into an AI training problem.
+I know how to build the harness, generate the data, train the model, evaluate
+it, and publish the result.
+```
+
+That is the real crux.
+
+The future is not only bigger models. It is millions of smaller, sharper,
+domain-trained machines built by people who understand their own problems.
