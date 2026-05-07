@@ -109,6 +109,24 @@ python scripts/rewrite_v4_reasoning_with_teacher.py \
 This rewrites only the `<think>` block. The oracle/simulator-approved action is
 copied from the source trace and revalidated.
 
+Current Kimi teacher checkpoint:
+
+```text
+sft_traces/gridops_curriculum_v4_kimi_reason_action_250.jsonl
+evals/gridops_curriculum_v4_kimi_reason_action_250_summary.json
+```
+
+It contains the 4,000 deterministic v4 rows plus 250 accepted Kimi teacher
+rewrites, with 50 rows each from the five selected buckets:
+
+```text
+normal_no_diesel
+previous_action_correction
+heatwave_rebound
+low_resource_edges
+crisis_diesel_positive
+```
+
 Kaggle runner:
 
 ```bash
