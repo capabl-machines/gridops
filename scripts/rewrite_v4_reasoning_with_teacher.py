@@ -59,6 +59,24 @@ def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
             f.write(json.dumps(row, separators=(",", ":")) + "\n")
 
 
+def append_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a") as f:
+        for row in rows:
+            f.write(json.dumps(row, separators=(",", ":")) + "\n")
+
+
+def source_id_for_row(row: dict[str, Any]) -> str:
+    raw = row.get("raw") or {}
+    return str(raw.get("teacher_source_id") or row.get("id", ""))
+
+
+def teacher_source_id_for_row(row: dict[str, Any]) -> str | None:
+    raw = row.get("raw") or {}
+    source_id = raw.get("teacher_source_id")
+    return str(source_id) if source_id else None
+
+
 def action_matches(row: dict[str, Any], action: dict[str, Any]) -> bool:
     expected = row.get("action") or {}
     for key in ["battery_dispatch", "diesel_dispatch", "demand_shedding"]:
@@ -264,6 +282,12 @@ def selected_rows(rows: list[dict[str, Any]], limit: int, buckets: list[str], pe
     return selected
 
 
+def load_existing_source_ids(path: Path) -> set[str]:
+    if not path.exists():
+        return set()
+    return {source_id for row in load_jsonl(path) if (source_id := teacher_source_id_for_row(row))}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default=DEFAULT_INPUT)
@@ -280,7 +304,9 @@ def main() -> None:
     parser.add_argument("--timeout", type=float, default=180.0)
     parser.add_argument("--retries", type=int, default=2)
     parser.add_argument("--sleep", type=float, default=3.0)
+    parser.add_argument("--between-batch-sleep", type=float, default=0.0)
     parser.add_argument("--append-original", action="store_true")
+    parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
 
     load_dotenv()
@@ -290,12 +316,18 @@ def main() -> None:
 
     source_rows = load_jsonl(Path(args.input))
     rows = selected_rows(source_rows, args.limit, args.bucket, args.per_bucket)
+    existing_source_ids: set[str] = set()
+    if args.resume:
+        existing_source_ids = load_existing_source_ids(Path(args.accepted_output))
+        rows = [row for row in rows if row["id"] not in existing_source_ids]
     accepted: list[dict[str, Any]] = []
     rejected: list[dict[str, Any]] = []
     usage_totals: Counter[str] = Counter()
 
     for start in range(0, len(rows), args.batch_size):
         batch = rows[start : start + args.batch_size]
+        batch_accepted: list[dict[str, Any]] = []
+        batch_rejected: list[dict[str, Any]] = []
         try:
             by_id, usage = request_batch(
                 batch,
@@ -312,20 +344,25 @@ def main() -> None:
                     usage_totals[key] += value
         except Exception as exc:
             for row in batch:
-                rejected.append({"id": row["id"], "reason": f"api_error:{type(exc).__name__}:{str(exc)[:300]}"})
+                batch_rejected.append({"id": row["id"], "reason": f"api_error:{type(exc).__name__}:{str(exc)[:300]}"})
+            rejected.extend(batch_rejected)
+            if args.resume:
+                append_jsonl(Path(args.rejected_output), batch_rejected)
             print(json.dumps({"batch": start // args.batch_size, "accepted": len(accepted), "error": str(exc)[:300]}), flush=True)
             continue
 
         for row in batch:
             item = by_id.get(row["id"])
             if not item:
-                rejected.append({"id": row["id"], "reason": "missing_teacher_item"})
+                batch_rejected.append({"id": row["id"], "reason": "missing_teacher_item"})
                 continue
             rewritten, reason = apply_teacher(row, item, args.model)
             if rewritten is None:
-                rejected.append({"id": row["id"], "reason": reason, "teacher_item": item})
+                batch_rejected.append({"id": row["id"], "reason": reason, "teacher_item": item})
             else:
-                accepted.append(rewritten)
+                batch_accepted.append(rewritten)
+        accepted.extend(batch_accepted)
+        rejected.extend(batch_rejected)
         print(
             json.dumps(
                 {
@@ -337,17 +374,32 @@ def main() -> None:
             ),
             flush=True,
         )
+        if args.resume:
+            append_jsonl(Path(args.accepted_output), batch_accepted)
+            if batch_rejected:
+                append_jsonl(Path(args.rejected_output), batch_rejected)
+        if args.between_batch_sleep > 0 and start + len(batch) < len(rows):
+            time.sleep(args.between_batch_sleep)
 
-    output_rows = source_rows + accepted if args.append_original else accepted
-    write_jsonl(Path(args.accepted_output), output_rows)
-    write_jsonl(Path(args.rejected_output), rejected)
+    if args.resume:
+        output_rows = load_jsonl(Path(args.accepted_output)) if Path(args.accepted_output).exists() else []
+        if args.append_original:
+            teacher_rows = [row for row in output_rows if teacher_source_id_for_row(row)]
+            output_rows = source_rows + teacher_rows
+            write_jsonl(Path(args.accepted_output), output_rows)
+    else:
+        output_rows = source_rows + accepted if args.append_original else accepted
+        write_jsonl(Path(args.accepted_output), output_rows)
+        write_jsonl(Path(args.rejected_output), rejected)
 
     bucket_counts = Counter((row.get("raw") or {}).get("bucket", "unknown") for row in accepted)
     task_counts = Counter(row.get("task_id", "unknown") for row in accepted)
     summary = {
         "model": args.model,
         "source_input": args.input,
-        "selected_rows": len(rows),
+        "selected_rows": len(rows) + len(existing_source_ids),
+        "skipped_existing_rows": len(existing_source_ids),
+        "attempted_rows_this_run": len(rows),
         "accepted_teacher_rows": len(accepted),
         "output_rows": len(output_rows),
         "rejected": len(rejected),
