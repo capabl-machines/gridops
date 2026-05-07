@@ -136,18 +136,24 @@ bash scripts/kaggle_sft_v4_reasoning.sh
 Default adapter target:
 
 ```text
-77ethers/gridops-models/sft_qwen25_3b_gridops_reason_action_v4
+77ethers/gridops-models/sft_qwen25_3b_gridops_kimi_reason_action_v4
 ```
 
 Default settings:
 
 ```text
 base: Qwen/Qwen2.5-3B-Instruct
-steps: 250
+steps: 300
 max_length: 1536
 batch_size: 1
 grad_accum: 8
 LoRA r: 16
+```
+
+Kaggle notebook-style script:
+
+```text
+notebooks/gridops_kaggle_sft_v4_reasoning.py
 ```
 
 ## Evaluation
@@ -157,11 +163,11 @@ Use the reasoning prompt mode:
 ```bash
 python scripts/evaluate_gridops_adapter.py \
   --base-model Qwen/Qwen2.5-3B-Instruct \
-  --adapter-path 77ethers/gridops-models/sft_qwen25_3b_gridops_reason_action_v4 \
+  --adapter-path 77ethers/gridops-models/sft_qwen25_3b_gridops_kimi_reason_action_v4 \
   --prompt-mode reason_action \
   --max-new-tokens 220 \
   --seeds 7001,7002,7003 \
-  --output evals/gridops_sft_reason_action_v4_holdout_7001_7003.json
+  --output evals/gridops_sft_kimi_reason_action_v4_holdout_7001_7003.json
 ```
 
 Promotion gate:
