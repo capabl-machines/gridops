@@ -112,12 +112,12 @@ copied from the source trace and revalidated.
 Current Kimi teacher checkpoint:
 
 ```text
-sft_traces/gridops_curriculum_v4_kimi_reason_action_250.jsonl
-evals/gridops_curriculum_v4_kimi_reason_action_250_summary.json
+sft_traces/gridops_curriculum_v4_kimi_reason_action_500.jsonl
+evals/gridops_curriculum_v4_kimi_reason_action_500_summary.json
 ```
 
-It contains the 4,000 deterministic v4 rows plus 250 accepted Kimi teacher
-rewrites, with 50 rows each from the five selected buckets:
+It contains the 4,000 deterministic v4 rows plus 500 accepted Kimi teacher
+rewrites, with 100 rows each from the five selected buckets:
 
 ```text
 normal_no_diesel

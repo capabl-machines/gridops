@@ -1,0 +1,33 @@
+{
+  "model": "moonshotai/kimi-k2.6",
+  "source_input": "sft_traces/gridops_curriculum_v4_reason_action.jsonl",
+  "selected_rows": 500,
+  "skipped_existing_rows": 250,
+  "attempted_rows_this_run": 250,
+  "accepted_teacher_rows": 250,
+  "output_rows": 4500,
+  "rejected": 0,
+  "acceptance_rate": 1.0,
+  "bucket_counts": {
+    "normal_no_diesel": 50,
+    "heatwave_rebound": 50,
+    "low_resource_edges": 50,
+    "previous_action_correction": 50,
+    "crisis_diesel_positive": 50
+  },
+  "task_counts": {
+    "task_1_normal": 100,
+    "task_2_heatwave": 50,
+    "task_3_crisis": 100
+  },
+  "usage_totals": {
+    "prompt_tokens": 139629,
+    "completion_tokens": 64957,
+    "total_tokens": 204586,
+    "cost": 0.39365192999999987,
+    "is_byok": 0
+  },
+  "accepted_output": "sft_traces/gridops_curriculum_v4_kimi_reason_action_250.jsonl",
+  "rejected_output": "sft_traces/gridops_curriculum_v4_kimi_reason_action_250_rejected.jsonl",
+  "append_original": true
+}
