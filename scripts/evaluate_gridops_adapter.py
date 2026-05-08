@@ -122,6 +122,7 @@ def rollout(
     max_new_tokens: int,
     sample_limit: int,
     prompt_mode: str,
+    horizon: int,
 ) -> dict[str, Any]:
     env = GridOpsEnvironment()
     obs = env.reset(seed=seed, task_id=task_id)
@@ -134,7 +135,7 @@ def rollout(
     prior_obs: dict[str, Any] | None = None
     prior_model_action: GridOpsAction | None = None
 
-    for _ in range(72):
+    for _ in range(horizon):
         obs_dict = obs.model_dump()
         if prior_obs is not None and prior_model_action is not None:
             previous_outcome = previous_outcome_from_obs(obs_dict, prior_obs, prior_model_action)
@@ -234,6 +235,7 @@ def main() -> None:
     parser.add_argument("--max-new-tokens", type=int, default=64)
     parser.add_argument("--prompt-mode", choices=["json", "reason_action"], default=os.environ.get("GRIDOPS_PROMPT_MODE", "json"))
     parser.add_argument("--sample-limit", type=int, default=5)
+    parser.add_argument("--horizon", type=int, default=72)
     parser.add_argument("--output", default="evals/gridops_sft_adapter_eval.json")
     parser.add_argument("--no-4bit", action="store_true")
     args = parser.parse_args()
@@ -246,7 +248,16 @@ def main() -> None:
     rows = []
     for task_id in task_ids:
         for seed in seeds:
-            result = rollout(tokenizer, model, task_id, seed, args.max_new_tokens, args.sample_limit, args.prompt_mode)
+            result = rollout(
+                tokenizer,
+                model,
+                task_id,
+                seed,
+                args.max_new_tokens,
+                args.sample_limit,
+                args.prompt_mode,
+                args.horizon,
+            )
             rows.append(result)
             print(
                 json.dumps(

@@ -170,6 +170,33 @@ python scripts/evaluate_gridops_adapter.py \
   --output evals/gridops_sft_kimi_reason_action_v4_holdout_7001_7003.json
 ```
 
+For unattended Kaggle evaluation, use the overnight runner. It saves and uploads
+after every eval so a Kaggle reset does not lose the evidence:
+
+```bash
+python scripts/kaggle_overnight_eval_v4.py
+```
+
+The runner creates:
+
+- `run_manifest.json` with GPU/runtime/model metadata;
+- smoke eval on seed `7001` with `max_new_tokens=160`;
+- full holdout eval on seeds `7001,7002,7003` with `max_new_tokens=220`;
+- long-decode eval on the same holdout with `max_new_tokens=320`;
+- stdout logs;
+- valid sample JSONL;
+- invalid example JSONL;
+- markdown summaries;
+- an uploaded index under the model subfolder.
+
+Useful variants:
+
+```bash
+python scripts/kaggle_overnight_eval_v4.py --skip-long-decode
+python scripts/kaggle_overnight_eval_v4.py --skip-full
+python scripts/kaggle_overnight_eval_v4.py --no-4bit
+```
+
 Promotion gate:
 
 ```text

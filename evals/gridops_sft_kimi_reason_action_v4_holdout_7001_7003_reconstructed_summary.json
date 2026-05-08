@@ -1,0 +1,98 @@
+{
+  "name": "77ethers/gridops-models/sft_qwen25_3b_gridops_kimi_reason_action_v4",
+  "source": "reconstructed_from_notebook_stdout_pasted_in_codex_chat",
+  "note": "This is not the original evaluator JSON. Kaggle runtime reset before the full JSON artifact was uploaded. Per-rollout rows, samples, and invalid_examples are not recoverable from the printed summary.",
+  "average_score": 0.7076,
+  "valid_action_rate": 0.9738,
+  "per_seed": [
+    {
+      "task_id": "task_1_normal",
+      "seed": 7001,
+      "score": 0.7755,
+      "valid_action_rate": 1.0
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7002,
+      "score": 0.8054,
+      "valid_action_rate": 1.0
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7003,
+      "score": 0.7864,
+      "valid_action_rate": 1.0
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7001,
+      "score": 0.7052,
+      "valid_action_rate": 0.9722
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7002,
+      "score": 0.7517,
+      "valid_action_rate": 0.9861
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7003,
+      "score": 0.6676,
+      "valid_action_rate": 0.9583
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7001,
+      "score": 0.6346,
+      "valid_action_rate": 0.9583
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7002,
+      "score": 0.6355,
+      "valid_action_rate": 0.9583
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7003,
+      "score": 0.6063,
+      "valid_action_rate": 0.9306
+    }
+  ],
+  "by_task": {
+    "task_1_normal": {
+      "score": 0.7891,
+      "valid_action_rate": 1.0,
+      "blackout_kwh": 23.63,
+      "diesel_kwh": 0.0,
+      "cost": 37027.44
+    },
+    "task_2_heatwave": {
+      "score": 0.7082,
+      "valid_action_rate": 0.9722,
+      "blackout_kwh": 327.24,
+      "diesel_kwh": 0.0,
+      "cost": 111706.42
+    },
+    "task_3_crisis": {
+      "score": 0.6255,
+      "valid_action_rate": 0.9491,
+      "blackout_kwh": 1250.76,
+      "diesel_kwh": 123.05,
+      "cost": 332579.76
+    }
+  },
+  "comparison_to_v3": {
+    "v3_model": "77ethers/gridops-models/sft_qwen25_3b_gridops_tool_augmented_v3",
+    "v3_average_score": 0.5076,
+    "v4_average_score": 0.7076,
+    "absolute_average_gain": 0.2,
+    "task_score_gains": {
+      "task_1_normal": 0.2237,
+      "task_2_heatwave": 0.203,
+      "task_3_crisis": 0.1734
+    },
+    "key_behavior_change": "v4 uses nonzero diesel in crisis states, unlike v3 which reported 0.0 diesel_kwh."
+  }
+}
