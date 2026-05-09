@@ -1,0 +1,22 @@
+{
+  "rows": 5300,
+  "repair_rows": 800,
+  "bucket_counts": {
+    "format_bound_anchor": 90,
+    "charge_bound_repair": 90,
+    "heatwave_bound_repair": 220,
+    "crisis_bound_repair": 260,
+    "previous_blackout_bound_repair": 140
+  },
+  "task_counts": {
+    "task_2_heatwave": 400,
+    "task_3_crisis": 400
+  },
+  "action_counts": {
+    "diesel_positive": 390,
+    "battery_charge": 96,
+    "battery_discharge": 580,
+    "shedding_positive": 9
+  },
+  "validation_failures": []
+}

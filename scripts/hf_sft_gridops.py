@@ -25,7 +25,7 @@ from pathlib import Path
 import torch
 from datasets import Dataset
 from huggingface_hub import HfApi, upload_folder
-from peft import LoraConfig
+from peft import LoraConfig, PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments
 from trl import SFTTrainer
 
@@ -50,6 +50,17 @@ LORA_DROPOUT = float(os.environ.get("GRIDOPS_LORA_DROPOUT", "0.05"))
 LEARNING_RATE = float(os.environ.get("GRIDOPS_LEARNING_RATE", "2e-4"))
 UPLOAD_TO_HF = os.environ.get("GRIDOPS_UPLOAD", "1").lower() not in {"0", "false", "no"}
 GRADIENT_CHECKPOINTING = os.environ.get("GRIDOPS_GRADIENT_CHECKPOINTING", "1").lower() not in {"0", "false", "no"}
+INIT_ADAPTER = os.environ.get("GRIDOPS_INIT_ADAPTER", "").strip()
+
+
+def model_path_kwargs(path: str) -> tuple[str, dict[str, str]]:
+    """Support local paths, Hub ids, and Hub repo subfolders."""
+    if Path(path).exists():
+        return path, {}
+    parts = path.split("/")
+    if len(parts) > 2:
+        return "/".join(parts[:2]), {"subfolder": "/".join(parts[2:])}
+    return path, {}
 
 
 def load_rows(path: str) -> list[dict]:
@@ -93,14 +104,19 @@ def main() -> None:
         if hasattr(model, "config"):
             model.config.use_cache = False
 
-    peft_config = LoraConfig(
-        r=LORA_R,
-        lora_alpha=LORA_ALPHA,
-        lora_dropout=LORA_DROPOUT,
-        bias="none",
-        task_type="CAUSAL_LM",
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
-    )
+    peft_config = None
+    if INIT_ADAPTER:
+        adapter_id, adapter_kwargs = model_path_kwargs(INIT_ADAPTER)
+        model = PeftModel.from_pretrained(model, adapter_id, token=HF_TOKEN, is_trainable=True, **adapter_kwargs)
+    else:
+        peft_config = LoraConfig(
+            r=LORA_R,
+            lora_alpha=LORA_ALPHA,
+            lora_dropout=LORA_DROPOUT,
+            bias="none",
+            task_type="CAUSAL_LM",
+            target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+        )
     out_dir = Path("outputs") / RUN_LABEL
     use_bf16 = torch.cuda.is_available() and torch.cuda.is_bf16_supported()
     train_args = {
@@ -162,6 +178,7 @@ def main() -> None:
         "lora_r": LORA_R,
         "lora_alpha": LORA_ALPHA,
         "learning_rate": LEARNING_RATE,
+        "init_adapter": INIT_ADAPTER,
     }
     (out_dir / "gridops_sft_metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")
 
