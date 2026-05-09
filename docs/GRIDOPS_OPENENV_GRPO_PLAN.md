@@ -128,7 +128,7 @@ Components:
 ```text
 format_reward:
   +1.0 valid <think>/<action> and Pydantic action
-  -5.0 missing action block, bad JSON, or out-of-bound action
+  -25.0 missing action block, bad JSON, or out-of-bound action
 
 env_step_reward:
   scaled OpenEnv one-step reward after executing the action
@@ -244,3 +244,36 @@ The GRPO script should reuse:
 - `GridOpsEnvironment` for environment execution;
 - `oracle_policy` for short-horizon continuation and regret baseline;
 - `scripts/evaluate_gridops_adapter.py` for final holdout eval.
+
+## Kaggle Commands
+
+Reward-contract smoke only:
+
+```bash
+bash scripts/kaggle_grpo_gridops_openenv_smoke.sh
+```
+
+Actual tiny GRPO smoke:
+
+```bash
+GRIDOPS_RUN_TRAIN=1 \
+GRIDOPS_GRPO_STEPS=8 \
+GRIDOPS_GRPO_TRAIN_HORIZON=1 \
+GRIDOPS_GRPO_PROMPT_LIMIT=24 \
+GRIDOPS_GRPO_NUM_GENERATIONS=2 \
+bash scripts/kaggle_grpo_gridops_openenv_smoke.sh
+```
+
+The smoke uploads to:
+
+```text
+77ethers/gridops-models/grpo_qwen25_3b_gridops_openenv_v4_smoke
+```
+
+After training, evaluate before promotion:
+
+```bash
+GRIDOPS_ADAPTER_PATH=77ethers/gridops-models/grpo_qwen25_3b_gridops_openenv_v4_smoke \
+GRIDOPS_RUN_LABEL=grpo_qwen25_3b_gridops_openenv_v4_smoke \
+python scripts/kaggle_overnight_eval_v4.py --skip-long-decode
+```
