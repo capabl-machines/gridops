@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from gridops.models import GridOpsAction
 from gridops.prompting import (
+    extract_action_json,
     messages_for_observation,
     messages_for_reason_action_observation,
     parse_action,
@@ -26,6 +27,25 @@ from gridops.prompting import (
 from gridops.server.environment import GridOpsEnvironment
 from gridops.tasks.definitions import TASKS
 from scripts.build_gridops_v4_reasoning_traces import derive_context, previous_outcome_from_obs
+
+
+def invalid_action_diagnostics(reply: str) -> dict[str, Any]:
+    """Return extra debugging context for invalid model completions."""
+    payload = extract_action_json(reply)
+    diagnostics: dict[str, Any] = {
+        "reply": reply,
+        "reply_chars": len(reply or ""),
+        "action_payload": payload,
+    }
+    if payload is None:
+        return diagnostics
+    try:
+        GridOpsAction(**payload)
+    except Exception as exc:
+        diagnostics["validation_error"] = str(exc)
+        if hasattr(exc, "errors"):
+            diagnostics["validation_errors"] = exc.errors()
+    return diagnostics
 
 
 def model_path_kwargs(path: str) -> tuple[str, dict[str, str]]:
@@ -169,7 +189,7 @@ def rollout(
                     "task_id": task_id,
                     "seed": seed,
                     "reason": reason,
-                    "reply": reply[:500],
+                    **invalid_action_diagnostics(reply),
                 }
             )
         prior_obs = obs_dict

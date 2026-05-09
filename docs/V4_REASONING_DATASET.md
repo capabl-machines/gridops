@@ -180,9 +180,9 @@ python scripts/kaggle_overnight_eval_v4.py
 The runner creates:
 
 - `run_manifest.json` with GPU/runtime/model metadata;
-- smoke eval on seed `7001` with `max_new_tokens=160`;
+- smoke eval on seed `7001` with `max_new_tokens=220`;
 - full holdout eval on seeds `7001,7002,7003` with `max_new_tokens=220`;
-- long-decode eval on the same holdout with `max_new_tokens=320`;
+- optional long-decode eval on the same holdout with `max_new_tokens=320`;
 - stdout logs;
 - valid sample JSONL;
 - invalid example JSONL;
@@ -194,6 +194,7 @@ Useful variants:
 ```bash
 python scripts/kaggle_overnight_eval_v4.py --skip-long-decode
 python scripts/kaggle_overnight_eval_v4.py --skip-full
+python scripts/kaggle_overnight_eval_v4.py --run-long-decode
 python scripts/kaggle_overnight_eval_v4.py --no-4bit
 ```
 

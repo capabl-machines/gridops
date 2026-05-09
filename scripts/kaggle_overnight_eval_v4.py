@@ -269,6 +269,7 @@ def main() -> None:
     parser.add_argument("--no-4bit", action="store_true")
     parser.add_argument("--skip-full", action="store_true")
     parser.add_argument("--skip-long-decode", action="store_true")
+    parser.add_argument("--run-long-decode", action="store_true")
     args = parser.parse_args()
 
     ensure_hf_token()
@@ -283,10 +284,10 @@ def main() -> None:
 
     eval_plan = [
         {
-            "run_name": "smoke_7001_tokens160",
+            "run_name": "smoke_7001_tokens220",
             "seeds": "7001",
             "tasks": "task_1_normal,task_2_heatwave,task_3_crisis",
-            "max_new_tokens": 160,
+            "max_new_tokens": 220,
             "horizon": 72,
         }
     ]
@@ -300,7 +301,7 @@ def main() -> None:
                 "horizon": 72,
             }
         )
-    if not args.skip_long_decode:
+    if args.run_long_decode and not args.skip_long_decode:
         eval_plan.append(
             {
                 "run_name": "holdout_7001_7003_tokens320",
