@@ -272,6 +272,9 @@ class RewardRecorder:
         self.horizon = horizon
         self.output_dir = output_dir
         self.calls: list[dict[str, Any]] = []
+        # TRL's GRPOTrainer records reward function names by reading
+        # `__name__`, even when the reward function is a callable object.
+        self.__name__ = "gridops_openenv_reward"
 
     def __call__(
         self,
