@@ -27,11 +27,11 @@ if [[ "${GRIDOPS_RUN_TRAIN:-0}" == "1" ]]; then
 
   python scripts/hf_grpo_gridops_openenv.py \
     --mode train \
-    --horizon "${GRIDOPS_GRPO_TRAIN_HORIZON:-1}" \
+    --horizon "${GRIDOPS_GRPO_TRAIN_HORIZON:-4}" \
     --prompt-limit "${GRIDOPS_GRPO_PROMPT_LIMIT:-24}" \
-    --max-steps "${GRIDOPS_GRPO_STEPS:-8}" \
+    --max-steps "${GRIDOPS_GRPO_STEPS:-20}" \
     --num-generations "${GRIDOPS_GRPO_NUM_GENERATIONS:-2}" \
     --batch-size "${GRIDOPS_GRPO_BATCH_SIZE:-2}" \
     --grad-accum "${GRIDOPS_GRPO_GRAD_ACCUM:-1}" \
-    --learning-rate "${GRIDOPS_GRPO_LR:-2e-6}"
+    --learning-rate "${GRIDOPS_GRPO_LR:-1e-6}"
 fi

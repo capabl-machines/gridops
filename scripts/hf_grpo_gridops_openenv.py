@@ -70,7 +70,10 @@ class RewardBreakdown:
     format_reward: float
     env_reward: float
     regret_reward: float
+    baseline_advantage_reward: float
     blackout_penalty: float
+    heatwave_rebound_reward: float
+    soc_preservation_reward: float
     diesel_context_reward: float
     brevity_reward: float
     valid: bool
@@ -152,11 +155,15 @@ def completion_text(completion: Any) -> str:
 
 
 def score_action_horizon(task_id: str, seed: int, hour: int, action: GridOpsAction, horizon: int) -> dict[str, float]:
-    env, _, _, _ = replay_to_state(task_id, seed, hour)
+    env, start_obs, _, _ = replay_to_state(task_id, seed, hour)
+    start_soc = float(start_obs.get("battery_soc", 0.0))
     total_reward = 0.0
     blackout = 0.0
     diesel = 0.0
     cost = 0.0
+    shed = 0.0
+    final_soc = start_soc
+    min_soc = start_soc
     obs = env.step(action)
     for step_idx in range(max(1, horizon)):
         obs_dict = obs.model_dump()
@@ -164,6 +171,9 @@ def score_action_horizon(task_id: str, seed: int, hour: int, action: GridOpsActi
         blackout += float(obs_dict.get("blackout_this_step", 0.0))
         diesel += float(obs_dict.get("flow_diesel", 0.0))
         cost += float(obs_dict.get("cost_this_step", 0.0))
+        shed += float(obs_dict.get("flow_shed", 0.0))
+        final_soc = float(obs_dict.get("battery_soc", final_soc))
+        min_soc = min(min_soc, final_soc)
         if obs.done or step_idx == horizon - 1:
             break
         obs = env.step(oracle_policy(obs_dict, task_id))
@@ -172,7 +182,16 @@ def score_action_horizon(task_id: str, seed: int, hour: int, action: GridOpsActi
         "blackout_kwh": blackout,
         "diesel_kwh": diesel,
         "cost": cost,
+        "shed_kwh": shed,
+        "start_soc": start_soc,
+        "final_soc": final_soc,
+        "min_soc": min_soc,
+        "soc_delta": final_soc - start_soc,
     }
+
+
+def clipped(value: float, low: float, high: float) -> float:
+    return max(low, min(high, value))
 
 
 def reward_completion(completion: str, prompt_row: dict[str, Any], horizon: int) -> RewardBreakdown:
@@ -184,7 +203,10 @@ def reward_completion(completion: str, prompt_row: dict[str, Any], horizon: int)
             format_reward=-25.0,
             env_reward=0.0,
             regret_reward=0.0,
+            baseline_advantage_reward=0.0,
             blackout_penalty=0.0,
+            heatwave_rebound_reward=0.0,
+            soc_preservation_reward=0.0,
             diesel_context_reward=0.0,
             brevity_reward=0.0,
             valid=False,
@@ -198,11 +220,35 @@ def reward_completion(completion: str, prompt_row: dict[str, Any], horizon: int)
     hour = int(prompt_row["hour"])
     candidate = score_action_horizon(task_id, seed, hour, action, horizon)
     oracle = score_action_horizon(task_id, seed, hour, oracle_policy(prompt_row["observation"], task_id), horizon)
+    baseline = score_action_horizon(task_id, seed, hour, GridOpsAction(), horizon)
 
-    env_reward = 0.20 * float(candidate["reward"])
-    regret_reward = max(-1.0, min(1.0, 0.20 * float(candidate["reward"] - oracle["reward"])))
-    blackout_penalty = -0.03 * float(candidate["blackout_kwh"])
+    env_reward = 0.10 * float(candidate["reward"])
+    regret_reward = clipped(0.15 * float(candidate["reward"] - oracle["reward"]), -1.5, 1.5)
+    baseline_advantage_reward = clipped(0.10 * float(candidate["reward"] - baseline["reward"]), -1.0, 1.0)
     derived = prompt_row.get("derived_context") or {}
+    blackout_weight = 0.035
+    if task_id == "task_2_heatwave":
+        blackout_weight = 0.075
+    elif task_id == "task_3_crisis":
+        blackout_weight = 0.06
+    blackout_penalty = max(-12.0, -blackout_weight * float(candidate["blackout_kwh"]))
+
+    heatwave_rebound_reward = 0.0
+    if task_id == "task_2_heatwave":
+        heatwave_rebound_reward -= min(4.0, 0.05 * float(candidate["blackout_kwh"]))
+        heatwave_rebound_reward -= min(2.0, 0.02 * float(candidate["shed_kwh"]))
+        if float(candidate["blackout_kwh"]) <= 1e-6 and float(candidate["shed_kwh"]) <= 1e-6:
+            heatwave_rebound_reward += 0.35
+
+    soc_preservation_reward = 0.0
+    risk = str(derived.get("scarcity_risk", ""))
+    phase = str(derived.get("time_phase", ""))
+    final_soc = float(candidate["final_soc"])
+    if risk in {"medium", "high"} and phase in {"pre_evening_charge_window", "evening_ramp", "late_evening"}:
+        soc_preservation_reward += clipped(1.5 * (final_soc - 0.35), -0.4, 0.4)
+    if task_id == "task_3_crisis" and str(derived.get("outage_risk")) == "near":
+        soc_preservation_reward += clipped(1.2 * (final_soc - 0.45), -0.5, 0.5)
+
     high_crisis_gap = task_id == "task_3_crisis" and (
         derived.get("grid_status") == "outage" or float(derived.get("max_future_supply_gap_kw", 0.0)) > 80.0
     )
@@ -214,13 +260,26 @@ def reward_completion(completion: str, prompt_row: dict[str, Any], horizon: int)
     else:
         diesel_context_reward = 0.0
     brevity_reward = -0.001 * max(0, len(completion) - 900)
-    total = 1.0 + env_reward + regret_reward + blackout_penalty + diesel_context_reward + brevity_reward
+    total = (
+        1.0
+        + env_reward
+        + regret_reward
+        + baseline_advantage_reward
+        + blackout_penalty
+        + heatwave_rebound_reward
+        + soc_preservation_reward
+        + diesel_context_reward
+        + brevity_reward
+    )
     return RewardBreakdown(
         total=float(total),
         format_reward=1.0,
         env_reward=env_reward,
         regret_reward=regret_reward,
+        baseline_advantage_reward=baseline_advantage_reward,
         blackout_penalty=blackout_penalty,
+        heatwave_rebound_reward=heatwave_rebound_reward,
+        soc_preservation_reward=soc_preservation_reward,
         diesel_context_reward=diesel_context_reward,
         brevity_reward=brevity_reward,
         valid=True,
@@ -513,7 +572,7 @@ def main() -> None:
     parser.add_argument("--model-repo", default=os.environ.get("GRIDOPS_MODEL_REPO", DEFAULT_MODEL_REPO))
     parser.add_argument("--run-label", default=os.environ.get("GRIDOPS_GRPO_RUN_LABEL", DEFAULT_RUN_LABEL))
     parser.add_argument("--prompt-limit", type=int, default=int(os.environ.get("GRIDOPS_GRPO_PROMPT_LIMIT", "24")))
-    parser.add_argument("--max-steps", type=int, default=int(os.environ.get("GRIDOPS_GRPO_STEPS", "8")))
+    parser.add_argument("--max-steps", type=int, default=int(os.environ.get("GRIDOPS_GRPO_STEPS", "20")))
     parser.add_argument("--num-generations", type=int, default=int(os.environ.get("GRIDOPS_GRPO_NUM_GENERATIONS", "2")))
     parser.add_argument("--batch-size", type=int, default=int(os.environ.get("GRIDOPS_GRPO_BATCH_SIZE", "2")))
     parser.add_argument("--grad-accum", type=int, default=int(os.environ.get("GRIDOPS_GRPO_GRAD_ACCUM", "1")))

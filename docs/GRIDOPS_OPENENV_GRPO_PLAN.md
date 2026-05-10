@@ -119,6 +119,9 @@ reward =
   + env_step_reward
   + short_horizon_reward
   + regret_reward
+  + baseline_advantage_reward
+  + heatwave_rebound_reward
+  + soc_preservation_reward
   + diesel_context_reward
   + brevity_reward
 ```
@@ -141,8 +144,19 @@ regret_reward:
   candidate_horizon_reward - oracle_first_action_horizon_reward
   small reward if near oracle; larger reward if better
 
+baseline_advantage_reward:
+  candidate_horizon_reward - do_nothing_horizon_reward
+  prevents the policy from learning passive no-action behavior
+
 blackout_penalty:
-  -0.03 per blackout kWh in the scored horizon
+  task-weighted blackout penalty, heavier for heatwave and crisis
+
+heatwave_rebound_reward:
+  extra penalty for heatwave blackout and shedding/rebound
+  bonus for no blackout and no shedding across the horizon
+
+soc_preservation_reward:
+  bonus/penalty for ending risky evening/outage-near windows with enough SOC
 
 diesel_context_reward:
   normal/heatwave diesel when no high gap: penalty
@@ -194,8 +208,8 @@ task_1 sampled completions do not spam diesel
 Then scale:
 
 ```text
-phase_1: 50 steps, horizon 1
-phase_2: 100 steps, horizon 4
+phase_1: 20-30 steps, horizon 4, lr 1e-6
+phase_2: 50-100 steps, horizon 4, only if phase 1 improves heatwave
 phase_3: eval only, full 72-hour holdout
 ```
 
@@ -257,10 +271,11 @@ Actual tiny GRPO smoke:
 
 ```bash
 GRIDOPS_RUN_TRAIN=1 \
-GRIDOPS_GRPO_STEPS=8 \
-GRIDOPS_GRPO_TRAIN_HORIZON=1 \
+GRIDOPS_GRPO_STEPS=20 \
+GRIDOPS_GRPO_TRAIN_HORIZON=4 \
 GRIDOPS_GRPO_PROMPT_LIMIT=24 \
 GRIDOPS_GRPO_NUM_GENERATIONS=2 \
+GRIDOPS_GRPO_LR=1e-6 \
 bash scripts/kaggle_grpo_gridops_openenv_smoke.sh
 ```
 
