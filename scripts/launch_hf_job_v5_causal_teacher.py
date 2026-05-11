@@ -96,6 +96,19 @@ def build_job_command(args: argparse.Namespace) -> str:
     )
 
 
+def job_to_dict(job: Any) -> dict[str, Any]:
+    """Serialize JobInfo across huggingface_hub versions."""
+    if hasattr(job, "model_dump"):
+        return job.model_dump()
+    if hasattr(job, "_asdict"):
+        return dict(job._asdict())
+    result = {}
+    for key in ["id", "status", "created_at", "docker_image", "flavor", "url", "labels"]:
+        if hasattr(job, key):
+            result[key] = getattr(job, key)
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-url", default=DEFAULT_REPO_URL)
@@ -154,7 +167,7 @@ def main() -> None:
         labels={"project": "gridops", "stage": "v5-causal-teacher-sft"},
         token=token,
     )
-    print(json.dumps({**metadata, "job": job.model_dump()}, indent=2, default=str))
+    print(json.dumps({**metadata, "job": job_to_dict(job)}, indent=2, default=str))
 
 
 if __name__ == "__main__":
