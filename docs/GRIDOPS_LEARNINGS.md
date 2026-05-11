@@ -185,3 +185,97 @@ LP task ceiling < 0.90: 0.90 likely requires environment/action/scoring changes.
 Do not overwrite v4.
 
 Every new model or planner run gets a new subfolder or eval path.
+
+## v5 Causal Teacher Plan
+
+The next model should be trained from a causal teacher, not from the full
+72-hour LP oracle. The full LP is useful as a ceiling, but it has hindsight.
+The model only sees the current observation, 4-hour forecasts, task context,
+and previous action feedback.
+
+New implementation:
+
+```text
+scripts/build_gridops_v5_causal_teacher_traces.py
+scripts/kaggle_sft_v5_causal_teacher.sh
+tests/test_v5_causal_teacher_traces.py
+```
+
+The v5 teacher is a rolling LP controller:
+
+```text
+current observation + previous outcome
+-> build short-horizon LP using current + forecast demand/solar/price
+-> include SOC, rebound, fuel, outage, grid cap, diesel, shedding, blackout constraints
+-> execute only the first action
+-> repeat each hour
+```
+
+This makes it a trainable teacher rather than a hindsight oracle.
+
+Default v5 dataset design:
+
+```text
+base rows:    1,800 sampled v4 reason-action traces
+teacher rows: 12 seeds/task * 72 hours = 2,592 causal LP traces
+total:        about 4,392 traces
+horizon:      12
+init model:   77ethers/gridops-models/sft_qwen25_3b_gridops_kimi_reason_action_v4
+run label:    sft_qwen25_3b_gridops_v5_causal_teacher
+```
+
+Why mix v4 base rows:
+
+- v4.1 taught us that narrow repair can oversteer;
+- teacher rows improve control behavior;
+- v4 rows preserve stable formatting and general operating behavior.
+
+Smoke check:
+
+```text
+command:
+python scripts/build_gridops_v5_causal_teacher_traces.py \
+  --output /tmp/gridops_v5_full_seed_smoke.jsonl \
+  --summary-output /tmp/gridops_v5_full_seed_smoke_summary.json \
+  --base-sample-limit 0 \
+  --seed-start 17600 \
+  --seeds-per-task 1 \
+  --stride 1 \
+  --horizon 12
+
+rows: 216
+validation: ok
+
+teacher smoke scores:
+task_1_normal:   0.8312
+task_2_heatwave: 0.8187
+task_3_crisis:   0.7407
+```
+
+Interpretation:
+
+- the teacher is close to the LP ceiling on normal and heatwave;
+- crisis remains below the full LP ceiling, but is a better supervision target
+  than the current v4 model;
+- v5 SFT should be judged by ceiling capture and task-wise improvement, not by
+  an absolute `0.90` target.
+
+Kaggle launch command:
+
+```bash
+GRIDOPS_SFT_STEPS=175 \
+GRIDOPS_LEARNING_RATE=6e-5 \
+GRIDOPS_RUN_LABEL=sft_qwen25_3b_gridops_v5_causal_teacher \
+bash scripts/kaggle_sft_v5_causal_teacher.sh
+```
+
+Promotion gate:
+
+```text
+valid_action_rate >= 99%
+task_1_normal >= v4 task_1 or no material regression
+task_2_heatwave > v4 task_2
+task_3_crisis > v4 task_3
+average_score > 0.72
+crisis blackout and diesel reported explicitly
+```
