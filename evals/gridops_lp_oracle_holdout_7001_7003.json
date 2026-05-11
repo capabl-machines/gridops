@@ -1,0 +1,1610 @@
+{
+  "name": "lp_full_episode_oracle_relaxed",
+  "average_score": 0.8233,
+  "by_task": {
+    "task_1_normal": {
+      "score": 0.8372,
+      "blackout_kwh": 0.0,
+      "diesel_kwh": 0.0,
+      "cost": 28698.45
+    },
+    "task_2_heatwave": {
+      "score": 0.8416,
+      "blackout_kwh": 0.0,
+      "diesel_kwh": 101.5,
+      "cost": 61356.04
+    },
+    "task_3_crisis": {
+      "score": 0.7912,
+      "blackout_kwh": 62.02,
+      "diesel_kwh": 792.0,
+      "cost": 183761.9
+    }
+  },
+  "rows": [
+    {
+      "task_id": "task_1_normal",
+      "seed": 7001,
+      "score": 0.832,
+      "grade": {
+        "score": 0.832,
+        "reliability": 1.0,
+        "cost_efficiency": 0.6639,
+        "green_score": 1.0,
+        "baseline_cost": 85327.88,
+        "actual_cost": 28674.62,
+        "total_blackout_kwh": 0.0,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8446.6,
+        "battery_throughput_kwh": 444.9
+      },
+      "lp_objective": 0.16802606646335258,
+      "trace_samples": [
+        {
+          "hour": 0,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 71.16184945180784,
+          "solar_kw": 0.0,
+          "grid_price": 8.140739874786597
+        },
+        {
+          "hour": 1,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 88.5221633886758,
+          "solar_kw": 61.709794084332984,
+          "grid_price": 8.41596966586936
+        },
+        {
+          "hour": 2,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 109.89749254769295,
+          "solar_kw": 131.82061796781855,
+          "grid_price": 8.885678304256038
+        },
+        {
+          "hour": 3,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 116.654947112314,
+          "solar_kw": 174.1697371257643,
+          "grid_price": 9.577279600873192
+        },
+        {
+          "hour": 4,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 117.08557514097707,
+          "solar_kw": 200.0,
+          "grid_price": 9.561862815509766
+        },
+        {
+          "hour": 5,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 104.85639478995114,
+          "solar_kw": 200.0,
+          "grid_price": 9.869556242062355
+        },
+        {
+          "hour": 6,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 129.81275179592356,
+          "solar_kw": 200.0,
+          "grid_price": 9.84740096885809
+        },
+        {
+          "hour": 7,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 131.15161024814594,
+          "solar_kw": 200.0,
+          "grid_price": 10.564390832598528
+        },
+        {
+          "hour": 8,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 130.84865421021325,
+          "solar_kw": 200.0,
+          "grid_price": 10.559872181683593
+        },
+        {
+          "hour": 9,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 117.15699767090408,
+          "solar_kw": 171.11437540949703,
+          "grid_price": 10.20393618745216
+        },
+        {
+          "hour": 10,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 119.48242239202996,
+          "solar_kw": 125.05654314143293,
+          "grid_price": 10.143453933907667
+        },
+        {
+          "hour": 11,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 148.35248311897342,
+          "solar_kw": 64.20911969880835,
+          "grid_price": 10.926416813748597
+        }
+      ]
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7002,
+      "score": 0.8454,
+      "grade": {
+        "score": 0.8454,
+        "reliability": 1.0,
+        "cost_efficiency": 0.6908,
+        "green_score": 1.0,
+        "baseline_cost": 91634.8,
+        "actual_cost": 28335.43,
+        "total_blackout_kwh": 0.0,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8418.37,
+        "battery_throughput_kwh": 436.96
+      },
+      "lp_objective": 0.15461062741319673,
+      "trace_samples": [
+        {
+          "hour": 0,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 71.11539950118328,
+          "solar_kw": 0.0,
+          "grid_price": 8.020976595469293
+        },
+        {
+          "hour": 1,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 81.82037439326376,
+          "solar_kw": 64.69529551966714,
+          "grid_price": 8.481647790487145
+        },
+        {
+          "hour": 2,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 100.83309831967271,
+          "solar_kw": 127.64231632077778,
+          "grid_price": 9.06214199727166
+        },
+        {
+          "hour": 3,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 104.04057664653995,
+          "solar_kw": 178.31267724585257,
+          "grid_price": 9.531763394125392
+        },
+        {
+          "hour": 4,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 122.14345564373242,
+          "solar_kw": 200.0,
+          "grid_price": 9.515340662743839
+        },
+        {
+          "hour": 5,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 122.45752747175707,
+          "solar_kw": 200.0,
+          "grid_price": 9.838791242618809
+        },
+        {
+          "hour": 6,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 121.91901585954199,
+          "solar_kw": 200.0,
+          "grid_price": 10.167432466506273
+        },
+        {
+          "hour": 7,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 144.25480437127914,
+          "solar_kw": 200.0,
+          "grid_price": 10.192032697061665
+        },
+        {
+          "hour": 8,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 138.9616809618788,
+          "solar_kw": 200.0,
+          "grid_price": 10.099907643581231
+        },
+        {
+          "hour": 9,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 126.06025396605956,
+          "solar_kw": 183.12140948551666,
+          "grid_price": 10.394290582039194
+        },
+        {
+          "hour": 10,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 108.01734240227486,
+          "solar_kw": 127.76770395577745,
+          "grid_price": 10.528610841222664
+        },
+        {
+          "hour": 11,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 140.53468503938956,
+          "solar_kw": 66.60631463427156,
+          "grid_price": 11.054461986545983
+        }
+      ]
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7003,
+      "score": 0.8342,
+      "grade": {
+        "score": 0.8342,
+        "reliability": 1.0,
+        "cost_efficiency": 0.6684,
+        "green_score": 1.0,
+        "baseline_cost": 87711.23,
+        "actual_cost": 29085.29,
+        "total_blackout_kwh": 0.0,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8480.72,
+        "battery_throughput_kwh": 373.97
+      },
+      "lp_objective": 0.16580142258386793,
+      "trace_samples": [
+        {
+          "hour": 0,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 70.98918482701058,
+          "solar_kw": 0.0,
+          "grid_price": 7.709458031953661
+        },
+        {
+          "hour": 1,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 86.70952369388151,
+          "solar_kw": 63.97184560404197,
+          "grid_price": 8.662641264249107
+        },
+        {
+          "hour": 2,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 100.24896171502688,
+          "solar_kw": 122.25186722585897,
+          "grid_price": 9.279020378644988
+        },
+        {
+          "hour": 3,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 109.26844955275998,
+          "solar_kw": 180.70589402401305,
+          "grid_price": 9.282450744893724
+        },
+        {
+          "hour": 4,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 126.75410908335317,
+          "solar_kw": 200.0,
+          "grid_price": 10.117808232037062
+        },
+        {
+          "hour": 5,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 111.83555651432928,
+          "solar_kw": 200.0,
+          "grid_price": 9.797052254772924
+        },
+        {
+          "hour": 6,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 123.05185652557383,
+          "solar_kw": 200.0,
+          "grid_price": 10.020161680053086
+        },
+        {
+          "hour": 7,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 138.21172523864894,
+          "solar_kw": 200.0,
+          "grid_price": 9.917446360239241
+        },
+        {
+          "hour": 8,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 134.32199456163684,
+          "solar_kw": 200.0,
+          "grid_price": 10.492809638599185
+        },
+        {
+          "hour": 9,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 115.24426682440371,
+          "solar_kw": 173.26162757880647,
+          "grid_price": 10.65667039785348
+        },
+        {
+          "hour": 10,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 122.22567888008152,
+          "solar_kw": 124.74005706899823,
+          "grid_price": 10.717026728300718
+        },
+        {
+          "hour": 11,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 135.40960979649796,
+          "solar_kw": 66.35176279812997,
+          "grid_price": 10.387607801004739
+        }
+      ]
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7001,
+      "score": 0.8393,
+      "grade": {
+        "score": 0.8393,
+        "reliability": 1.0,
+        "cost_efficiency": 0.683,
+        "green_score": 0.9913,
+        "baseline_cost": 192472.73,
+        "actual_cost": 61008.7,
+        "total_blackout_kwh": 0.0,
+        "total_diesel_kwh": 88.04,
+        "total_demand_kwh": 10129.09,
+        "battery_throughput_kwh": 2122.98
+      },
+      "lp_objective": 0.1601400238710025,
+      "trace_samples": [
+        {
+          "hour": 0,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 71.16184945180784,
+          "solar_kw": 0.0,
+          "grid_price": 9.823332938736382
+        },
+        {
+          "hour": 1,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 88.5221633886758,
+          "solar_kw": 61.709794084332984,
+          "grid_price": 10.236170959571393
+        },
+        {
+          "hour": 2,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 109.89749254769295,
+          "solar_kw": 131.82061796781855,
+          "grid_price": 10.863305370635517
+        },
+        {
+          "hour": 3,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 116.654947112314,
+          "solar_kw": 174.1697371257643,
+          "grid_price": 11.750228810357108
+        },
+        {
+          "hour": 4,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 117.08557514097707,
+          "solar_kw": 200.0,
+          "grid_price": 11.761558376799712
+        },
+        {
+          "hour": 5,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 104.85639478995114,
+          "solar_kw": 200.0,
+          "grid_price": 12.163290968947393
+        },
+        {
+          "hour": 6,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 129.81275179592356,
+          "solar_kw": 200.0,
+          "grid_price": 12.152803227495532
+        },
+        {
+          "hour": 7,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 131.15161024814594,
+          "solar_kw": 200.0,
+          "grid_price": 13.050380341255394
+        },
+        {
+          "hour": 8,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 130.84865421021325,
+          "solar_kw": 200.0,
+          "grid_price": 13.054702994424257
+        },
+        {
+          "hour": 9,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 117.15699767090408,
+          "solar_kw": 171.11437540949703,
+          "grid_price": 12.62507713016576
+        },
+        {
+          "hour": 10,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 119.48242239202996,
+          "solar_kw": 125.05654314143293,
+          "grid_price": 12.564807075841674
+        },
+        {
+          "hour": 11,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 148.35248311897342,
+          "solar_kw": 64.20911969880835,
+          "grid_price": 13.555149439469053
+        }
+      ]
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7002,
+      "score": 0.845,
+      "grade": {
+        "score": 0.845,
+        "reliability": 1.0,
+        "cost_efficiency": 0.695,
+        "green_score": 0.9899,
+        "baseline_cost": 199282.94,
+        "actual_cost": 60785.97,
+        "total_blackout_kwh": 0.0,
+        "total_diesel_kwh": 101.51,
+        "total_demand_kwh": 10089.03,
+        "battery_throughput_kwh": 2004.1
+      },
+      "lp_objective": 0.15452530747816842,
+      "trace_samples": [
+        {
+          "hour": 0,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 71.11539950118328,
+          "solar_kw": 0.0,
+          "grid_price": 9.678816029381185
+        },
+        {
+          "hour": 1,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 81.82037439326376,
+          "solar_kw": 64.69529551966714,
+          "grid_price": 10.316053912883135
+        },
+        {
+          "hour": 2,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 100.83309831967271,
+          "solar_kw": 127.64231632077778,
+          "grid_price": 11.079043428937785
+        },
+        {
+          "hour": 3,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 104.04057664653995,
+          "solar_kw": 178.31267724585257,
+          "grid_price": 11.694385620416469
+        },
+        {
+          "hour": 4,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 122.14345564373242,
+          "solar_kw": 200.0,
+          "grid_price": 11.70433385620909
+        },
+        {
+          "hour": 5,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 122.45752747175707,
+          "solar_kw": 200.0,
+          "grid_price": 12.12537602822325
+        },
+        {
+          "hour": 6,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 121.91901585954199,
+          "solar_kw": 200.0,
+          "grid_price": 12.547758183612252
+        },
+        {
+          "hour": 7,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 144.25480437127914,
+          "solar_kw": 200.0,
+          "grid_price": 12.5903996978924
+        },
+        {
+          "hour": 8,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 138.9616809618788,
+          "solar_kw": 200.0,
+          "grid_price": 12.48606917674328
+        },
+        {
+          "hour": 9,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 126.06025396605956,
+          "solar_kw": 183.12140948551666,
+          "grid_price": 12.860597900736883
+        },
+        {
+          "hour": 10,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 108.01734240227486,
+          "solar_kw": 127.76770395577745,
+          "grid_price": 13.041905139861413
+        },
+        {
+          "hour": 11,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 140.53468503938956,
+          "solar_kw": 66.60631463427156,
+          "grid_price": 13.714000367623946
+        }
+      ]
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7003,
+      "score": 0.8406,
+      "grade": {
+        "score": 0.8406,
+        "reliability": 1.0,
+        "cost_efficiency": 0.6868,
+        "green_score": 0.9887,
+        "baseline_cost": 198844.53,
+        "actual_cost": 62273.46,
+        "total_blackout_kwh": 0.0,
+        "total_diesel_kwh": 114.95,
+        "total_demand_kwh": 10186.37,
+        "battery_throughput_kwh": 2045.93
+      },
+      "lp_objective": 0.1589066083348351,
+      "trace_samples": [
+        {
+          "hour": 0,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 70.98918482701058,
+          "solar_kw": 0.0,
+          "grid_price": 9.30291032387046
+        },
+        {
+          "hour": 1,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 86.70952369388151,
+          "solar_kw": 63.97184560404197,
+          "grid_price": 10.536192555671692
+        },
+        {
+          "hour": 2,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 100.24896171502688,
+          "solar_kw": 122.25186722585897,
+          "grid_price": 11.34419100737523
+        },
+        {
+          "hour": 3,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 109.26844955275998,
+          "solar_kw": 180.70589402401305,
+          "grid_price": 11.388507459198193
+        },
+        {
+          "hour": 4,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 126.75410908335317,
+          "solar_kw": 200.0,
+          "grid_price": 12.44539839803426
+        },
+        {
+          "hour": 5,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 111.83555651432928,
+          "solar_kw": 200.0,
+          "grid_price": 12.073936688756781
+        },
+        {
+          "hour": 6,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 123.05185652557383,
+          "solar_kw": 200.0,
+          "grid_price": 12.366009426292011
+        },
+        {
+          "hour": 7,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 138.21172523864894,
+          "solar_kw": 200.0,
+          "grid_price": 12.251198300592025
+        },
+        {
+          "hour": 8,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 134.32199456163684,
+          "solar_kw": 200.0,
+          "grid_price": 12.971796538081323
+        },
+        {
+          "hour": 9,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 115.24426682440371,
+          "solar_kw": 173.26162757880647,
+          "grid_price": 13.185233938360046
+        },
+        {
+          "hour": 10,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 122.22567888008152,
+          "solar_kw": 124.74005706899823,
+          "grid_price": 13.275297955226359
+        },
+        {
+          "hour": 11,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 135.40960979649796,
+          "solar_kw": 66.35176279812997,
+          "grid_price": 12.886711029002623
+        }
+      ]
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7001,
+      "score": 0.7968,
+      "grade": {
+        "score": 0.7968,
+        "reliability": 0.999,
+        "cost_efficiency": 0.6254,
+        "green_score": 0.9375,
+        "baseline_cost": 472588.83,
+        "actual_cost": 177020.29,
+        "total_blackout_kwh": 13.18,
+        "total_diesel_kwh": 792.0,
+        "total_demand_kwh": 12669.91,
+        "battery_throughput_kwh": 2808.69
+      },
+      "lp_objective": 0.2028581100600765,
+      "trace_samples": [
+        {
+          "hour": 0,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.9325722582228824,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 106.74277417771177,
+          "solar_kw": 0.0,
+          "grid_price": 14.97826741029845
+        },
+        {
+          "hour": 1,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -1.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.6770022146107031,
+          "demand_kw": 132.7832450830137,
+          "solar_kw": 43.196855859033086,
+          "grid_price": 15.161780600843489
+        },
+        {
+          "hour": 2,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.7017796911975606,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.8668022146107031,
+          "demand_kw": 164.8462388215394,
+          "solar_kw": 92.274432577473,
+          "grid_price": 15.784633879164845
+        },
+        {
+          "hour": 3,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 174.982420668471,
+          "solar_kw": 121.91881598803499,
+          "grid_price": 16.847615431059513
+        },
+        {
+          "hour": 4,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 175.6283627114656,
+          "solar_kw": 151.76292921253548,
+          "grid_price": 16.699518596199592
+        },
+        {
+          "hour": 5,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 157.2845921849267,
+          "solar_kw": 162.82387719774846,
+          "grid_price": 17.143877737959464
+        },
+        {
+          "hour": 6,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 194.71912769388533,
+          "solar_kw": 172.60443707324674,
+          "grid_price": 17.03812688240513
+        },
+        {
+          "hour": 7,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 196.7274153722189,
+          "solar_kw": 161.8484597702597,
+          "grid_price": 18.22775085230194
+        },
+        {
+          "hour": 8,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 196.2729813153199,
+          "solar_kw": 76.76542305523171,
+          "grid_price": 18.180335900193583
+        },
+        {
+          "hour": 9,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 175.7354965063561,
+          "solar_kw": 59.89003139332395,
+          "grid_price": 17.52593272901803
+        },
+        {
+          "hour": 10,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 179.22363358804492,
+          "solar_kw": 43.76979009950152,
+          "grid_price": 17.363797922684423
+        },
+        {
+          "hour": 11,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0005851715898545552,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 222.52872467846012,
+          "solar_kw": 22.47319189458292,
+          "grid_price": 18.622181000447764
+        }
+      ]
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7002,
+      "score": 0.7892,
+      "grade": {
+        "score": 0.7892,
+        "reliability": 0.9937,
+        "cost_efficiency": 0.6128,
+        "green_score": 0.9373,
+        "baseline_cost": 479033.37,
+        "actual_cost": 185465.93,
+        "total_blackout_kwh": 79.32,
+        "total_diesel_kwh": 792.0,
+        "total_demand_kwh": 12627.55,
+        "battery_throughput_kwh": 2817.18
+      },
+      "lp_objective": 0.21052084045162112,
+      "trace_samples": [
+        {
+          "hour": 0,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.9332690074822508,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 106.67309925177491,
+          "solar_kw": 0.0,
+          "grid_price": 14.75791318560387
+        },
+        {
+          "hour": 1,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -1.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.6771344576201312,
+          "demand_kw": 122.73056158989564,
+          "solar_kw": 45.286706863766995,
+          "grid_price": 15.280102951715085
+        },
+        {
+          "hour": 2,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.7010829419381919,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.8669344576201312,
+          "demand_kw": 151.24964747950906,
+          "solar_kw": 89.34962142454444,
+          "grid_price": 16.098106266059922
+        },
+        {
+          "hour": 3,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 156.06086496980993,
+          "solar_kw": 124.81887407209679,
+          "grid_price": 16.7675468125034
+        },
+        {
+          "hour": 4,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 183.2151834655986,
+          "solar_kw": 157.59427902918839,
+          "grid_price": 16.6182689934559
+        },
+        {
+          "hour": 5,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 183.6862912076356,
+          "solar_kw": 169.31440917941532,
+          "grid_price": 17.090437504565713
+        },
+        {
+          "hour": 6,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 182.87852378931296,
+          "solar_kw": 169.96812740467578,
+          "grid_price": 17.591850375592816
+        },
+        {
+          "hour": 7,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 216.3822065569187,
+          "solar_kw": 179.76720064407206,
+          "grid_price": 17.585285855508165
+        },
+        {
+          "hour": 8,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 208.4425214428182,
+          "solar_kw": 77.66578434265476,
+          "grid_price": 17.38844091690174
+        },
+        {
+          "hour": 9,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 189.09038094908937,
+          "solar_kw": 64.09249331993082,
+          "grid_price": 17.85287894398043
+        },
+        {
+          "hour": 10,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 162.0260136034123,
+          "solar_kw": 44.718696384522104,
+          "grid_price": 18.023118382038774
+        },
+        {
+          "hour": 11,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 210.80202755908434,
+          "solar_kw": 23.312210121995044,
+          "grid_price": 18.840411773144094
+        }
+      ]
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7003,
+      "score": 0.7875,
+      "grade": {
+        "score": 0.7875,
+        "reliability": 0.9926,
+        "cost_efficiency": 0.6097,
+        "green_score": 0.9377,
+        "baseline_cost": 483769.17,
+        "actual_cost": 188799.47,
+        "total_blackout_kwh": 93.55,
+        "total_diesel_kwh": 792.0,
+        "total_demand_kwh": 12721.08,
+        "battery_throughput_kwh": 2817.18
+      },
+      "lp_objective": 0.21222699838225295,
+      "trace_samples": [
+        {
+          "hour": 0,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.9351622275948414,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.5,
+          "demand_kw": 106.48377724051586,
+          "solar_kw": 0.0,
+          "grid_price": 14.184745584209224
+        },
+        {
+          "hour": 1,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -1.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.6774937907975008,
+          "demand_kw": 130.06428554082228,
+          "solar_kw": 44.78029192282937,
+          "grid_price": 15.60617153897394
+        },
+        {
+          "hour": 2,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.8672937907975008,
+          "demand_kw": 150.37344257254034,
+          "solar_kw": 85.57630705810128,
+          "grid_price": 16.483371828132338
+        },
+        {
+          "hour": 3,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.6991897218256016,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 0.8672937907975008,
+          "demand_kw": 163.90267432913996,
+          "solar_kw": 126.49412581680913,
+          "grid_price": 16.32897512916539
+        },
+        {
+          "hour": 4,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 190.13116362502976,
+          "solar_kw": 153.0691661052174,
+          "grid_price": 17.670461288110044
+        },
+        {
+          "hour": 5,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 167.75333477149394,
+          "solar_kw": 162.91524961353306,
+          "grid_price": 17.017934943459025
+        },
+        {
+          "hour": 6,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 184.57778478836073,
+          "solar_kw": 172.56438951694753,
+          "grid_price": 17.337040161852535
+        },
+        {
+          "hour": 7,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 207.31758785797342,
+          "solar_kw": 163.99289793620522,
+          "grid_price": 17.111515865893505
+        },
+        {
+          "hour": 8,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 201.48299184245525,
+          "solar_kw": 73.0763106438326,
+          "grid_price": 18.064878105002606
+        },
+        {
+          "hour": 9,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 172.86640023660556,
+          "solar_kw": 60.641569652582255,
+          "grid_price": 18.303533565583027
+        },
+        {
+          "hour": 10,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 183.33851832012226,
+          "solar_kw": 43.65901997414937,
+          "grid_price": 18.345653034432697
+        },
+        {
+          "hour": 11,
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": -0.0
+          },
+          "battery_soc": 1.0,
+          "demand_kw": 203.11441469474693,
+          "solar_kw": 23.223116979345487,
+          "grid_price": 17.70387455735443
+        }
+      ]
+    }
+  ]
+}
