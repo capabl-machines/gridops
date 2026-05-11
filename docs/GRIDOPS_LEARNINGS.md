@@ -269,6 +269,27 @@ GRIDOPS_RUN_LABEL=sft_qwen25_3b_gridops_v5_causal_teacher \
 bash scripts/kaggle_sft_v5_causal_teacher.sh
 ```
 
+Hugging Face Jobs launch command:
+
+```bash
+python scripts/launch_hf_job_v5_causal_teacher.py
+```
+
+Default HF Job settings:
+
+```text
+image:   pytorch/pytorch:2.6.0-cuda12.4-cudnn9-devel
+flavor:  l4x1
+timeout: 8h
+secret:  HF_TOKEN from local HF_API_TOKEN/HF_TOKEN
+branch:  codex/gridops-sft-pipeline
+```
+
+Use HF Jobs when notebook providers disconnect mid-run. The job clones the repo,
+builds v5 traces, validates them, trains from the v4 adapter, and uploads the
+new adapter to `77ethers/gridops-models/sft_qwen25_3b_gridops_v5_causal_teacher`.
+HF Jobs require prepaid compute credits; HF Pro alone may not be sufficient.
+
 Promotion gate:
 
 ```text
