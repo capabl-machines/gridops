@@ -300,3 +300,113 @@ task_3_crisis > v4 task_3
 average_score > 0.72
 crisis blackout and diesel reported explicitly
 ```
+
+## v5 Holdout Result
+
+HF Jobs:
+
+```text
+training job: 6a022d0faff1cd33e8f33e56
+eval job:     6a023c67317220dbbd1a7c2e
+model:        77ethers/gridops-models/sft_qwen25_3b_gridops_v5_causal_teacher
+eval file:    sft_qwen25_3b_gridops_v5_causal_teacher/evals/holdout_7001_7003_summary.json
+```
+
+Holdout on seeds `7001,7002,7003`:
+
+```text
+average_score:      0.7282
+valid_action_rate:  0.9907
+
+task_1_normal:      0.7923
+task_2_heatwave:    0.7553
+task_3_crisis:      0.6370
+```
+
+Compared with v4:
+
+```text
+v4 average:      0.7076 -> v5 average:      0.7282  (+0.0206)
+v4 task_1:       0.7891 -> v5 task_1:       0.7923  (+0.0032)
+v4 task_2:       0.7082 -> v5 task_2:       0.7553  (+0.0471)
+v4 task_3:       0.6255 -> v5 task_3:       0.6370  (+0.0115)
+v4 valid rate:   0.9738 -> v5 valid rate:   0.9907  (+0.0169)
+```
+
+Ceiling capture against the relaxed LP oracle:
+
+```text
+task_1: 0.7923 / 0.8372 = 94.6%
+task_2: 0.7553 / 0.8416 = 89.8%
+task_3: 0.6370 / 0.7912 = 80.5%
+```
+
+Interpretation:
+
+- v5 passes the promotion gate and beats v4 on every task;
+- heatwave improved substantially, confirming the causal-teacher approach;
+- crisis remains the bottleneck: blackout is still high and diesel use is
+  inconsistent across seeds;
+- the next repair should be crisis-focused, but it must preserve the v5
+  heatwave gain and valid-output stability.
+
+## v5.1 Crisis Repair Scaffold
+
+Prepared but not launched as paid training:
+
+```text
+scripts/build_gridops_v51_crisis_repair_traces.py
+scripts/kaggle_sft_v51_crisis_repair.sh
+tests/test_v51_crisis_repair_traces.py
+```
+
+Purpose:
+
+```text
+Continue from v5, not v4:
+77ethers/gridops-models/sft_qwen25_3b_gridops_v5_causal_teacher
+
+Small repair:
+70 SFT steps
+learning_rate: 3e-5
+run label: sft_qwen25_3b_gridops_v51_crisis_repair
+```
+
+Dataset shape:
+
+- crisis rows from the causal LP teacher around pre-outage, active outage,
+  previous-blackout correction, post-outage recovery, and late crisis evening;
+- normal/heatwave stability anchors to reduce forgetting;
+- optional sampled v4 reason-action rows for format stability.
+
+Smoke check:
+
+```text
+rows: 51
+task_1_normal: 8
+task_2_heatwave: 4
+task_3_crisis: 39
+diesel_positive: 11
+shedding_positive: 3
+validation: ok
+```
+
+Recommended next run only if we accept v5 as baseline and want one targeted
+repair:
+
+```bash
+GRIDOPS_SFT_STEPS=70 \
+GRIDOPS_LEARNING_RATE=3e-5 \
+GRIDOPS_RUN_LABEL=sft_qwen25_3b_gridops_v51_crisis_repair \
+bash scripts/kaggle_sft_v51_crisis_repair.sh
+```
+
+Promotion gate for v5.1:
+
+```text
+valid_action_rate >= 99%
+task_3_crisis > 0.66
+task_2_heatwave >= 0.74
+task_1_normal >= 0.78
+average_score > v5 average_score 0.7282
+```
