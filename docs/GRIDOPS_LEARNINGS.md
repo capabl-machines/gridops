@@ -410,3 +410,58 @@ task_2_heatwave >= 0.74
 task_1_normal >= 0.78
 average_score > v5 average_score 0.7282
 ```
+
+## v5.1 Holdout Result
+
+HF Jobs:
+
+```text
+training job: 6a02c06e317220dbbd1a7ece
+eval job:     6a02c6b8317220dbbd1a7eeb
+model:        77ethers/gridops-models/sft_qwen25_3b_gridops_v51_crisis_repair
+eval file:    sft_qwen25_3b_gridops_v51_crisis_repair/evals/holdout_7001_7003_summary.json
+```
+
+Holdout on seeds `7001,7002,7003`:
+
+```text
+average_score:      0.7354
+valid_action_rate:  0.9969
+
+task_1_normal:      0.7896
+task_2_heatwave:    0.7681
+task_3_crisis:      0.6484
+```
+
+Compared with v5:
+
+```text
+v5 average:      0.7282 -> v5.1 average:      0.7354  (+0.0072)
+v5 task_1:       0.7923 -> v5.1 task_1:       0.7896  (-0.0027)
+v5 task_2:       0.7553 -> v5.1 task_2:       0.7681  (+0.0128)
+v5 task_3:       0.6370 -> v5.1 task_3:       0.6484  (+0.0114)
+v5 valid rate:   0.9907 -> v5.1 valid rate:   0.9969  (+0.0062)
+```
+
+Ceiling capture against the relaxed LP oracle:
+
+```text
+task_1: 0.7896 / 0.8372 = 94.3%
+task_2: 0.7681 / 0.8416 = 91.3%
+task_3: 0.6484 / 0.7912 = 82.0%
+avg:    0.7354 / 0.8233 = 89.3%
+```
+
+Decision:
+
+- v5.1 passes the promotion gate;
+- valid action rate is the best so far;
+- heatwave and crisis improve over v5;
+- task 1 has a tiny regression versus v5 but remains above v4 and above the
+  v5.1 gate.
+
+Current best checkpoint:
+
+```text
+77ethers/gridops-models/sft_qwen25_3b_gridops_v51_crisis_repair
+```
