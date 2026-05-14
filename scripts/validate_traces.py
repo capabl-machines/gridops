@@ -18,9 +18,10 @@ from gridops.prompting import (
     validate_completion,
     validate_reason_action_completion,
 )
+from gridops.critics.lp_critic import validate_clean_reasoning_completion
 
 
-def validate_file(path: Path) -> dict:
+def validate_file(path: Path, *, strict_clean_reasoning: bool = False) -> dict:
     counts: Counter[str] = Counter()
     failures: list[dict] = []
     seen_ids: set[str] = set()
@@ -47,6 +48,12 @@ def validate_file(path: Path) -> dict:
             expected_system_prompt = SYSTEM_PROMPT
         if not valid:
             failures.append({"line": line_no, "id": row_id, "reason": reason})
+        if prompt_mode == "reason_action" and (
+            strict_clean_reasoning or str(raw.get("source", "")).startswith("lp_critic_distilled")
+        ):
+            clean_valid, clean_reason = validate_clean_reasoning_completion(row.get("completion", ""))
+            if not clean_valid:
+                failures.append({"line": line_no, "id": row_id, "reason": clean_reason})
 
         messages = row.get("messages") or []
         if not messages or messages[0].get("content") != expected_system_prompt:
@@ -74,9 +81,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("path", nargs="?", default="sft_traces/gridops_curriculum_1200.jsonl")
     parser.add_argument("--fail-fast", action="store_true")
+    parser.add_argument("--strict-clean-reasoning", action="store_true")
     args = parser.parse_args()
 
-    report = validate_file(Path(args.path))
+    report = validate_file(Path(args.path), strict_clean_reasoning=args.strict_clean_reasoning)
     print(json.dumps(report["counts"], indent=2))
     if report["failures"]:
         print(json.dumps(report["failures"][:20], indent=2))

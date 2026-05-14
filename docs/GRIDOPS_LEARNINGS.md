@@ -591,3 +591,84 @@ Why this matters:
 - correction rows explicitly capture where the model/candidate was rejected;
 - once the model imitates the tool reliably, DPO/GRPO can become a polishing
   stage rather than a rescue attempt.
+
+## v6 Result And v6.1 Pivot
+
+The first v6 tool-corrected run was useful, but not promotable. It trained on
+tool-selected labels, yet the completion target included too much diagnostic
+tool language. The model learned to emit verbose internal traces instead of
+stable `<think>...</think><action>{...}</action>` completions, so holdout
+validity collapsed.
+
+Decision:
+
+- keep `sft_qwen25_3b_gridops_v51_crisis_repair` as the promoted model-only
+  baseline;
+- keep the hybrid tool-agent as the best deployable system;
+- mark `sft_qwen25_3b_gridops_v6_tool_corrected` as failed/not promoted;
+- rebuild v6.1 as clean LP-critic distillation.
+
+v6.1 architecture:
+
+```text
+OpenEnv state -> weak candidate action -> causal LP critic on copied state
+-> chosen action -> clean operator reasoning -> final bounded JSON action
+```
+
+The full 72-hour LP remains an offline ceiling. The training critic uses the
+causal LP controller only: current observation, short forecasts, task rules,
+SOC/fuel/rebound, and previous feedback. Critic details stay in `raw`; the SFT
+completion reads like an operator decision, not a tool transcript.
+
+Implemented files:
+
+```text
+gridops/critics/lp_critic.py
+scripts/build_gridops_lp_critic_distilled_sft.py
+scripts/launch_hf_job_v61_lp_critic_distilled_sft.py
+tests/test_lp_critic_distilled_sft.py
+```
+
+Smoke dataset:
+
+```bash
+.venv/bin/python scripts/build_gridops_lp_critic_distilled_sft.py \
+  --tasks task_1_normal,task_2_heatwave,task_3_crisis \
+  --seeds 7401,7402 \
+  --stride 6 \
+  --output /tmp/gridops_lp_critic_distilled_smoke.jsonl \
+  --summary /tmp/gridops_lp_critic_distilled_smoke_summary.json
+
+.venv/bin/python scripts/validate_traces.py \
+  /tmp/gridops_lp_critic_distilled_smoke.jsonl \
+  --strict-clean-reasoning
+```
+
+HF dry run:
+
+```bash
+.venv/bin/python scripts/launch_hf_job_v61_lp_critic_distilled_sft.py --dry-run
+```
+
+HF launch, after reviewing the dry run:
+
+```bash
+.venv/bin/python scripts/launch_hf_job_v61_lp_critic_distilled_sft.py --run-eval
+```
+
+Default v6.1 settings:
+
+```text
+base_model: Qwen/Qwen3-4B-Instruct-2507
+run_label:  sft_qwen3_4b_gridops_lp_critic_distilled_v1
+trace_path: sft_traces/gridops_lp_critic_distilled_sft_v1.jsonl
+max_rows:   3600
+steps:      160
+```
+
+Promotion gate:
+
+- valid action rate >= 0.99;
+- average score > v5.1 model-only `0.7354`;
+- task 3 crisis > v5.1 `0.6484`, target >= `0.68`;
+- no task regresses below v5.1 by more than `0.01`.
