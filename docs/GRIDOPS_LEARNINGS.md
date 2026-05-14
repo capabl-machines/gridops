@@ -465,3 +465,129 @@ Current best checkpoint:
 ```text
 77ethers/gridops-models/sft_qwen25_3b_gridops_v51_crisis_repair
 ```
+
+## Hybrid Tool-Agent v1
+
+The next improvement is not another checkpoint first. It is a runtime harness:
+the model proposes or explains an action, while a causal optimizer, validator,
+and short simulator decide whether that action is safe to execute.
+
+Implemented tools:
+
+```text
+optimizer:  short-horizon causal LP using current observation + forecasts
+validator:  GridOpsAction JSON/schema/bounds validation
+sim guard:  compare model vs optimizer action on copied environment state
+logger:     reset/plan/step JSONL episode capture for future SFT/RL data
+exporter:   episode_logs/*.jsonl -> validated SFT trace JSONL
+```
+
+Important design decision:
+
+- the full 72-hour LP oracle remains an offline ceiling because it sees the
+  whole future;
+- the deployed tool uses the causal LP only;
+- in crisis, the LLM may override only when the rollout predicts lower
+  blackout, not merely lower short-term cost.
+
+Holdout smoke on seeds `7001,7002,7003`:
+
+```text
+optimizer-only average: 0.7882
+hybrid-guard average:   0.7946
+valid_action_rate:      1.0000
+
+hybrid task_1_normal:   0.8182
+hybrid task_2_heatwave: 0.8226
+hybrid task_3_crisis:   0.7428
+```
+
+Compared with v5.1 SFT:
+
+```text
+v5.1 average: 0.7354 -> hybrid guard: 0.7946 (+0.0592)
+v5.1 task_1:  0.7896 -> hybrid task_1: 0.8182 (+0.0286)
+v5.1 task_2:  0.7681 -> hybrid task_2: 0.8226 (+0.0545)
+v5.1 task_3:  0.6484 -> hybrid task_3: 0.7428 (+0.0944)
+```
+
+This confirms the main lesson: for GridOps, a small model plus executable
+optimizer/validator tools is more reliable than trying to make the model
+memorize every control rule through SFT alone.
+
+## Tool-Corrected SFT Loop
+
+The right v6 path is tool distillation before more GRPO. The loop is:
+
+```text
+model/candidate proposes -> optimizer proposes -> validator/simulator selects
+-> save correction -> SFT on selected action -> evaluate model-only and hybrid
+```
+
+Implemented dataset tools:
+
+```text
+scripts/build_gridops_tool_corrected_sft.py
+  Generates deterministic rollout traces where the guard chooses the label.
+
+scripts/export_episode_logs_to_traces.py
+  Converts real demo/API episode_logs/*.jsonl into SFT-ready rows.
+```
+
+Smoke command:
+
+```bash
+.venv/bin/python scripts/build_gridops_tool_corrected_sft.py \
+  --tasks task_1_normal,task_2_heatwave,task_3_crisis \
+  --seeds 7301,7302,7303 \
+  --stride 1 \
+  --candidate-policy price_greedy \
+  --output sft_traces/gridops_tool_corrected_sft_v1.jsonl \
+  --summary-output evals/gridops_tool_corrected_sft_v1_summary.json
+```
+
+Convert real usage logs:
+
+```bash
+.venv/bin/python scripts/export_episode_logs_to_traces.py \
+  --log-dir episode_logs \
+  --prompt-mode reason_action \
+  --output sft_traces/gridops_episode_logs_reason_action.jsonl
+```
+
+Train v6 as a continuation of v5.1:
+
+```bash
+GRIDOPS_TRACE_PATH=sft_traces/gridops_tool_corrected_sft_v1.jsonl \
+GRIDOPS_INIT_ADAPTER=77ethers/gridops-models/sft_qwen25_3b_gridops_v51_crisis_repair \
+GRIDOPS_RUN_LABEL=sft_qwen25_3b_gridops_v6_tool_corrected \
+GRIDOPS_SFT_STEPS=100 \
+GRIDOPS_LEARNING_RATE=3e-5 \
+python scripts/hf_sft_gridops.py
+```
+
+Launch the same flow on Hugging Face Jobs:
+
+```bash
+.venv/bin/python scripts/launch_hf_job_v6_tool_corrected_sft.py --run-eval
+```
+
+Default HF settings:
+
+```text
+image:        pytorch/pytorch:2.6.0-cuda12.4-cudnn9-devel
+flavor:       l4x1
+timeout:      10h
+branch:       codex/gridops-sft-pipeline
+init_adapter: 77ethers/gridops-models/sft_qwen25_3b_gridops_v51_crisis_repair
+run_label:    sft_qwen25_3b_gridops_v6_tool_corrected
+trace rows:   3 tasks x 6 seeds x 72 hours = 1296 rows
+```
+
+Why this matters:
+
+- SFT now teaches the model the action that survived validation and rollout,
+  not just the action a generator guessed;
+- correction rows explicitly capture where the model/candidate was rejected;
+- once the model imitates the tool reliably, DPO/GRPO can become a polishing
+  stage rather than a rescue attempt.

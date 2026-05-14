@@ -12,3 +12,4 @@ build/
 04-training.md
 GRIDOPS_SPEC.md
 gemini31.py
+episode_logs/

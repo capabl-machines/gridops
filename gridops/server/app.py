@@ -7,6 +7,7 @@ Adds custom STATEFUL /reset and /step endpoints for the dashboard (HTTP).
 
 from __future__ import annotations
 
+import copy
 import os
 import mimetypes
 from pathlib import Path
@@ -19,9 +20,20 @@ from pydantic import BaseModel
 
 from openenv.core.env_server.http_server import create_app
 
+from gridops.episode_logging import episode_logger
 from gridops.models import GridOpsAction, GridOpsObservation
 from gridops.server.environment import GridOpsEnvironment
 from gridops.tasks.definitions import TASKS
+from gridops.tool_agent import (
+    DEFAULT_COMPARE_HORIZON,
+    DEFAULT_OPTIMIZER_HORIZON,
+    PlanInputs,
+    action_dict,
+    optimize_action,
+    plan_action,
+    previous_outcome_from_observation,
+    validate_action_payload,
+)
 
 mimetypes.add_type("image/webp", ".webp")
 mimetypes.add_type("image/svg+xml", ".svg")
@@ -51,6 +63,12 @@ async def add_static_cache_headers(request, call_next):
 _dashboard_env = GridOpsEnvironment()
 
 
+def _dashboard_observation_snapshot() -> dict[str, Any]:
+    """Return current dashboard observation without advancing live forecast RNG."""
+    env_copy = copy.deepcopy(_dashboard_env)
+    return env_copy._make_observation(0.0, env_copy.state.done, "").model_dump()  # noqa: SLF001
+
+
 class ResetBody(BaseModel):
     seed: int | None = 42
     task_id: str = "task_1_normal"
@@ -60,18 +78,65 @@ class StepBody(BaseModel):
     action: dict[str, Any]
 
 
+class OptimizeBody(BaseModel):
+    task_id: str | None = None
+    observation: dict[str, Any] | None = None
+    previous_outcome: dict[str, Any] | None = None
+    horizon: int = DEFAULT_OPTIMIZER_HORIZON
+
+
+class ValidateBody(BaseModel):
+    action: dict[str, Any] | None = None
+    completion: str | None = None
+
+
+class PlanBody(BaseModel):
+    task_id: str | None = None
+    observation: dict[str, Any] | None = None
+    previous_action: dict[str, Any] | None = None
+    previous_outcome: dict[str, Any] | None = None
+    model_action: dict[str, Any] | None = None
+    model_completion: str | None = None
+    use_llm: bool = False
+    optimizer_horizon: int = DEFAULT_OPTIMIZER_HORIZON
+    compare_horizon: int = DEFAULT_COMPARE_HORIZON
+
+
 @app.post("/api/reset")
 def dashboard_reset(body: ResetBody):
     """Reset the shared dashboard environment."""
     obs = _dashboard_env.reset(seed=body.seed, task_id=body.task_id)
+    episode_logger.append(
+        _dashboard_env.state.episode_id,
+        "reset",
+        {
+            "task_id": _dashboard_env.state.task_id,
+            "seed": body.seed,
+            "observation": obs.model_dump(),
+        },
+    )
     return {"observation": obs.model_dump()}
 
 
 @app.post("/api/step")
 def dashboard_step(body: StepBody):
     """Execute one step in the shared dashboard environment."""
+    before = _dashboard_env.state.model_dump()
+    obs_before = _dashboard_observation_snapshot()
     action = GridOpsAction(**body.action)
     obs = _dashboard_env.step(action)
+    episode_logger.append(
+        _dashboard_env.state.episode_id,
+        "step",
+        {
+            "task_id": _dashboard_env.state.task_id,
+            "hour_before": before.get("hour"),
+            "action": action_dict(action),
+            "observation_before": obs_before,
+            "observation": obs.model_dump(),
+            "grade": _dashboard_env.state.grade,
+        },
+    )
     return {"observation": obs.model_dump()}
 
 
@@ -79,6 +144,58 @@ def dashboard_step(body: StepBody):
 def dashboard_state():
     """Get current state of the shared dashboard environment."""
     return _dashboard_env.state.model_dump()
+
+
+@app.post("/api/tools/optimize")
+def tool_optimize(body: OptimizeBody):
+    """Return a causal LP optimizer action without stepping the environment."""
+    task_id = body.task_id or _dashboard_env.state.task_id
+    obs = body.observation or _dashboard_observation_snapshot()
+    previous_outcome = body.previous_outcome or previous_outcome_from_observation(obs)
+    action, info = optimize_action(obs, task_id, previous_outcome=previous_outcome, horizon=body.horizon)
+    return {
+        "task_id": task_id,
+        "action": action_dict(action),
+        "info": info,
+    }
+
+
+@app.post("/api/tools/validate")
+def tool_validate(body: ValidateBody):
+    """Validate a raw action dict or model completion."""
+    payload = body.completion if body.completion is not None else body.action
+    return validate_action_payload(payload)
+
+
+@app.post("/api/plan")
+def dashboard_plan(body: PlanBody):
+    """Plan one action from the current dashboard state without stepping."""
+    task_id = body.task_id or _dashboard_env.state.task_id
+    obs = body.observation or _dashboard_observation_snapshot()
+    result = plan_action(
+        _dashboard_env,
+        PlanInputs(
+            task_id=task_id,
+            observation=obs,
+            previous_action=body.previous_action,
+            previous_outcome=body.previous_outcome,
+            model_action=body.model_action,
+            model_completion=body.model_completion,
+            use_llm=body.use_llm,
+            optimizer_horizon=body.optimizer_horizon,
+            compare_horizon=body.compare_horizon,
+        ),
+    )
+    episode_logger.append(
+        _dashboard_env.state.episode_id,
+        "plan",
+        {
+            "task_id": task_id,
+            "observation": obs,
+            "plan": result,
+        },
+    )
+    return result
 
 
 # ── Custom endpoints ─────────────────────────────────────────────────────

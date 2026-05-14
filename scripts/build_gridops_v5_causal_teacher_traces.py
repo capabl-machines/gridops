@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from gridops.models import GridOpsAction
 from gridops.policies import oracle_policy
+from gridops.tool_agent import optimize_action as runtime_optimize_action
 from gridops.simulation.physics import (
     BATTERY_CAPACITY_KWH,
     BATTERY_CHARGE_EFF,
@@ -120,6 +121,16 @@ def causal_lp_teacher_action(
     fuel_deficit_weight: float = 8.0,
 ) -> tuple[GridOpsAction, dict[str, Any]]:
     """Return the first action from a short-horizon causal LP teacher."""
+    return runtime_optimize_action(
+        obs,
+        task_id,
+        previous_outcome=previous_outcome,
+        horizon=horizon,
+        blackout_weight=blackout_weight,
+        diesel_green_weight=diesel_green_weight,
+        soc_deficit_weight=soc_deficit_weight,
+        fuel_deficit_weight=fuel_deficit_weight,
+    )
     horizon = max(1, min(int(horizon), 12))
     demand, solar, price = _series_from_observation(obs, horizon)
     hour = int(obs["hour"])

@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install deps first (cached layer)
 COPY pyproject.toml ./
-RUN pip install --no-cache-dir numpy pydantic fastapi "uvicorn[standard]" websockets openai requests openenv-core
+RUN pip install --no-cache-dir numpy scipy pydantic fastapi "uvicorn[standard]" websockets openai requests openenv-core
 
 # Copy app code
 COPY gridops/ gridops/
