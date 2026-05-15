@@ -787,3 +787,77 @@ Decision:
   versus the previous hybrid guard;
 - the next training step should be a strategy-selector model, not another
   action-float model.
+
+## v7.1 Strategy-Selector SFT Prep
+
+The next checkpoint should learn strategy selection, not direct dispatch. The
+model output stays small and categorical, while the controller keeps numerical
+optimization, safety bounds, and final `GridOpsAction` generation.
+
+Implemented files:
+
+```text
+scripts/evaluate_gridops_strategy_adapter.py
+scripts/launch_hf_job_v7_strategy_sft.py
+```
+
+Default training target:
+
+```text
+base_model:  Qwen/Qwen2.5-1.5B-Instruct
+run_label:   sft_qwen25_15b_gridops_strategy_v7
+trace_path:  sft_traces/gridops_strategy_v7_sft.jsonl
+rows:        up to 3600 deterministic strategy rows
+steps:       120
+output:      strict strategy JSON only
+```
+
+Why `1.5B` is acceptable here:
+
+- the model no longer has to calculate exact dispatch floats;
+- it only chooses among six modes and four small enum fields;
+- the causal LP/MPC controller remains responsible for numerical dispatch;
+- smaller inference is easier to deploy and fine-tune repeatedly.
+
+Smoke data command:
+
+```bash
+.venv/bin/python scripts/build_gridops_strategy_dataset.py \
+  --tasks task_1_normal,task_2_heatwave,task_3_crisis \
+  --seeds 7601,7602 \
+  --stride 6 \
+  --max-rows 80 \
+  --output /tmp/gridops_strategy_v7_sft_smoke.jsonl \
+  --summary /tmp/gridops_strategy_v7_sft_smoke_summary.json
+
+.venv/bin/python scripts/validate_traces.py \
+  /tmp/gridops_strategy_v7_sft_smoke.jsonl \
+  --fail-fast
+```
+
+HF dry run:
+
+```bash
+.venv/bin/python scripts/launch_hf_job_v7_strategy_sft.py \
+  --dry-run \
+  --run-eval
+```
+
+Launch when ready:
+
+```bash
+.venv/bin/python scripts/launch_hf_job_v7_strategy_sft.py \
+  --run-eval
+```
+
+Promotion gate:
+
+```text
+valid_strategy_rate >= 0.995
+average_score >= deterministic v7 strategy-controller average 0.7907 - 0.005
+task_3_crisis >= 0.74
+no task below v5.1 model-only baseline
+```
+
+If the strategy model fails, keep deterministic v7 strategy-controller as the
+deployable system and repair the strategy dataset before considering DPO/GRPO.
