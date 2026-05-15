@@ -82,7 +82,7 @@ if [[ "${GRIDOPS_RUN_EVAL}" == "1" ]]; then
     --adapter-path "${GRIDOPS_MODEL_REPO}/${GRIDOPS_RUN_LABEL}" \
     --base-model "${GRIDOPS_BASE_MODEL}" \
     --prompt-mode reason_action \
-    --max-new-tokens 220 \
+    --max-new-tokens 384 \
     --seeds "${GRIDOPS_EVAL_SEEDS}" \
     --output "evals/${GRIDOPS_RUN_LABEL}_holdout.json"
   python - <<'PY'
@@ -93,13 +93,19 @@ repo = os.environ["GRIDOPS_MODEL_REPO"]
 run_label = os.environ["GRIDOPS_RUN_LABEL"]
 path = f"evals/{run_label}_holdout.json"
 api = HfApi(token=os.environ["HF_API_TOKEN"])
-api.upload_file(
-    path_or_fileobj=path,
-    path_in_repo=f"{run_label}/evals/holdout/{run_label}_holdout.json",
-    repo_id=repo,
-    repo_type="model",
-    commit_message=f"Upload GridOps v6.1 holdout eval {run_label}",
-)
+for local_path, remote_name in [
+    (path, f"{run_label}_holdout.json"),
+    (f"evals/{run_label}_holdout.invalid_examples.jsonl", f"{run_label}_holdout.invalid_examples.jsonl"),
+    (f"evals/{run_label}_holdout.valid_samples.jsonl", f"{run_label}_holdout.valid_samples.jsonl"),
+]:
+    if os.path.exists(local_path):
+        api.upload_file(
+            path_or_fileobj=local_path,
+            path_in_repo=f"{run_label}/evals/holdout/{remote_name}",
+            repo_id=repo,
+            repo_type="model",
+            commit_message=f"Upload GridOps v6.1 holdout eval {run_label}",
+        )
 PY
 fi
 '''

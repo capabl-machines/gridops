@@ -26,16 +26,22 @@ from gridops.prompting import (
 )
 from gridops.server.environment import GridOpsEnvironment
 from gridops.tasks.definitions import TASKS
-from scripts.build_gridops_v4_reasoning_traces import derive_context, previous_outcome_from_obs
+from gridops.tool_agent import derive_control_context, previous_outcome_from_observation
 
 
 def invalid_action_diagnostics(reply: str) -> dict[str, Any]:
     """Return extra debugging context for invalid model completions."""
     payload = extract_action_json(reply)
+    parsed_action = parse_action(reply, default=GridOpsAction())
     diagnostics: dict[str, Any] = {
         "reply": reply,
         "reply_chars": len(reply or ""),
         "action_payload": payload,
+        "parsed_action": parsed_action.model_dump(),
+        "has_think": "<think>" in (reply or ""),
+        "has_think_close": "</think>" in (reply or ""),
+        "has_action": "<action>" in (reply or ""),
+        "has_action_close": "</action>" in (reply or ""),
     }
     if payload is None:
         return diagnostics
@@ -60,7 +66,10 @@ def model_path_kwargs(path: str) -> tuple[str, dict[str, str]]:
 
 def load_model(base_model: str, adapter_path: str, token: str | None, load_4bit: bool):
     adapter_id, adapter_kwargs = model_path_kwargs(adapter_path)
-    tokenizer = AutoTokenizer.from_pretrained(base_model, token=token)
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(adapter_id, token=token, **adapter_kwargs)
+    except Exception:
+        tokenizer = AutoTokenizer.from_pretrained(base_model, token=token)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
@@ -93,7 +102,7 @@ def build_messages(
     if prompt_mode == "reason_action":
         return messages_for_reason_action_observation(
             obs,
-            derive_context(obs, task_id),
+            derive_control_context(obs, task_id),
             previous_action,
             previous_outcome,
         )
@@ -158,7 +167,7 @@ def rollout(
     for _ in range(horizon):
         obs_dict = obs.model_dump()
         if prior_obs is not None and prior_model_action is not None:
-            previous_outcome = previous_outcome_from_obs(obs_dict, prior_obs, prior_model_action)
+            previous_outcome = previous_outcome_from_observation(obs_dict)
             previous_action = prior_model_action.model_dump()
         reply, action, valid, reason = generate_action(
             tokenizer,
@@ -257,6 +266,8 @@ def main() -> None:
     parser.add_argument("--sample-limit", type=int, default=5)
     parser.add_argument("--horizon", type=int, default=72)
     parser.add_argument("--output", default="evals/gridops_sft_adapter_eval.json")
+    parser.add_argument("--invalid-output", default="")
+    parser.add_argument("--samples-output", default="")
     parser.add_argument("--no-4bit", action="store_true")
     args = parser.parse_args()
 
@@ -266,6 +277,12 @@ def main() -> None:
 
     tokenizer, model = load_model(args.base_model, args.adapter_path, token, load_4bit=not args.no_4bit)
     rows = []
+    invalid_output = Path(args.invalid_output) if args.invalid_output else Path(args.output).with_suffix(".invalid_examples.jsonl")
+    samples_output = Path(args.samples_output) if args.samples_output else Path(args.output).with_suffix(".valid_samples.jsonl")
+    invalid_output.parent.mkdir(parents=True, exist_ok=True)
+    samples_output.parent.mkdir(parents=True, exist_ok=True)
+    invalid_output.write_text("")
+    samples_output.write_text("")
     for task_id in task_ids:
         for seed in seeds:
             result = rollout(
@@ -279,6 +296,13 @@ def main() -> None:
                 args.horizon,
             )
             rows.append(result)
+            with invalid_output.open("a", encoding="utf-8") as handle:
+                for example in result["invalid_examples"]:
+                    handle.write(json.dumps(example, sort_keys=True) + "\n")
+            with samples_output.open("a", encoding="utf-8") as handle:
+                for sample in result["samples"]:
+                    handle.write(json.dumps(sample, sort_keys=True) + "\n")
+            first_invalid = result["invalid_examples"][0] if result["invalid_examples"] else None
             print(
                 json.dumps(
                     {
@@ -286,6 +310,15 @@ def main() -> None:
                         "seed": seed,
                         "score": result["score"],
                         "valid_action_rate": round(result["valid_action_rate"], 4),
+                        "first_invalid_reason": first_invalid.get("reason") if first_invalid else None,
+                        "first_invalid_flags": {
+                            "has_think": first_invalid.get("has_think") if first_invalid else None,
+                            "has_think_close": first_invalid.get("has_think_close") if first_invalid else None,
+                            "has_action": first_invalid.get("has_action") if first_invalid else None,
+                            "has_action_close": first_invalid.get("has_action_close") if first_invalid else None,
+                            "reply_chars": first_invalid.get("reply_chars") if first_invalid else None,
+                        },
+                        "first_invalid_reply_prefix": first_invalid.get("reply", "")[:500] if first_invalid else None,
                     }
                 ),
                 flush=True,
