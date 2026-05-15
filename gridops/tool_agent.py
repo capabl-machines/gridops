@@ -40,6 +40,7 @@ from gridops.simulation.physics import (
     VOLL,
 )
 from gridops.tasks.definitions import TASKS
+from gridops.strategy import plan_strategy_action
 
 
 LP_VARS = ["imp", "exp", "ch", "dis", "diesel", "shed", "blackout", "curtail"]
@@ -558,6 +559,7 @@ class PlanInputs:
     previous_outcome: dict[str, Any] | None = None
     model_action: dict[str, Any] | None = None
     model_completion: str | None = None
+    strategy: dict[str, Any] | str | None = None
     use_llm: bool = False
     optimizer_horizon: int = DEFAULT_OPTIMIZER_HORIZON
     compare_horizon: int = DEFAULT_COMPARE_HORIZON
@@ -567,12 +569,16 @@ def plan_action(env: GridOpsEnvironment, inputs: PlanInputs) -> dict[str, Any]:
     """Plan one action from the current environment state."""
     task_id = inputs.task_id if inputs.task_id in TASKS else "task_1_normal"
     previous_outcome = inputs.previous_outcome or previous_outcome_from_observation(inputs.observation)
-    optimizer_action, optimizer_info = optimize_action(
-        inputs.observation,
+    strategy_plan = plan_strategy_action(
+        env,
         task_id,
+        inputs.observation,
         previous_outcome=previous_outcome,
-        horizon=inputs.optimizer_horizon,
+        strategy=inputs.strategy,
+        optimizer_horizon=inputs.optimizer_horizon,
     )
+    optimizer_action = GridOpsAction(**strategy_plan["action"])
+    optimizer_info = strategy_plan["optimizer_info"]
 
     llm_result: dict[str, Any] = {"available": False, "reason": "not_requested"}
     raw_model_candidate: Any = inputs.model_action
@@ -618,10 +624,16 @@ def plan_action(env: GridOpsEnvironment, inputs: PlanInputs) -> dict[str, Any]:
             "validation": model_validation,
             "llm": llm_result,
         },
+        "strategy_candidate": {
+            "strategy": strategy_plan["strategy"],
+            "source": strategy_plan["strategy_source"],
+            "validation": strategy_plan["strategy_validation"],
+        },
         "optimizer_candidate": {
             "action": action_dict(optimizer_action),
             "info": optimizer_info,
         },
+        "optimizer_config": strategy_plan["optimizer_config"],
         "comparison": comparison,
     }
 

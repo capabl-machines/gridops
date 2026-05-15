@@ -672,3 +672,118 @@ Promotion gate:
 - average score > v5.1 model-only `0.7354`;
 - task 3 crisis > v5.1 `0.6484`, target >= `0.68`;
 - no task regresses below v5.1 by more than `0.01`.
+
+## v7 Strategy Harness
+
+The v6.1 Qwen3 experiment clarified a larger architecture lesson: forcing the
+model to emit exact dispatch floats is brittle. GridOps is a control problem,
+so the model should select operating intent and the deterministic controller
+should turn that intent into bounded action.
+
+v7 changes the model target from action JSON to strategy JSON:
+
+```json
+{
+  "mode": "cost_saving | peak_shaving | outage_prepare | reliability | recovery | fuel_conservation",
+  "risk_level": "low | medium | high | critical",
+  "battery_bias": "charge | preserve | discharge | neutral",
+  "diesel_policy": "avoid | allow_if_blackout | prewarm | conserve",
+  "shedding_policy": "never | last_resort"
+}
+```
+
+Runtime flow:
+
+```text
+OpenEnv observation
+-> deterministic or model-selected GridOpsStrategy
+-> strategy_to_optimizer_config(...)
+-> causal LP/MPC optimizer
+-> final GridOpsAction
+```
+
+The OpenEnv action and observation contracts remain unchanged. `/api/reset`,
+`/api/step`, `/api/state`, `/ws`, and the dashboard still operate on
+`GridOpsAction`. `/api/plan` now optionally accepts a `strategy` and returns
+the strategy candidate, optimizer config, selected action, and diagnostics.
+
+Implemented files:
+
+```text
+gridops/strategy.py
+scripts/build_gridops_strategy_dataset.py
+scripts/evaluate_gridops_strategy_controller.py
+tests/test_strategy_harness.py
+```
+
+Validation and smoke commands:
+
+```bash
+.venv/bin/python scripts/build_gridops_strategy_dataset.py \
+  --tasks task_1_normal,task_2_heatwave,task_3_crisis \
+  --seeds 7601 \
+  --stride 12 \
+  --output /tmp/gridops_strategy_v7_smoke.jsonl \
+  --summary /tmp/gridops_strategy_v7_smoke_summary.json
+
+.venv/bin/python scripts/validate_traces.py \
+  /tmp/gridops_strategy_v7_smoke.jsonl \
+  --fail-fast
+
+.venv/bin/python scripts/evaluate_gridops_strategy_controller.py \
+  --mode strategy \
+  --tasks task_1_normal,task_2_heatwave,task_3_crisis \
+  --seeds 7001,7002,7003 \
+  --output evals/gridops_v7_strategy_controller_holdout_7001_7003.json
+```
+
+Holdout result on seeds `7001,7002,7003`:
+
+```text
+strategy-controller average: 0.7907
+valid_action_rate:           1.0000
+LP ceiling capture:          96.04%
+
+task_1_normal:               0.7995
+task_2_heatwave:             0.8224
+task_3_crisis:               0.7503
+```
+
+Compared with v5.1 model-only:
+
+```text
+v5.1 average: 0.7354 -> v7 strategy: 0.7907 (+0.0553)
+v5.1 task_1:  0.7896 -> v7 task_1:   0.7995 (+0.0099)
+v5.1 task_2:  0.7681 -> v7 task_2:   0.8224 (+0.0543)
+v5.1 task_3:  0.6484 -> v7 task_3:   0.7503 (+0.1019)
+```
+
+Compared with the previous hybrid guard:
+
+```text
+hybrid average: 0.7946 -> v7 strategy: 0.7907 (-0.0039)
+hybrid task_1:  0.8182 -> v7 task_1:   0.7995 (-0.0187)
+hybrid task_2:  0.8226 -> v7 task_2:   0.8224 (-0.0002)
+hybrid task_3:  0.7428 -> v7 task_3:   0.7503 (+0.0075)
+```
+
+Extended check on seeds `7201-7210`:
+
+```text
+average_score:      0.7921
+valid_action_rate:  1.0000
+LP ceiling capture: 96.21%
+
+task_1_normal:      0.8049
+task_2_heatwave:    0.8257
+task_3_crisis:      0.7457
+```
+
+Decision:
+
+- v7 passes the harness milestone with no paid model training;
+- strategy JSON is a much easier future SFT target than raw dispatch floats;
+- deterministic strategy-controller beats v5.1 model-only and improves crisis
+  versus the previous hybrid guard;
+- the next training step should be a strategy-selector model, not another
+  action-float model.

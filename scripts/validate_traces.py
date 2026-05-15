@@ -19,6 +19,11 @@ from gridops.prompting import (
     validate_reason_action_completion,
 )
 from gridops.critics.lp_critic import validate_clean_reasoning_completion
+from gridops.strategy import (
+    STRATEGY_SYSTEM_PROMPT,
+    format_strategy_observation,
+    validate_strategy_completion,
+)
 
 
 def validate_file(path: Path, *, strict_clean_reasoning: bool = False) -> dict:
@@ -43,6 +48,9 @@ def validate_file(path: Path, *, strict_clean_reasoning: bool = False) -> dict:
         if prompt_mode == "reason_action":
             valid, reason = validate_reason_action_completion(row.get("completion", ""))
             expected_system_prompt = REASON_ACTION_SYSTEM_PROMPT
+        elif prompt_mode == "strategy_json":
+            valid, reason = validate_strategy_completion(row.get("completion", ""))
+            expected_system_prompt = STRATEGY_SYSTEM_PROMPT
         else:
             valid, reason = validate_completion(row.get("completion", ""))
             expected_system_prompt = SYSTEM_PROMPT
@@ -65,6 +73,12 @@ def validate_file(path: Path, *, strict_clean_reasoning: bool = False) -> dict:
                 obs,
                 raw.get("derived_context"),
                 raw.get("previous_action"),
+                raw.get("previous_outcome"),
+            )
+        elif prompt_mode == "strategy_json" and obs:
+            expected_prompt = format_strategy_observation(
+                obs,
+                raw.get("derived_context"),
                 raw.get("previous_outcome"),
             )
         elif obs:

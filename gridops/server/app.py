@@ -97,6 +97,7 @@ class PlanBody(BaseModel):
     previous_outcome: dict[str, Any] | None = None
     model_action: dict[str, Any] | None = None
     model_completion: str | None = None
+    strategy: dict[str, Any] | str | None = None
     use_llm: bool = False
     optimizer_horizon: int = DEFAULT_OPTIMIZER_HORIZON
     compare_horizon: int = DEFAULT_COMPARE_HORIZON
@@ -181,6 +182,7 @@ def dashboard_plan(body: PlanBody):
             previous_outcome=body.previous_outcome,
             model_action=body.model_action,
             model_completion=body.model_completion,
+            strategy=body.strategy,
             use_llm=body.use_llm,
             optimizer_horizon=body.optimizer_horizon,
             compare_horizon=body.compare_horizon,
@@ -196,6 +198,12 @@ def dashboard_plan(body: PlanBody):
         },
     )
     return result
+
+
+@app.post("/api/strategy/plan")
+def dashboard_strategy_plan(body: PlanBody):
+    """Plan one strategy-mediated action without stepping."""
+    return dashboard_plan(body)
 
 
 # ── Custom endpoints ─────────────────────────────────────────────────────
