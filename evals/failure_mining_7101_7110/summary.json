@@ -1,0 +1,228 @@
+{
+  "episodes": 30,
+  "average_score": 0.6832,
+  "average_oracle_score": 0.77,
+  "average_score_gap": 0.0869,
+  "valid_action_rate": 0.9986,
+  "by_task": {
+    "task_1_normal": {
+      "episodes": 10,
+      "score": 0.642,
+      "oracle_score": 0.7957,
+      "score_gap": 0.1537,
+      "valid_action_rate": 1.0,
+      "blackout_kwh": 204.15,
+      "oracle_blackout_kwh": 15.26
+    },
+    "task_2_heatwave": {
+      "episodes": 10,
+      "score": 0.7452,
+      "oracle_score": 0.8117,
+      "score_gap": 0.0665,
+      "valid_action_rate": 1.0,
+      "blackout_kwh": 219.09,
+      "oracle_blackout_kwh": 43.32
+    },
+    "task_3_crisis": {
+      "episodes": 10,
+      "score": 0.6623,
+      "oracle_score": 0.7027,
+      "score_gap": 0.0404,
+      "valid_action_rate": 0.9958,
+      "blackout_kwh": 994.65,
+      "oracle_blackout_kwh": 714.22
+    }
+  },
+  "label_counts": {
+    "blackout_after_action": 390,
+    "battery_oracle_gap": 347,
+    "missed_discharge": 94,
+    "missed_charge": 36,
+    "diesel_oracle_gap": 36,
+    "missed_diesel": 26,
+    "unnecessary_diesel": 14,
+    "invalid:missing_json": 3
+  },
+  "worst_episodes": [
+    {
+      "task_id": "task_1_normal",
+      "seed": 7108,
+      "score": 0.6141,
+      "oracle_score": 0.7938,
+      "score_gap": 0.1797,
+      "failure_count": 16,
+      "blackout_kwh": 231.24
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7107,
+      "score": 0.6314,
+      "oracle_score": 0.8109,
+      "score_gap": 0.1795,
+      "failure_count": 18,
+      "blackout_kwh": 265.13
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7102,
+      "score": 0.6122,
+      "oracle_score": 0.789,
+      "score_gap": 0.1768,
+      "failure_count": 14,
+      "blackout_kwh": 218.76
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7106,
+      "score": 0.6219,
+      "oracle_score": 0.7972,
+      "score_gap": 0.1753,
+      "failure_count": 17,
+      "blackout_kwh": 244.19
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7104,
+      "score": 0.6153,
+      "oracle_score": 0.7906,
+      "score_gap": 0.1753,
+      "failure_count": 15,
+      "blackout_kwh": 216.63
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7101,
+      "score": 0.6444,
+      "oracle_score": 0.7997,
+      "score_gap": 0.1553,
+      "failure_count": 15,
+      "blackout_kwh": 207.9
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7103,
+      "score": 0.6555,
+      "oracle_score": 0.7907,
+      "score_gap": 0.1352,
+      "failure_count": 14,
+      "blackout_kwh": 174.55
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7110,
+      "score": 0.6627,
+      "oracle_score": 0.7898,
+      "score_gap": 0.1271,
+      "failure_count": 22,
+      "blackout_kwh": 166.25
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7105,
+      "score": 0.6746,
+      "oracle_score": 0.7914,
+      "score_gap": 0.1168,
+      "failure_count": 16,
+      "blackout_kwh": 148.06
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7109,
+      "score": 0.6879,
+      "oracle_score": 0.8041,
+      "score_gap": 0.1162,
+      "failure_count": 13,
+      "blackout_kwh": 168.78
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7104,
+      "score": 0.6958,
+      "oracle_score": 0.8089,
+      "score_gap": 0.1131,
+      "failure_count": 25,
+      "blackout_kwh": 342.69
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7109,
+      "score": 0.7368,
+      "oracle_score": 0.816,
+      "score_gap": 0.0792,
+      "failure_count": 23,
+      "blackout_kwh": 272.2
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7107,
+      "score": 0.7425,
+      "oracle_score": 0.8198,
+      "score_gap": 0.0773,
+      "failure_count": 25,
+      "blackout_kwh": 262.06
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7103,
+      "score": 0.747,
+      "oracle_score": 0.8121,
+      "score_gap": 0.0651,
+      "failure_count": 26,
+      "blackout_kwh": 215.57
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7108,
+      "score": 0.7465,
+      "oracle_score": 0.8084,
+      "score_gap": 0.0619,
+      "failure_count": 23,
+      "blackout_kwh": 196.3
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7110,
+      "score": 0.749,
+      "oracle_score": 0.8107,
+      "score_gap": 0.0617,
+      "failure_count": 23,
+      "blackout_kwh": 205.94
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7110,
+      "score": 0.6463,
+      "oracle_score": 0.6999,
+      "score_gap": 0.0536,
+      "failure_count": 38,
+      "blackout_kwh": 1119.59
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7105,
+      "score": 0.7517,
+      "oracle_score": 0.8051,
+      "score_gap": 0.0534,
+      "failure_count": 22,
+      "blackout_kwh": 171.18
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7102,
+      "score": 0.755,
+      "oracle_score": 0.8083,
+      "score_gap": 0.0533,
+      "failure_count": 20,
+      "blackout_kwh": 170.87
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7106,
+      "score": 0.763,
+      "oracle_score": 0.8144,
+      "score_gap": 0.0514,
+      "failure_count": 16,
+      "blackout_kwh": 181.68
+    }
+  ]
+}

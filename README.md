@@ -37,6 +37,60 @@ tags:
 
 ---
 
+## SFT Training Pipeline Upgrade
+
+This branch adds a CarbonAlpha-style training harness around the original GridOps environment without changing the public OpenEnv API.
+
+| Artifact | Link |
+|---|---|
+| Shared prompt/action contract | [`gridops/prompting.py`](gridops/prompting.py) |
+| Reusable oracle + adversarial policies | [`gridops/policies.py`](gridops/policies.py) |
+| 1,200-row curriculum dataset | [`sft_traces/gridops_curriculum_1200.jsonl`](sft_traces/gridops_curriculum_1200.jsonl) |
+| Trace generator | [`scripts/generate_sft_traces.py`](scripts/generate_sft_traces.py) |
+| OpenRouter/DeepSeek trace generator | [`scripts/generate_openrouter_deepseek_traces.py`](scripts/generate_openrouter_deepseek_traces.py) |
+| Trace validator | [`scripts/validate_traces.py`](scripts/validate_traces.py) |
+| Holdout/adversarial evaluator | [`scripts/evaluate_gridops_model.py`](scripts/evaluate_gridops_model.py) |
+| Local adapter evaluator | [`scripts/evaluate_gridops_adapter.py`](scripts/evaluate_gridops_adapter.py) |
+| Guarded SFT script | [`scripts/hf_sft_gridops.py`](scripts/hf_sft_gridops.py) |
+| Eval plotter | [`scripts/plot_gridops_evals.py`](scripts/plot_gridops_evals.py) |
+| Colab-ready notebook | [`notebooks/gridops_sft_pipeline.ipynb`](notebooks/gridops_sft_pipeline.ipynb) |
+| Model card | [`GRIDOPS_MODEL_CARD.md`](GRIDOPS_MODEL_CARD.md) |
+
+The first milestone is **SFT only**: teach a compact model to emit valid JSON actions for each hourly observation. The first adapter passed the SFT gate on held-out seeds `7001,7002,7003`.
+
+| Model | Avg score | Valid JSON | Task 1 | Task 2 | Task 3 |
+|---|---:|---:|---:|---:|---:|
+| Do-nothing | 0.5133 | 100.00% | 0.5820 | 0.5057 | 0.4522 |
+| GridOps SFT v1 | 0.6854 | 99.85% | 0.6615 | 0.7300 | 0.6648 |
+| Oracle | 0.7688 | 100.00% | 0.7932 | 0.8087 | 0.7046 |
+
+| Gate | Target |
+|---|---:|
+| Valid JSON action rate | >= 98% |
+| Average holdout score | >= 0.65 |
+| No task below do-nothing baseline | required |
+| Task 3 crisis score | >= 0.55 |
+| Fixed-seed determinism | stable |
+
+Final SFT v1 artifact:
+
+```text
+Qwen/Qwen2.5-3B-Instruct -> QLoRA SFT adapter:
+77ethers/gridops-models/sft_qwen25_3b_gridops_mixed1418_v1
+```
+
+Evidence:
+
+- [SFT training curve](evals/plots/gridops_sft_training_curve.png)
+- [Holdout scores](evals/plots/gridops_holdout_scores.png)
+- [Battery throughput](evals/plots/gridops_battery_throughput.png)
+- [Blackout reduction](evals/plots/gridops_blackout_kwh.png)
+- [Holdout summary JSON](evals/plots/gridops_holdout_summary.json)
+
+The existing leaderboard remains historical. The table above is reported separately as **GridOps SFT v1**.
+
+---
+
 ## Why This Environment Exists
 
 Community microgrid operation is a **real job** in India under the [RDSS](https://rdss.gov.in/) (Revamped Distribution Sector Scheme). IEX prosumer bidding is live. Over 50 million Indian homes will have rooftop solar by 2030, and someone — or some agent — needs to manage the battery-grid-diesel tradeoff in real time.
@@ -227,6 +281,24 @@ open http://localhost:8000/dashboard/
 
 # Validate oracle + determinism
 python scripts/oracle_test.py
+
+# Generate and validate the SFT curriculum
+python scripts/generate_sft_traces.py
+python scripts/validate_traces.py sft_traces/gridops_curriculum_1200.jsonl
+
+# Optional: generate 10-at-a-time teacher traces with DeepSeek on OpenRouter
+export API_BASE_URL="https://openrouter.ai/api/v1"
+export OPENROUTER_API_KEY="your-token"
+python scripts/generate_openrouter_deepseek_traces.py --model deepseek/deepseek-v4-pro
+
+# Evaluate reusable policies on holdout seeds
+python scripts/evaluate_gridops_model.py --policy oracle
+python scripts/evaluate_gridops_model.py --policy do_nothing
+
+# Evaluate an API-hosted or HF-router model with the SFT prompt contract
+export HF_API_TOKEN="your-token"
+export MODEL_NAME="your-gridops-sft-endpoint-or-model"
+python scripts/evaluate_gridops_model.py --model-name "$MODEL_NAME"
 
 # Run LLM baseline
 export API_BASE_URL="https://router.huggingface.co/v1"

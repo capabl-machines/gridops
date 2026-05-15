@@ -1,0 +1,62 @@
+{
+  "rows": 2111,
+  "task_counts": {
+    "task_1_normal": 637,
+    "task_2_heatwave": 626,
+    "task_3_crisis": 848
+  },
+  "source_counts": {
+    "oracle_base": 1200,
+    "failure_replay": 855,
+    "gemma_clean_json": 12,
+    "deepseek_crisis_aug": 44
+  },
+  "source_task_counts": {
+    "oracle_base": {
+      "task_1_normal": 300,
+      "task_2_heatwave": 400,
+      "task_3_crisis": 500
+    },
+    "failure_replay": {
+      "task_1_normal": 320,
+      "task_2_heatwave": 226,
+      "task_3_crisis": 309
+    },
+    "gemma_clean_json": {
+      "task_1_normal": 9,
+      "task_3_crisis": 3
+    },
+    "deepseek_crisis_aug": {
+      "task_1_normal": 8,
+      "task_3_crisis": 36
+    }
+  },
+  "policy_counts": {
+    "oracle_plus_targeted_edges": 1200,
+    "oracle_on_failure_targeted_hours": 855,
+    "openrouter_tool_augmented": 56
+  },
+  "rejected": [],
+  "sources": [
+    {
+      "name": "oracle_base",
+      "path": "sft_traces/gridops_curriculum_1200.jsonl",
+      "repeat": 1
+    },
+    {
+      "name": "failure_replay",
+      "path": "sft_traces/gridops_failure_targeted_7101_7110.jsonl",
+      "repeat": 1
+    },
+    {
+      "name": "gemma_clean_json",
+      "path": "sft_traces/gridops_v3_openrouter_gemma_pilot_accepted.jsonl",
+      "repeat": 3
+    },
+    {
+      "name": "deepseek_crisis_aug",
+      "path": "sft_traces/gridops_v3_openrouter_deepseek_targeted_accepted.jsonl",
+      "repeat": 4
+    }
+  ]
+}

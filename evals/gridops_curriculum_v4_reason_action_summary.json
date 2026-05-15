@@ -1,0 +1,66 @@
+{
+  "rows": 4000,
+  "targets": {
+    "crisis_diesel_positive": 900,
+    "normal_no_diesel": 700,
+    "heatwave_rebound": 600,
+    "previous_action_correction": 500,
+    "low_resource_edges": 400,
+    "time_context_mix": 600,
+    "format_anchors": 300
+  },
+  "task_counts": {
+    "task_1_normal": 833,
+    "task_2_heatwave": 1629,
+    "task_3_crisis": 1538
+  },
+  "bucket_counts": {
+    "normal_no_diesel": 700,
+    "previous_action_correction": 500,
+    "format_anchors": 300,
+    "time_context_mix": 600,
+    "heatwave_rebound": 600,
+    "low_resource_edges": 400,
+    "crisis_diesel_positive": 900
+  },
+  "action_counts": {
+    "diesel_positive": 1029,
+    "diesel_zero": 2971,
+    "battery_charge": 1444,
+    "battery_discharge": 563,
+    "shedding_positive": 592
+  },
+  "top_focus_tags": {
+    "diesel_zero": 2971,
+    "low": 2100,
+    "task_2_heatwave": 1629,
+    "fuel_constraint": 1538,
+    "task_3_crisis": 1538,
+    "battery_charge": 1391,
+    "high": 1375,
+    "diesel_positive": 1029,
+    "pre_evening_charge_window": 1017,
+    "low_soc": 992,
+    "midday_solar_window": 986,
+    "outage": 922,
+    "crisis_diesel_positive": 900,
+    "v3_never_diesel_counterexample": 863,
+    "overnight_low_demand": 852,
+    "task_1_normal": 833,
+    "previous_blackout": 795,
+    "normal_no_diesel": 700,
+    "time_context_mix": 600,
+    "heatwave_rebound": 600,
+    "shedding_positive": 592,
+    "medium": 525,
+    "evening_ramp": 525,
+    "previous_action_correction": 500,
+    "battery_discharge": 471,
+    "blackout_after_action": 471,
+    "rebound": 445,
+    "morning_ramp": 442,
+    "low_resource_edges": 400,
+    "format_anchors": 300
+  },
+  "validation_failures": []
+}

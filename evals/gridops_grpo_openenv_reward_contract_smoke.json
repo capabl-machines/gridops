@@ -1,0 +1,1060 @@
+{
+  "rows": [
+    {
+      "task_id": "task_1_normal",
+      "seed": 15000,
+      "hour": 10,
+      "oracle_reward": {
+        "total": 0.8569643427286748,
+        "format_reward": 1.0,
+        "env_reward": -0.49876966941700235,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": -0.044265987854322904,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.4,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": -0.8,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 16000,
+      "hour": 13,
+      "oracle_reward": {
+        "total": -0.4605097231991167,
+        "format_reward": 1.0,
+        "env_reward": -1.0504935236695145,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.07086868484592497,
+        "blackout_penalty": -0.28853093062531626,
+        "heatwave_rebound_reward": -0.19235395375021086,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.049849669470959555,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 17000,
+      "hour": 25,
+      "oracle_reward": {
+        "total": 0.6562017680008805,
+        "format_reward": 1.0,
+        "env_reward": -0.34379823199911946,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": -0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.0,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 15001,
+      "hour": 14,
+      "oracle_reward": {
+        "total": 1.2930807686821382,
+        "format_reward": 1.0,
+        "env_reward": -0.7611270015521787,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.8172516111782084,
+        "blackout_penalty": -0.16304384094389165,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.4,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.5767826130367075,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 16001,
+      "hour": 14,
+      "oracle_reward": {
+        "total": 0.264964083853912,
+        "format_reward": 1.0,
+        "env_reward": -0.8628681515641841,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.4664149819120123,
+        "blackout_penalty": -0.2031496478963497,
+        "heatwave_rebound_reward": -0.13543309859756647,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.32872145692918026,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 17001,
+      "hour": 26,
+      "oracle_reward": {
+        "total": 1.2873858972085594,
+        "format_reward": 1.0,
+        "env_reward": -0.21261410279144052,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": -0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.5,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.0,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 15002,
+      "hour": 17,
+      "oracle_reward": {
+        "total": 0.7083631580980514,
+        "format_reward": 1.0,
+        "env_reward": -0.29163684190194855,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": -0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.0,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 16002,
+      "hour": 17,
+      "oracle_reward": {
+        "total": 1.0275009068943484,
+        "format_reward": 1.0,
+        "env_reward": -0.3224990931056516,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": -0.0,
+        "heatwave_rebound_reward": 0.35,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.0,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 17002,
+      "hour": 29,
+      "oracle_reward": {
+        "total": 0.6882956516736994,
+        "format_reward": 1.0,
+        "env_reward": -0.19845525716561951,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": -0.433359380760382,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.32011028959970095,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.0,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 15003,
+      "hour": 18,
+      "oracle_reward": {
+        "total": 0.8415325217477727,
+        "format_reward": 1.0,
+        "env_reward": -0.15796598715119262,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": -0.0005014911010347234,
+        "blackout_penalty": -0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": -0.8,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 16003,
+      "hour": 18,
+      "oracle_reward": {
+        "total": 1.0413029942468741,
+        "format_reward": 1.0,
+        "env_reward": -0.31167316168111875,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0029761559279930074,
+        "blackout_penalty": -0.0,
+        "heatwave_rebound_reward": 0.35,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": -0.8,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 17003,
+      "hour": 30,
+      "oracle_reward": {
+        "total": 0.1306759193081075,
+        "format_reward": 1.0,
+        "env_reward": -0.31899974242194395,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.17153783590756522,
+        "blackout_penalty": -0.7218621741775137,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.12044981826661143,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 15004,
+      "hour": 19,
+      "oracle_reward": {
+        "total": 0.9010852043968383,
+        "format_reward": 1.0,
+        "env_reward": -0.09891479560316178,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": -0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.0,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 16004,
+      "hour": 19,
+      "oracle_reward": {
+        "total": 1.1674673847368529,
+        "format_reward": 1.0,
+        "env_reward": -0.18340778964742943,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0008751743842823957,
+        "blackout_penalty": -0.0,
+        "heatwave_rebound_reward": 0.35,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": -0.8,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 17004,
+      "hour": 31,
+      "oracle_reward": {
+        "total": -0.387775109674543,
+        "format_reward": 1.0,
+        "env_reward": -0.5412508319838629,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0909972580989555,
+        "blackout_penalty": -0.9375215357896356,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.06379586859357544,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 15005,
+      "hour": 20,
+      "oracle_reward": {
+        "total": 0.891413102246816,
+        "format_reward": 1.0,
+        "env_reward": -0.10858689775318396,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": -0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.0,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 16005,
+      "hour": 20,
+      "oracle_reward": {
+        "total": 1.2197571115961665,
+        "format_reward": 1.0,
+        "env_reward": -0.13024288840383338,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": -0.0,
+        "heatwave_rebound_reward": 0.35,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.0,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 17005,
+      "hour": 32,
+      "oracle_reward": {
+        "total": 0.2396130476506797,
+        "format_reward": 1.0,
+        "env_reward": -0.7863869523493184,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 1.0,
+        "blackout_penalty": -1.224000000000002,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.25,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 1.0,
+          "diesel_dispatch": 0.15295002349906753,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 15006,
+      "hour": 38,
+      "oracle_reward": {
+        "total": 1.3839118922259819,
+        "format_reward": 1.0,
+        "env_reward": -0.8086979429434393,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 1.0,
+        "blackout_penalty": -0.20739016483057868,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.4,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.7689571274137915,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 16006,
+      "hour": 37,
+      "oracle_reward": {
+        "total": -2.0905185448558816,
+        "format_reward": 1.0,
+        "env_reward": -1.616096637681382,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 1.0,
+        "blackout_penalty": -1.3166532613744082,
+        "heatwave_rebound_reward": -0.8777688409162722,
+        "soc_preservation_reward": -0.2799998048838195,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 0.9495753452180997,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 17006,
+      "hour": 33,
+      "oracle_reward": {
+        "total": -2.0204876411392636,
+        "format_reward": 1.0,
+        "env_reward": -1.4430480617249035,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 1.0,
+        "blackout_penalty": -2.42743957941436,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": -0.4,
+        "diesel_context_reward": 0.25,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 1.0,
+          "diesel_dispatch": 0.11887790198641668,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 15007,
+      "hour": 42,
+      "oracle_reward": {
+        "total": 0.841991975207881,
+        "format_reward": 1.0,
+        "env_reward": -0.15953964330056847,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.001531618508449517,
+        "blackout_penalty": -0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": -0.8,
+          "diesel_dispatch": 0.0,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 16007,
+      "hour": 38,
+      "oracle_reward": {
+        "total": -0.7407493255835067,
+        "format_reward": 1.0,
+        "env_reward": -1.284947148239937,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 1.0,
+        "blackout_penalty": -0.8046567591380388,
+        "heatwave_rebound_reward": -0.5364378394253592,
+        "soc_preservation_reward": 0.028808565281205206,
+        "diesel_context_reward": -0.14351614406137694,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 1.0,
+          "diesel_dispatch": 0.41004612588964845,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 17007,
+      "hour": 34,
+      "oracle_reward": {
+        "total": -13.730178713729805,
+        "format_reward": 1.0,
+        "env_reward": -3.86706543379719,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.04382518583282505,
+        "blackout_penalty": -10.756938465765439,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": -0.4,
+        "diesel_context_reward": 0.25,
+        "brevity_reward": -0.0,
+        "valid": true,
+        "reason": "ok",
+        "action": {
+          "metadata": {},
+          "battery_dispatch": 1.0,
+          "diesel_dispatch": 0.3566029699531353,
+          "demand_shedding": 0.0
+        }
+      },
+      "invalid_reward": {
+        "total": -25.0,
+        "format_reward": -25.0,
+        "env_reward": 0.0,
+        "regret_reward": 0.0,
+        "baseline_advantage_reward": 0.0,
+        "blackout_penalty": 0.0,
+        "heatwave_rebound_reward": 0.0,
+        "soc_preservation_reward": 0.0,
+        "diesel_context_reward": 0.0,
+        "brevity_reward": 0.0,
+        "valid": false,
+        "reason": "invalid_action:ValidationError",
+        "action": {
+          "battery_dispatch": 2.0,
+          "diesel_dispatch": 0,
+          "demand_shedding": 0
+        }
+      }
+    }
+  ]
+}

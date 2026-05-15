@@ -1,0 +1,183 @@
+{
+  "name": "oracle",
+  "average_score": 0.7688,
+  "valid_action_rate": 1.0,
+  "by_task": {
+    "task_1_normal": 0.7932,
+    "task_2_heatwave": 0.8087,
+    "task_3_crisis": 0.7046
+  },
+  "rows": [
+    {
+      "task_id": "task_1_normal",
+      "seed": 7001,
+      "score": 0.7864,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "grade": {
+        "score": 0.7864,
+        "reliability": 0.9983,
+        "cost_efficiency": 0.5737,
+        "green_score": 1.0,
+        "baseline_cost": 85327.88,
+        "actual_cost": 36377.19,
+        "total_blackout_kwh": 14.2,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8446.6,
+        "battery_throughput_kwh": 1086.53
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7002,
+      "score": 0.8031,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "grade": {
+        "score": 0.8031,
+        "reliability": 0.998,
+        "cost_efficiency": 0.6071,
+        "green_score": 1.0,
+        "baseline_cost": 91634.8,
+        "actual_cost": 36002.91,
+        "total_blackout_kwh": 16.51,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8418.37,
+        "battery_throughput_kwh": 921.79
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7003,
+      "score": 0.7902,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "grade": {
+        "score": 0.7902,
+        "reliability": 0.9982,
+        "cost_efficiency": 0.5813,
+        "green_score": 1.0,
+        "baseline_cost": 87711.23,
+        "actual_cost": 36727.16,
+        "total_blackout_kwh": 15.02,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8480.72,
+        "battery_throughput_kwh": 903.55
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7001,
+      "score": 0.8053,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "grade": {
+        "score": 0.8053,
+        "reliability": 0.996,
+        "cost_efficiency": 0.6161,
+        "green_score": 0.9928,
+        "baseline_cost": 192472.73,
+        "actual_cost": 73891.39,
+        "total_blackout_kwh": 40.39,
+        "total_diesel_kwh": 72.74,
+        "total_demand_kwh": 10129.09,
+        "battery_throughput_kwh": 2090.81
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7002,
+      "score": 0.8119,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "grade": {
+        "score": 0.8119,
+        "reliability": 0.9958,
+        "cost_efficiency": 0.6302,
+        "green_score": 0.9915,
+        "baseline_cost": 199282.94,
+        "actual_cost": 73703.1,
+        "total_blackout_kwh": 42.35,
+        "total_diesel_kwh": 86.21,
+        "total_demand_kwh": 10089.03,
+        "battery_throughput_kwh": 2052.87
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7003,
+      "score": 0.8088,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "grade": {
+        "score": 0.8088,
+        "reliability": 0.996,
+        "cost_efficiency": 0.6245,
+        "green_score": 0.9902,
+        "baseline_cost": 198844.53,
+        "actual_cost": 74674.36,
+        "total_blackout_kwh": 41.01,
+        "total_diesel_kwh": 99.65,
+        "total_demand_kwh": 10186.37,
+        "battery_throughput_kwh": 2083.56
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7001,
+      "score": 0.7052,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "grade": {
+        "score": 0.7052,
+        "reliability": 0.9465,
+        "cost_efficiency": 0.4533,
+        "green_score": 0.9679,
+        "baseline_cost": 472588.83,
+        "actual_cost": 258384.45,
+        "total_blackout_kwh": 678.33,
+        "total_diesel_kwh": 406.62,
+        "total_demand_kwh": 12669.91,
+        "battery_throughput_kwh": 3178.69
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7002,
+      "score": 0.7122,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "grade": {
+        "score": 0.7122,
+        "reliability": 0.9476,
+        "cost_efficiency": 0.467,
+        "green_score": 0.9672,
+        "baseline_cost": 479033.37,
+        "actual_cost": 255315.14,
+        "total_blackout_kwh": 661.44,
+        "total_diesel_kwh": 414.65,
+        "total_demand_kwh": 12627.55,
+        "battery_throughput_kwh": 3195.91
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7003,
+      "score": 0.6965,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "grade": {
+        "score": 0.6965,
+        "reliability": 0.9403,
+        "cost_efficiency": 0.4396,
+        "green_score": 0.9663,
+        "baseline_cost": 483769.17,
+        "actual_cost": 271108.14,
+        "total_blackout_kwh": 758.92,
+        "total_diesel_kwh": 428.4,
+        "total_demand_kwh": 12721.08,
+        "battery_throughput_kwh": 3137.21
+      }
+    }
+  ]
+}

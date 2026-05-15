@@ -47,6 +47,12 @@
   .logo h1 { font-size: 18px; font-weight: 600; letter-spacing: 1px; }
   .logo h1 span { color: var(--cyan); }
   .header-info { display: flex; gap: 20px; font-size: 12px; color: var(--text-dim); }
+  .header-info a {
+    color: var(--cyan);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .header-info a:hover { color: var(--text); }
   .header-info .tag {
     padding: 3px 10px; border-radius: 4px;
     border: 1px solid var(--border);
@@ -518,6 +524,7 @@
     <span><strong id="hourDisp">6:00</strong></span>
     <span>Day <strong id="dayDisp">1</strong></span>
     <span>Step <strong id="stepDisp">0</strong>/72</span>
+    <a href="/case-study">Case Study</a>
   </div>
 </header>
 

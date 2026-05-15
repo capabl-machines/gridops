@@ -1,0 +1,359 @@
+{
+  "accepted": 4,
+  "rejected": 8,
+  "candidate_valid_action_rate": 1.0,
+  "candidate_valid_action_rate_including_api_errors": 1.0,
+  "api_or_parse_error_rows": 0,
+  "accepted_by_task": {
+    "task_1_normal": 3,
+    "task_3_crisis": 1
+  },
+  "accepted_tasks": [
+    "task_1_normal",
+    "task_3_crisis"
+  ],
+  "by_model": {
+    "google/gemma-4-26b-a4b-it": {
+      "accepted": 3,
+      "valid": 15,
+      "valid_action_rate": 1.0,
+      "average_accepted_margin": 0.001116
+    },
+    "oracle": {
+      "accepted": 1,
+      "valid_action_rate": null,
+      "average_accepted_margin": 0.0
+    },
+    "none": {
+      "rejected": 8,
+      "valid_action_rate": null,
+      "average_accepted_margin": 0.0
+    }
+  },
+  "pilot_gate": {
+    "valid_action_rate_ge_0_99": true,
+    "accepted_all_tasks": false,
+    "accepted_ratio_ge_0_20": true
+  },
+  "best_accepted_examples": [
+    {
+      "id": "gridops_v3_tool_augmented_task_1_normal_seed8000_h00",
+      "task_id": "task_1_normal",
+      "chosen_source": "google/gemma-4-26b-a4b-it",
+      "acceptance_reason": "near_oracle_contrast",
+      "action": {
+        "battery_dispatch": -1.0,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      }
+    },
+    {
+      "id": "gridops_v3_tool_augmented_task_1_normal_seed8000_h10",
+      "task_id": "task_1_normal",
+      "chosen_source": "google/gemma-4-26b-a4b-it",
+      "acceptance_reason": "near_oracle_contrast",
+      "action": {
+        "battery_dispatch": 0.0,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      }
+    },
+    {
+      "id": "gridops_v3_tool_augmented_task_1_normal_seed8000_h16",
+      "task_id": "task_1_normal",
+      "chosen_source": "google/gemma-4-26b-a4b-it",
+      "acceptance_reason": "near_oracle_contrast",
+      "action": {
+        "battery_dispatch": 1.0,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      }
+    },
+    {
+      "id": "gridops_v3_tool_augmented_task_3_crisis_seed10000_h26",
+      "task_id": "task_3_crisis",
+      "chosen_source": "oracle",
+      "acceptance_reason": "oracle_failure_replay",
+      "action": {
+        "battery_dispatch": 0.0,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      }
+    }
+  ],
+  "closest_rejected_examples": [
+    {
+      "id": "gridops_v3_probe_task_1_normal_seed8000_h18",
+      "task_id": "task_1_normal",
+      "reason": "rejected_no_useful_candidate",
+      "best_source": "none",
+      "best_margin": null,
+      "focus_tags": [
+        "routine"
+      ],
+      "scored_candidates": [
+        {
+          "source": "oracle",
+          "candidate_index": 0,
+          "tag": "oracle_reference",
+          "action": {
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "valid": true,
+          "validation": {
+            "valid": true,
+            "reason": "ok"
+          },
+          "score": -0.381552,
+          "score_margin": 0.0,
+          "horizon_cost": 2289.3097,
+          "horizon_blackout_kwh": 0.0,
+          "distance_from_oracle": 0.0
+        }
+      ],
+      "judge": {}
+    },
+    {
+      "id": "gridops_v3_probe_task_2_heatwave_seed9000_h00",
+      "task_id": "task_2_heatwave",
+      "reason": "rejected_no_useful_candidate",
+      "best_source": "none",
+      "best_margin": null,
+      "focus_tags": [
+        "high_price"
+      ],
+      "scored_candidates": [
+        {
+          "source": "oracle",
+          "candidate_index": 0,
+          "tag": "oracle_reference",
+          "action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "valid": true,
+          "validation": {
+            "valid": true,
+            "reason": "ok"
+          },
+          "score": -0.240716,
+          "score_margin": 0.0,
+          "horizon_cost": 1444.2985,
+          "horizon_blackout_kwh": 0.0,
+          "distance_from_oracle": 0.0
+        }
+      ],
+      "judge": {}
+    },
+    {
+      "id": "gridops_v3_probe_task_2_heatwave_seed9000_h24",
+      "task_id": "task_2_heatwave",
+      "reason": "rejected_no_useful_candidate",
+      "best_source": "none",
+      "best_margin": null,
+      "focus_tags": [
+        "routine"
+      ],
+      "scored_candidates": [
+        {
+          "source": "oracle",
+          "candidate_index": 0,
+          "tag": "oracle_reference",
+          "action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "valid": true,
+          "validation": {
+            "valid": true,
+            "reason": "ok"
+          },
+          "score": -0.004471,
+          "score_margin": 0.0,
+          "horizon_cost": 26.8254,
+          "horizon_blackout_kwh": 0.0,
+          "distance_from_oracle": 0.0
+        }
+      ],
+      "judge": {}
+    },
+    {
+      "id": "gridops_v3_probe_task_2_heatwave_seed9000_h28",
+      "task_id": "task_2_heatwave",
+      "reason": "rejected_no_useful_candidate",
+      "best_source": "none",
+      "best_margin": null,
+      "focus_tags": [
+        "high_price"
+      ],
+      "scored_candidates": [
+        {
+          "source": "oracle",
+          "candidate_index": 0,
+          "tag": "oracle_reference",
+          "action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "valid": true,
+          "validation": {
+            "valid": true,
+            "reason": "ok"
+          },
+          "score": 0.182797,
+          "score_margin": 0.0,
+          "horizon_cost": -1096.7818,
+          "horizon_blackout_kwh": 0.0,
+          "distance_from_oracle": 0.0
+        }
+      ],
+      "judge": {}
+    },
+    {
+      "id": "gridops_v3_probe_task_2_heatwave_seed9000_h30",
+      "task_id": "task_2_heatwave",
+      "reason": "rejected_no_useful_candidate",
+      "best_source": "none",
+      "best_margin": null,
+      "focus_tags": [
+        "high_price"
+      ],
+      "scored_candidates": [
+        {
+          "source": "oracle",
+          "candidate_index": 0,
+          "tag": "oracle_reference",
+          "action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "valid": true,
+          "validation": {
+            "valid": true,
+            "reason": "ok"
+          },
+          "score": -0.308586,
+          "score_margin": 0.0,
+          "horizon_cost": 1851.5186,
+          "horizon_blackout_kwh": 0.0,
+          "distance_from_oracle": 0.0
+        }
+      ],
+      "judge": {}
+    },
+    {
+      "id": "gridops_v3_probe_task_3_crisis_seed10000_h00",
+      "task_id": "task_3_crisis",
+      "reason": "rejected_no_useful_candidate",
+      "best_source": "none",
+      "best_margin": null,
+      "focus_tags": [
+        "high_price"
+      ],
+      "scored_candidates": [
+        {
+          "source": "oracle",
+          "candidate_index": 0,
+          "tag": "oracle_reference",
+          "action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "valid": true,
+          "validation": {
+            "valid": true,
+            "reason": "ok"
+          },
+          "score": -0.842889,
+          "score_margin": 0.0,
+          "horizon_cost": 5057.3329,
+          "horizon_blackout_kwh": 0.0,
+          "distance_from_oracle": 0.0
+        }
+      ],
+      "judge": {}
+    },
+    {
+      "id": "gridops_v3_probe_task_3_crisis_seed10000_h08",
+      "task_id": "task_3_crisis",
+      "reason": "rejected_no_useful_candidate",
+      "best_source": "none",
+      "best_margin": null,
+      "focus_tags": [
+        "high_price"
+      ],
+      "scored_candidates": [
+        {
+          "source": "oracle",
+          "candidate_index": 0,
+          "tag": "oracle_reference",
+          "action": {
+            "battery_dispatch": -0.5,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "valid": true,
+          "validation": {
+            "valid": true,
+            "reason": "ok"
+          },
+          "score": -4.23303,
+          "score_margin": 0.0,
+          "horizon_cost": 25320.7129,
+          "horizon_blackout_kwh": 17.3054,
+          "distance_from_oracle": 0.0
+        }
+      ],
+      "judge": {}
+    },
+    {
+      "id": "gridops_v3_probe_task_3_crisis_seed10000_h24",
+      "task_id": "task_3_crisis",
+      "reason": "rejected_no_useful_candidate",
+      "best_source": "none",
+      "best_margin": null,
+      "focus_tags": [
+        "high_price"
+      ],
+      "scored_candidates": [
+        {
+          "source": "oracle",
+          "candidate_index": 0,
+          "tag": "oracle_reference",
+          "action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "valid": true,
+          "validation": {
+            "valid": true,
+            "reason": "ok"
+          },
+          "score": -0.859553,
+          "score_margin": 0.0,
+          "horizon_cost": 5157.3184,
+          "horizon_blackout_kwh": 0.0,
+          "distance_from_oracle": 0.0
+        }
+      ],
+      "judge": {}
+    }
+  ],
+  "accepted_output": "sft_traces/gridops_v3_openrouter_gemma_pilot_accepted.jsonl",
+  "rejected_output": "sft_traces/gridops_v3_openrouter_gemma_pilot_rejected.jsonl",
+  "proposers": [
+    "google/gemma-4-26b-a4b-it"
+  ],
+  "judge_model": "deepseek/deepseek-v4-pro",
+  "per_task": 4,
+  "horizon": 6,
+  "candidates_per_item": 5
+}

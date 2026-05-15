@@ -1,0 +1,1325 @@
+{
+  "name": "outputs/sft_qwen25_3b_gridops_mixed1418_v1",
+  "average_score": 0.6854,
+  "valid_action_rate": 0.9985,
+  "by_task": {
+    "task_1_normal": {
+      "score": 0.6615,
+      "valid_action_rate": 1.0,
+      "blackout_kwh": 177.57,
+      "diesel_kwh": 0.0,
+      "cost": 58685.13
+    },
+    "task_2_heatwave": {
+      "score": 0.73,
+      "valid_action_rate": 1.0,
+      "blackout_kwh": 258.3,
+      "diesel_kwh": 48.89,
+      "cost": 103310.54
+    },
+    "task_3_crisis": {
+      "score": 0.6648,
+      "valid_action_rate": 0.9954,
+      "blackout_kwh": 978.99,
+      "diesel_kwh": 275.29,
+      "cost": 297079.42
+    }
+  },
+  "rows": [
+    {
+      "task_id": "task_1_normal",
+      "seed": 7001,
+      "score": 0.6683,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "valid_action_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.22,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.22,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.45,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.45,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.82,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.82,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.82,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.82,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 5.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 6.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 7.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 8.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 9.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        }
+      ],
+      "grade": {
+        "score": 0.6683,
+        "reliability": 0.9814,
+        "cost_efficiency": 0.3459,
+        "green_score": 1.0,
+        "baseline_cost": 85327.88,
+        "actual_cost": 55814.65,
+        "total_blackout_kwh": 156.72,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8446.6,
+        "battery_throughput_kwh": 653.65
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7002,
+      "score": 0.7081,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "valid_action_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.25,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.25,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.5,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.5,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.82,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.82,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.82,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.82,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 5.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 6.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 7.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 8.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 9.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        }
+      ],
+      "grade": {
+        "score": 0.7081,
+        "reliability": 0.9836,
+        "cost_efficiency": 0.4244,
+        "green_score": 1.0,
+        "baseline_cost": 91634.8,
+        "actual_cost": 52747.58,
+        "total_blackout_kwh": 138.32,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8418.37,
+        "battery_throughput_kwh": 691.39
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7003,
+      "score": 0.6082,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "valid_action_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.22,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.22,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.22,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.22,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.42, \"diesel_dispatch\":0.0, \"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.42,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 5.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.805,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.805,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 6.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 7.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 8.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 9.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        }
+      ],
+      "grade": {
+        "score": 0.6082,
+        "reliability": 0.972,
+        "cost_efficiency": 0.2305,
+        "green_score": 1.0,
+        "baseline_cost": 87711.23,
+        "actual_cost": 67493.17,
+        "total_blackout_kwh": 237.67,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8480.72,
+        "battery_throughput_kwh": 388.88
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7001,
+      "score": 0.7281,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "valid_action_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.22,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.22,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.45,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.45,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.82,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.82,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.82,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.82,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 5.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 6.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 7.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 8.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 9.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        }
+      ],
+      "grade": {
+        "score": 0.7281,
+        "reliability": 0.9752,
+        "cost_efficiency": 0.47,
+        "green_score": 0.9975,
+        "baseline_cost": 192472.73,
+        "actual_cost": 102012.65,
+        "total_blackout_kwh": 251.67,
+        "total_diesel_kwh": 25.69,
+        "total_demand_kwh": 10129.09,
+        "battery_throughput_kwh": 1609.4
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7002,
+      "score": 0.72,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "valid_action_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.25,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.25,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.5,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.5,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.82,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.82,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.82,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.82,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 5.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.805,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.805,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 6.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 7.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 8.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 9.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        }
+      ],
+      "grade": {
+        "score": 0.72,
+        "reliability": 0.9703,
+        "cost_efficiency": 0.4575,
+        "green_score": 0.9947,
+        "baseline_cost": 199282.94,
+        "actual_cost": 108106.31,
+        "total_blackout_kwh": 299.78,
+        "total_diesel_kwh": 53.78,
+        "total_demand_kwh": 10089.03,
+        "battery_throughput_kwh": 1717.74
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7003,
+      "score": 0.7419,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "valid_action_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.25,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.25,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.5,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.5,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.82,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.82,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.82,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.82,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 5.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 6.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 7.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 8.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 9.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        }
+      ],
+      "grade": {
+        "score": 0.7419,
+        "reliability": 0.9781,
+        "cost_efficiency": 0.498,
+        "green_score": 0.9934,
+        "baseline_cost": 198844.53,
+        "actual_cost": 99812.66,
+        "total_blackout_kwh": 223.46,
+        "total_diesel_kwh": 67.2,
+        "total_demand_kwh": 10186.37,
+        "battery_throughput_kwh": 1836.01
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7001,
+      "score": 0.6626,
+      "valid_actions": 71,
+      "total_actions": 72,
+      "valid_action_rate": 0.9861111111111112,
+      "invalid_examples": [
+        {
+          "hour": 65.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reason": "missing_json",
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\",0.0,\"demand_shedding\":0.0}"
+        }
+      ],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.25,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.25,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.5,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.5,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 5.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.805,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.805,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 6.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 7.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 8.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 9.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        }
+      ],
+      "grade": {
+        "score": 0.6626,
+        "reliability": 0.9234,
+        "cost_efficiency": 0.3742,
+        "green_score": 0.9788,
+        "baseline_cost": 472588.83,
+        "actual_cost": 295763.46,
+        "total_blackout_kwh": 970.28,
+        "total_diesel_kwh": 268.93,
+        "total_demand_kwh": 12669.91,
+        "battery_throughput_kwh": 2858.77
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7002,
+      "score": 0.6629,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "valid_action_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 5.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 6.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 7.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 8.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 9.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        }
+      ],
+      "grade": {
+        "score": 0.6629,
+        "reliability": 0.9205,
+        "cost_efficiency": 0.376,
+        "green_score": 0.9791,
+        "baseline_cost": 479033.37,
+        "actual_cost": 298898.53,
+        "total_blackout_kwh": 1003.62,
+        "total_diesel_kwh": 263.72,
+        "total_demand_kwh": 12627.55,
+        "battery_throughput_kwh": 2872.01
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7003,
+      "score": 0.6688,
+      "valid_actions": 72,
+      "total_actions": 72,
+      "valid_action_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.32,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.32,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.85,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.85,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 5.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 6.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 7.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":0.0,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 8.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        },
+        {
+          "hour": 9.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"battery_dispatch\":-0.8,\"diesel_dispatch\":0.0,\"demand_shedding\":0.0}",
+          "action": {
+            "metadata": {},
+            "battery_dispatch": -0.8,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          }
+        }
+      ],
+      "grade": {
+        "score": 0.6688,
+        "reliability": 0.9243,
+        "cost_efficiency": 0.3869,
+        "green_score": 0.977,
+        "baseline_cost": 483769.17,
+        "actual_cost": 296576.26,
+        "total_blackout_kwh": 963.06,
+        "total_diesel_kwh": 293.21,
+        "total_demand_kwh": 12721.08,
+        "battery_throughput_kwh": 2963.51
+      }
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+# GridOps v4 Reasoning-Action Dataset
+
+v4 is a targeted correction after the v3 result:
+
+```text
+v3 learned valid JSON perfectly, but regressed into zero diesel usage.
+```
+
+The v4 dataset teaches a compact operator reasoning loop before the final
+action. The action schema remains unchanged.
+
+## Format
+
+Assistant completion:
+
+```text
+<think>
+time_context: ...
+1st_order: ...
+2nd_order: ...
+previous_action: ...
+decision: ...
+</think>
+<action>
+{"battery_dispatch": ..., "diesel_dispatch": ..., "demand_shedding": ...}
+</action>
+```
+
+The evaluator parses only the JSON inside `<action>`.
+
+## Dataset Builder
+
+```bash
+python scripts/build_gridops_v4_reasoning_traces.py
+python scripts/validate_traces.py sft_traces/gridops_curriculum_v4_reason_action.jsonl
+```
+
+Outputs:
+
+```text
+sft_traces/gridops_curriculum_v4_reason_action.jsonl
+evals/gridops_curriculum_v4_reason_action_summary.json
+```
+
+Current generated dataset:
+
+```text
+rows: 4000
+task_1_normal: 833
+task_2_heatwave: 1629
+task_3_crisis: 1538
+```
+
+Bucket balance:
+
+```text
+crisis_diesel_positive: 900
+normal_no_diesel: 700
+heatwave_rebound: 600
+previous_action_correction: 500
+low_resource_edges: 400
+time_context_mix: 600
+format_anchors: 300
+```
+
+Action balance:
+
+```text
+diesel_positive: 1029
+diesel_zero: 2971
+battery_charge: 1444
+battery_discharge: 563
+shedding_positive: 592
+```
+
+## How Rows Are Built
+
+The factory creates traces through three routes:
+
+- oracle rollouts across normal, heatwave, and crisis tasks;
+- failure-bank corrections where a prior model action caused blackout or missed diesel;
+- stressed crisis rollouts that deliberately recreate the v3 zero-diesel failure mode,
+  then label the recovery action with the oracle.
+
+Every row includes:
+
+- current observation;
+- derived time and forecast context;
+- previous action;
+- previous outcome;
+- oracle action;
+- short structured reasoning;
+- final `<action>` JSON.
+
+## Training
+
+Optional Kimi K2.6 teacher rewrite:
+
+```bash
+python scripts/rewrite_v4_reasoning_with_teacher.py \
+  --model moonshotai/kimi-k2.6 \
+  --input sft_traces/gridops_curriculum_v4_reason_action.jsonl \
+  --accepted-output sft_traces/gridops_curriculum_v4_kimi_reason_action.jsonl \
+  --summary-output evals/gridops_curriculum_v4_kimi_reason_action_summary.json \
+  --batch-size 5 \
+  --append-original
+```
+
+This rewrites only the `<think>` block. The oracle/simulator-approved action is
+copied from the source trace and revalidated.
+
+Current Kimi teacher checkpoint:
+
+```text
+sft_traces/gridops_curriculum_v4_kimi_reason_action_500.jsonl
+evals/gridops_curriculum_v4_kimi_reason_action_500_summary.json
+```
+
+It contains the 4,000 deterministic v4 rows plus 500 accepted Kimi teacher
+rewrites, with 100 rows each from the five selected buckets:
+
+```text
+normal_no_diesel
+previous_action_correction
+heatwave_rebound
+low_resource_edges
+crisis_diesel_positive
+```
+
+Kaggle runner:
+
+```bash
+bash scripts/kaggle_sft_v4_reasoning.sh
+```
+
+Default adapter target:
+
+```text
+77ethers/gridops-models/sft_qwen25_3b_gridops_kimi_reason_action_v4
+```
+
+Default settings:
+
+```text
+base: Qwen/Qwen2.5-3B-Instruct
+steps: 300
+max_length: 1536
+batch_size: 1
+grad_accum: 8
+LoRA r: 16
+```
+
+Kaggle notebook-style script:
+
+```text
+notebooks/gridops_kaggle_sft_v4_reasoning.py
+```
+
+## Evaluation
+
+Use the reasoning prompt mode:
+
+```bash
+python scripts/evaluate_gridops_adapter.py \
+  --base-model Qwen/Qwen2.5-3B-Instruct \
+  --adapter-path 77ethers/gridops-models/sft_qwen25_3b_gridops_kimi_reason_action_v4 \
+  --prompt-mode reason_action \
+  --max-new-tokens 220 \
+  --seeds 7001,7002,7003 \
+  --output evals/gridops_sft_kimi_reason_action_v4_holdout_7001_7003.json
+```
+
+For unattended Kaggle evaluation, use the overnight runner. It saves and uploads
+after every eval so a Kaggle reset does not lose the evidence:
+
+```bash
+python scripts/kaggle_overnight_eval_v4.py
+```
+
+The runner creates:
+
+- `run_manifest.json` with GPU/runtime/model metadata;
+- smoke eval on seed `7001` with `max_new_tokens=220`;
+- full holdout eval on seeds `7001,7002,7003` with `max_new_tokens=220`;
+- optional long-decode eval on the same holdout with `max_new_tokens=320`;
+- stdout logs;
+- valid sample JSONL;
+- invalid example JSONL;
+- markdown summaries;
+- an uploaded index under the model subfolder.
+
+Useful variants:
+
+```bash
+python scripts/kaggle_overnight_eval_v4.py --skip-long-decode
+python scripts/kaggle_overnight_eval_v4.py --skip-full
+python scripts/kaggle_overnight_eval_v4.py --run-long-decode
+python scripts/kaggle_overnight_eval_v4.py --no-4bit
+```
+
+Promotion gate:
+
+```text
+valid action rate >= 99.5%
+average score > 0.6894
+task_3_crisis score > 0.6201
+task_3_crisis diesel_kwh > 0
+task_3_crisis blackout_kwh materially below v2
+task_1_normal diesel remains near 0
+```

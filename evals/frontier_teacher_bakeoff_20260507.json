@@ -1,0 +1,652 @@
+{
+  "items": [
+    {
+      "id": "gridops_v4_crisis_diesel_positive_task_3_crisis_seed11000_h60",
+      "bucket": "crisis_diesel_positive",
+      "task_id": "task_3_crisis",
+      "hour": 60,
+      "focus_tags": [
+        "battery_discharge",
+        "crisis_diesel_positive",
+        "diesel_positive",
+        "evening_ramp",
+        "fuel_constraint",
+        "high",
+        "task_3_crisis"
+      ],
+      "observation": {
+        "hour": 60.0,
+        "demand_kw": 311.10986005862236,
+        "solar_kw": 0.0,
+        "battery_soc": 1.0,
+        "grid_price": 18.45415189075687,
+        "diesel_fuel_remaining": 0.19273178515063685,
+        "diesel_is_on": false,
+        "demand_forecast_4h": [
+          333.1070134142177,
+          283.23538830644907,
+          367.8673186368719,
+          289.49030789238344
+        ],
+        "solar_forecast_4h": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "price_forecast_4h": [
+          16.021952590946064,
+          20.093591993685,
+          18.02992676326564,
+          16.773052412489942
+        ],
+        "blackout_this_step": 0.0,
+        "cost_this_step": 3577.597000082411,
+        "grid_kw_this_step": 194.79113804656708,
+        "narration": "Day 3, 17:00. Peak demand period. Grid import near limit (195/200 kW). Grid price high (Rs 18.4/kWh). Battery well-charged (100%)."
+      },
+      "derived_context": {
+        "time_phase": "evening_ramp",
+        "hour_of_day": 18,
+        "grid_status": "available",
+        "outage_risk": "normal",
+        "solar_trend": "steady",
+        "demand_trend": "steady",
+        "price_trend": "steady",
+        "supply_gap_kw": 111.11,
+        "max_future_supply_gap_kw": 167.87,
+        "battery_state": "high",
+        "fuel_state": "limited",
+        "scarcity_risk": "high"
+      },
+      "previous_action": {
+        "battery_dispatch": -0.8,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      },
+      "previous_outcome": {
+        "blackout_kwh": 0.0,
+        "battery_soc_delta": 0.0,
+        "diesel_used_kwh": 0.0,
+        "cost": 3577.6
+      },
+      "approved_action": {
+        "battery_dispatch": 1.0,
+        "diesel_dispatch": 0.1111,
+        "demand_shedding": 0.0
+      }
+    },
+    {
+      "id": "gridops_v4_previous_action_correction_task_1_normal_seed9000_h14",
+      "bucket": "previous_action_correction",
+      "task_id": "task_1_normal",
+      "hour": 14,
+      "focus_tags": [
+        "battery_discharge",
+        "diesel_zero",
+        "evening_ramp",
+        "high",
+        "previous_action_correction",
+        "previous_blackout",
+        "task_1_normal"
+      ],
+      "observation": {
+        "hour": 14.0,
+        "demand_kw": 251.04321694323585,
+        "solar_kw": 0.0,
+        "battery_soc": 0.8999157946987275,
+        "grid_price": 11.316910518348761,
+        "diesel_fuel_remaining": 1.0,
+        "diesel_is_on": false,
+        "demand_forecast_4h": [
+          240.83324245984682,
+          180.61547461243674,
+          116.68371877512239,
+          54.329713553397035
+        ],
+        "solar_forecast_4h": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "price_forecast_4h": [
+          9.807737539162119,
+          10.751046981177488,
+          6.956766571656512,
+          5.25563315159333
+        ],
+        "blackout_this_step": 1.1370885122615277,
+        "cost_this_step": 2461.8807754137915,
+        "grid_kw_this_step": 200.0,
+        "narration": "Day 1, 19:00. BLACKOUT: 1 kWh unmet! Grid import near limit (200/200 kW). Battery well-charged (90%). Battery discharging 21 kW."
+      },
+      "derived_context": {
+        "time_phase": "evening_ramp",
+        "hour_of_day": 20,
+        "grid_status": "available",
+        "outage_risk": "normal",
+        "solar_trend": "steady",
+        "demand_trend": "falling",
+        "price_trend": "falling",
+        "supply_gap_kw": 51.04,
+        "max_future_supply_gap_kw": 51.04,
+        "battery_state": "high",
+        "fuel_state": "available",
+        "scarcity_risk": "high"
+      },
+      "previous_action": {
+        "battery_dispatch": 0.223,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      },
+      "previous_outcome": {
+        "blackout_kwh": 1.1371,
+        "battery_soc_delta": -0.0446,
+        "diesel_used_kwh": 0.0,
+        "cost": 2461.88
+      },
+      "approved_action": {
+        "battery_dispatch": 0.5104,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      }
+    },
+    {
+      "id": "gridops_v4_normal_no_diesel_task_1_normal_seed9000_h00",
+      "bucket": "normal_no_diesel",
+      "task_id": "task_1_normal",
+      "hour": 0,
+      "focus_tags": [
+        "diesel_zero",
+        "low",
+        "morning_ramp",
+        "normal_no_diesel",
+        "task_1_normal"
+      ],
+      "observation": {
+        "hour": 0.0,
+        "demand_kw": 63.92666240200092,
+        "solar_kw": 0.0,
+        "battery_soc": 0.5,
+        "grid_price": 7.984621337411679,
+        "diesel_fuel_remaining": 1.0,
+        "diesel_is_on": false,
+        "demand_forecast_4h": [
+          89.1626760825985,
+          93.52267992965977,
+          95.91072539021661,
+          123.51985692329247
+        ],
+        "solar_forecast_4h": [
+          64.3988844295234,
+          142.96400002824888,
+          163.8869807533273,
+          189.15627157773676
+        ],
+        "price_forecast_4h": [
+          10.60999933890951,
+          10.165378975676022,
+          11.525404268140738,
+          11.670484289643042
+        ],
+        "blackout_this_step": 0.0,
+        "cost_this_step": 0.0,
+        "grid_kw_this_step": 0.0,
+        "narration": "Episode started. Day 1, 06:00. Make your first decision."
+      },
+      "derived_context": {
+        "time_phase": "morning_ramp",
+        "hour_of_day": 6,
+        "grid_status": "available",
+        "outage_risk": "normal",
+        "solar_trend": "rising",
+        "demand_trend": "rising",
+        "price_trend": "rising",
+        "supply_gap_kw": -136.07,
+        "max_future_supply_gap_kw": -136.07,
+        "battery_state": "medium",
+        "fuel_state": "available",
+        "scarcity_risk": "low"
+      },
+      "previous_action": {
+        "battery_dispatch": 0.0,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      },
+      "previous_outcome": {
+        "blackout_kwh": 0.0,
+        "battery_soc_delta": 0.0,
+        "diesel_used_kwh": 0.0,
+        "cost": 0.0
+      },
+      "approved_action": {
+        "battery_dispatch": 0.0,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      }
+    },
+    {
+      "id": "gridops_v4_heatwave_rebound_task_2_heatwave_seed10000_h10",
+      "bucket": "heatwave_rebound",
+      "task_id": "task_2_heatwave",
+      "hour": 10,
+      "focus_tags": [
+        "battery_charge",
+        "diesel_zero",
+        "heatwave_rebound",
+        "medium",
+        "pre_evening_charge_window",
+        "task_2_heatwave"
+      ],
+      "observation": {
+        "hour": 10.0,
+        "demand_kw": 115.24005700736863,
+        "solar_kw": 130.72776753933937,
+        "battery_soc": 0.9974910288929898,
+        "grid_price": 12.880854160127301,
+        "diesel_fuel_remaining": 1.0,
+        "diesel_is_on": false,
+        "demand_forecast_4h": [
+          151.3074866156139,
+          225.6026464792635,
+          210.89004076931172,
+          265.3975392728856
+        ],
+        "solar_forecast_4h": [
+          73.33935968468562,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "price_forecast_4h": [
+          13.094604713631862,
+          17.020040555606037,
+          14.06081426620423,
+          14.338956989112686
+        ],
+        "blackout_this_step": 0.0,
+        "cost_this_step": -829.8346132851353,
+        "grid_kw_this_step": -65.201944105676,
+        "narration": "Day 1, 15:00. Strong solar generation. Exporting 65 kW to grid at Rs 12.7. Grid price high (Rs 12.7/kWh). Battery well-charged (100%)."
+      },
+      "derived_context": {
+        "time_phase": "pre_evening_charge_window",
+        "hour_of_day": 16,
+        "grid_status": "available",
+        "outage_risk": "normal",
+        "solar_trend": "falling",
+        "demand_trend": "rising",
+        "price_trend": "steady",
+        "supply_gap_kw": -215.49,
+        "max_future_supply_gap_kw": 65.4,
+        "battery_state": "high",
+        "fuel_state": "available",
+        "scarcity_risk": "medium"
+      },
+      "previous_action": {
+        "battery_dispatch": 0.0,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      },
+      "previous_outcome": {
+        "blackout_kwh": 0.0,
+        "battery_soc_delta": 0.0,
+        "diesel_used_kwh": 0.0,
+        "cost": -829.83
+      },
+      "approved_action": {
+        "battery_dispatch": -0.8,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      }
+    },
+    {
+      "id": "gridops_v4_low_resource_edges_task_2_heatwave_seed10079_h42",
+      "bucket": "low_resource_edges",
+      "task_id": "task_2_heatwave",
+      "hour": 42,
+      "focus_tags": [
+        "battery_charge",
+        "diesel_zero",
+        "low",
+        "low_resource_edges",
+        "low_soc",
+        "overnight_low_demand",
+        "task_2_heatwave"
+      ],
+      "observation": {
+        "hour": 42.0,
+        "demand_kw": 59.904994148081535,
+        "solar_kw": 0.0,
+        "battery_soc": 0.23869187899497307,
+        "grid_price": 6.430633246402119,
+        "diesel_fuel_remaining": 0.9972294201720154,
+        "diesel_is_on": false,
+        "demand_forecast_4h": [
+          58.03118423235404,
+          46.424650765868016,
+          58.2487513148553,
+          49.943830423448134
+        ],
+        "solar_forecast_4h": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "price_forecast_4h": [
+          4.942933090823988,
+          6.411975671686752,
+          4.847249038796258,
+          5.330364505441771
+        ],
+        "blackout_this_step": 0.0,
+        "cost_this_step": 1961.9430018855724,
+        "grid_kw_this_step": 178.17314286325657,
+        "narration": "Day 2, 23:00. Evening approaching \u2014 solar fading. Grid import near limit (178/200 kW). Battery charging 50 kW."
+      },
+      "derived_context": {
+        "time_phase": "overnight_low_demand",
+        "hour_of_day": 0,
+        "grid_status": "available",
+        "outage_risk": "normal",
+        "solar_trend": "steady",
+        "demand_trend": "steady",
+        "price_trend": "steady",
+        "supply_gap_kw": -140.1,
+        "max_future_supply_gap_kw": -140.1,
+        "battery_state": "low",
+        "fuel_state": "available",
+        "scarcity_risk": "low"
+      },
+      "previous_action": {
+        "battery_dispatch": -0.5,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      },
+      "previous_outcome": {
+        "blackout_kwh": 0.0,
+        "battery_soc_delta": 0.0949,
+        "diesel_used_kwh": 0.0,
+        "cost": 1961.94
+      },
+      "approved_action": {
+        "battery_dispatch": -0.8,
+        "diesel_dispatch": 0.0,
+        "demand_shedding": 0.0
+      }
+    }
+  ],
+  "models": {
+    "openai/gpt-5.5": {
+      "ok": false,
+      "status": 404,
+      "error": "{\"error\":{\"message\":\"No endpoints found that can handle the requested parameters. To learn more about provider routing, visit: https://openrouter.ai/docs/guides/routing/provider-selection\",\"code\":404}}",
+      "latency_s": 0.49
+    },
+    "moonshotai/kimi-k2.6": {
+      "ok": false,
+      "latency_s": 63.78,
+      "metrics": {
+        "score": 0,
+        "parse_error": "JSONDecodeError",
+        "content_head": ""
+      },
+      "usage": {
+        "prompt_tokens": 2671,
+        "completion_tokens": 2600,
+        "total_tokens": 5271,
+        "cost": 0.01487139,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.01487139,
+          "upstream_inference_prompt_cost": 0.00291139,
+          "upstream_inference_completions_cost": 0.01196
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2385,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "response": null
+    },
+    "minimax/minimax-m2.7": {
+      "ok": true,
+      "latency_s": 78.12,
+      "metrics": {
+        "items_returned": 5,
+        "valid_reason_fields": 5,
+        "action_matches": 3,
+        "avg_signal_score": 0.9,
+        "lengths_ok": 5,
+        "notes": [],
+        "score": 0.815
+      },
+      "usage": {
+        "prompt_tokens": 2738,
+        "completion_tokens": 2250,
+        "total_tokens": 4988,
+        "cost": 0.0035214,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.0035214,
+          "upstream_inference_prompt_cost": 0.0008214,
+          "upstream_inference_completions_cost": 0.0027
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 933,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "response": {
+        "items": [
+          {
+            "id": "gridops_v4_crisis_diesel_positive_task_3_crisis_seed11000_h60",
+            "think": {
+              "time_context": "Day 3, 17:00 (evening ramp). Peak demand period with grid near import limit.",
+              "first_order": "Battery at 100% SOC provides 80 kW discharge capacity. Diesel fuel at 0.19 units allows 11 kW generation. Grid at 195/200 kW with Rs 18.4/kWh high price.",
+              "second_order": "Evening ramp forecast shows demand rising to 367 kW in 2 hours. Supply gap of 111 kW now, 168 kW max. Must discharge battery and use diesel to prevent evening peak blackout.",
+              "previous_action": "Previous step was battery charging (-0.8) which was incorrect timing for peak demand. No blackout occurred but opportunity cost of charging during high demand period.",
+              "decision": "Increase battery discharge to 1.0 (80 kW) and activate diesel at 0.1111 (11 kW) to meet 111 kW supply gap. Grid at limit cannot help further."
+            },
+            "action": {
+              "battery_dispatch": 1.0,
+              "diesel_dispatch": 0.1111,
+              "demand_shedding": 0.0
+            }
+          },
+          {
+            "id": "gridops_v4_previous_action_correction_task_1_normal_seed9000_h14",
+            "think": {
+              "time_context": "Day 1, 19:00 (evening ramp). BLACKOUT occurred in previous step.",
+              "first_order": "Grid at 200/200 kW limit. Battery at 90% SOC. Demand 251 kW, supply gap 51 kW. Previous battery discharge of 0.223 (22 kW) was insufficient.",
+              "second_order": "Demand forecast falling from 241 kW to 54 kW over next 4 hours. Current blackout of 1.14 kWh indicates supply shortage. Must increase battery discharge to cover gap.",
+              "previous_action": "Previous battery dispatch 0.223 resulted in 1.14 kWh blackout and 4.5% SOC drain. Insufficient discharge caused unmet demand.",
+              "decision": "Increase battery discharge to 0.5104 (51 kW) to exactly cover supply gap. No diesel needed as demand trend is falling. Avoid shedding to recover from blackout."
+            },
+            "action": {
+              "battery_dispatch": 0.5104,
+              "diesel_dispatch": 0.0,
+              "demand_shedding": 0.0
+            }
+          },
+          {
+            "id": "gridops_v4_normal_no_diesel_task_1_normal_seed9000_h00",
+            "think": {
+              "time_context": "Day 1, 06:00 (morning ramp). Episode start with first decision.",
+              "first_order": "Solar generation 64 kW exceeds demand 64 kW. Battery at 50% SOC. Grid price low at Rs 8/kWh. Supply surplus of 136 kW.",
+              "second_order": "Solar forecast rising from 64 kW to 189 kW over next 4 hours. Demand rising from 89 kW to 124 kW. Surplus will increase with solar ramp.",
+              "previous_action": "No previous actions (episode start). Zero cost and zero blackout.",
+              "decision": "No action needed. Solar alone meets demand with large surplus. Battery at medium SOC can wait for higher solar generation later. No diesel or shedding required."
+            },
+            "action": {
+              "battery_dispatch": 0.0,
+              "diesel_dispatch": 0.0,
+              "demand_shedding": 0.0
+            }
+          },
+          {
+            "id": "gridops_v4_heatwave_rebound_task_2_heatwave_seed10000_h10",
+            "think": {
+              "time_context": "Day 1, 15:00 (pre-evening charge window). Strong solar generation with grid export.",
+              "first_order": "Solar 131 kW exceeds demand 115 kW. Battery at 100% SOC. Exporting 65 kW to grid at Rs 12.7/kWh. Supply surplus of 215 kW.",
+              "second_order": "Solar forecast drops to 73 kW in 1 hour then zero. Demand forecast rises to 265 kW by evening. Must charge battery now for evening peak.",
+              "previous_action": "Previous step had zero battery dispatch. Cost was -Rs 830 (revenue from solar export). Good decision to wait and export.",
+              "decision": "Charge battery at -0.8 (absorb 80 kW of surplus). Solar will fade soon, so this pre-evening window is critical for battery charging. Diesel not needed."
+            },
+            "action": {
+              "battery_dispatch": -1.0,
+              "diesel_dispatch": 0.0,
+              "demand_shedding": 0.0
+            }
+          },
+          {
+            "id": "gridops_v4_low_resource_edges_task_2_heatwave_seed10079_h42",
+            "think": {
+              "time_context": "Day 2, 23:00 (overnight low demand). Battery at low SOC with low grid price.",
+              "first_order": "Demand 60 kW, solar 0 kW. Battery at 24% SOC (low). Grid import 178/200 kW. Grid price low at Rs 6.4/kWh. Supply surplus of 140 kW.",
+              "second_order": "Overnight low demand period. Demand forecast stable 46-58 kW. Battery at low SOC needs charging before next heatwave day. Low price makes grid charging economical.",
+              "previous_action": "Previous battery dispatch -0.5 (charging 50 kW) resulted in 9.5% SOC increase. Good decision, continuing charge pattern.",
+              "decision": "Increase battery charging to -0.8 (absorb 80 kW). Low overnight price (Rs 6.4/kWh) makes charging cost-effective. Battery must reach high SOC for next day's heatwave peak demand."
+            },
+            "action": {
+              "battery_dispatch": -1.0,
+              "diesel_dispatch": 0.0,
+              "demand_shedding": 0.0
+            }
+          }
+        ]
+      }
+    },
+    "google/gemma-4-26b-a4b-it": {
+      "ok": true,
+      "latency_s": 40.44,
+      "metrics": {
+        "items_returned": 5,
+        "valid_reason_fields": 5,
+        "action_matches": 3,
+        "avg_signal_score": 0.767,
+        "lengths_ok": 5,
+        "notes": [],
+        "score": 0.782
+      },
+      "usage": {
+        "prompt_tokens": 3690,
+        "completion_tokens": 797,
+        "total_tokens": 4487,
+        "cost": 0.00052928,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0.00052928,
+          "upstream_inference_prompt_cost": 0.0002583,
+          "upstream_inference_completions_cost": 0.00027098
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 0,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "response": {
+        "items": [
+          {
+            "id": "gridops_v4_crisis_diesel_positive_task_3_crisis_seed11000_h60",
+            "think": {
+              "time_context": "Evening ramp period with high grid prices (Rs 18.4/kWh).",
+              "first_order": "Demand is 311 kW and grid import is near the 200 kW limit.",
+              "second_order": "Forecast shows rising demand and high prices, while diesel fuel is critically low (0.19).",
+              "previous_action": "Previous battery discharge was insufficient to cover the gap.",
+              "decision": "Discharge battery at max capacity and use limited diesel to cover the supply gap and prevent grid limit violations."
+            },
+            "action": {
+              "battery_dispatch": 1.0,
+              "diesel_dispatch": 0.1111,
+              "demand_shedding": 0.0
+            }
+          },
+          {
+            "id": "gridops_v4_previous_action_correction_task_1_normal_seed9000_h14",
+            "think": {
+              "time_context": "Evening ramp period with falling demand and prices.",
+              "first_order": "A blackout occurred in the previous step due to grid limit being reached.",
+              "second_order": "The supply gap remains high (51 kW) despite falling demand.",
+              "previous_action": "Previous battery discharge was too low (0.223 kW) to prevent the blackout.",
+              "decision": "Increase battery discharge to 0.5104 kW to cover the supply gap and prevent further blackouts."
+            },
+            "action": {
+              "battery_dispatch": 0.5104,
+              "diesel_dispatch": 0.0,
+              "demand_shedding": 0.0
+            }
+          },
+          {
+            "id": "gridops_v4_normal_no_diesel_task_1_normal_seed9000_h00",
+            "think": {
+              "time_context": "Morning ramp at the start of the episode.",
+              "first_order": "Demand is low (64 kW) and solar is forecast to rise.",
+              "second_order": "Grid prices are low and there is a significant supply surplus forecast.",
+              "previous_action": "No previous action.",
+              "decision": "Maintain zero dispatch for battery, diesel, and shedding as the system is stable with rising solar."
+            },
+            "action": {
+              "battery_dispatch": 0.0,
+              "diesel_dispatch": 0.0,
+              "demand_shedding": 0.0
+            }
+          },
+          {
+            "id": "gridops_v4_heatwave_rebound_task_2_heatwave_seed10000_h10",
+            "think": {
+              "time_context": "Pre-evening charge window with strong solar generation.",
+              "first_order": "Solar is currently exceeding demand, allowing for grid export.",
+              "second_order": "Demand is forecast to rise sharply and prices are expected to increase.",
+              "previous_action": "No previous action.",
+              "decision": "Use excess solar to charge the battery (dispatch -0.8) to prepare for the upcoming evening demand peak."
+            },
+            "action": {
+              "battery_dispatch": -1.0,
+              "diesel_dispatch": 0.0,
+              "demand_shedding": 0.0
+            }
+          },
+          {
+            "id": "gridops_v4_low_resource_edges_task_2_heatwave_seed10079_h42",
+            "think": {
+              "time_context": "Overnight low demand period with low grid prices.",
+              "first_order": "Battery SOC is low (0.24) and grid import is near the limit.",
+              "second_order": "Low prices and low demand provide an opportunity to recharge the battery before the next cycle.",
+              "previous_action": "Previous battery charging (0.5) was insufficient to raise SOC significantly.",
+              "decision": "Increase battery charging to 0.8 to utilize low grid prices and recover SOC."
+            },
+            "action": {
+              "battery_dispatch": -1.0,
+              "diesel_dispatch": 0.0,
+              "demand_shedding": 0.0
+            }
+          }
+        ]
+      }
+    }
+  }
+}
