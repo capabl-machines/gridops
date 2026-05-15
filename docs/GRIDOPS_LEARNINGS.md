@@ -1,10 +1,79 @@
 # GridOps Training Learnings
 
 This is the running engineering notebook for GridOps model-building decisions.
+It is also the walkthrough of how we moved from "train a small model to emit
+dispatch floats" toward a more capable system: OpenEnv as the world, LP/MPC as
+the critic/controller, and the LLM as a strategy selector.
 
-## Current Best Model
+## Research Arc
 
-Best SFT baseline:
+The core problem was not only format following. GridOps is a sequential control
+environment: each hourly action changes battery SOC, diesel fuel, rebound load,
+blackout risk, and future cost. A model that emits three floats directly has to
+learn both language formatting and control optimization inside its weights.
+
+The journey so far:
+
+```text
+v4:    action SFT from Kimi/OpenRouter reasoning traces
+v5:    causal LP teacher imitation
+v5.1:  crisis repair continuation
+v6:    tool-corrected action SFT, not promoted
+v6.1:  clean LP-critic action SFT with Qwen3, not promoted
+v7:    strategy-first harness, deterministic strategy -> causal optimizer
+v7.1:  1.5B model learns strict strategy JSON, controller executes action
+```
+
+The important architectural shift:
+
+```text
+Before:
+LLM -> exact battery/diesel/shedding floats -> OpenEnv
+
+Now:
+OpenEnv observation -> LLM or deterministic strategy -> causal LP/MPC
+-> bounded GridOpsAction -> OpenEnv
+```
+
+This keeps the model useful where language models are strongest: selecting
+intent under context. It keeps numerical dispatch where deterministic tools are
+strongest: constrained optimization, validation, and safety.
+
+## Current Best Systems
+
+Best deployed/controller baseline:
+
+```text
+v7 deterministic strategy-controller
+average_score:      0.7907
+valid_action_rate:  1.0000
+task_1_normal:      0.7995
+task_2_heatwave:    0.8224
+task_3_crisis:      0.7503
+LP ceiling capture: 96.04%
+```
+
+Best model-only checkpoint before strategy harness:
+
+```text
+77ethers/gridops-models/sft_qwen25_3b_gridops_v51_crisis_repair
+average_score:      0.7354
+valid_action_rate:  0.9969
+task_1_normal:      0.7896
+task_2_heatwave:    0.7681
+task_3_crisis:      0.6484
+```
+
+Latest strategy-selector experiment:
+
+```text
+77ethers/gridops-models/sft_qwen25_15b_gridops_strategy_v7
+base_model: Qwen/Qwen2.5-1.5B-Instruct
+output: strict GridOpsStrategy JSON
+status: trained and uploaded; final holdout eval still running at this note
+```
+
+Historical model to preserve:
 
 ```text
 77ethers/gridops-models/sft_qwen25_3b_gridops_kimi_reason_action_v4
@@ -21,7 +90,8 @@ task_3_crisis:      0.6255
 crisis diesel_kwh:  123.05
 ```
 
-v4 is the current model to preserve.
+v4 was the first useful baseline. It is no longer the best system, but it
+remains a preserved comparison point.
 
 ## v4.1 Repair Lesson
 
@@ -861,3 +931,58 @@ no task below v5.1 model-only baseline
 
 If the strategy model fails, keep deterministic v7 strategy-controller as the
 deployable system and repair the strategy dataset before considering DPO/GRPO.
+
+## v7.1 HF Training Run
+
+HF Job:
+
+```text
+job_id:    6a075ed33308d79117b907fd
+url:       https://huggingface.co/jobs/77ethers/6a075ed33308d79117b907fd
+model:     77ethers/gridops-models/sft_qwen25_15b_gridops_strategy_v7
+base:      Qwen/Qwen2.5-1.5B-Instruct
+dataset:   3600 strategy rows
+steps:     120
+max_len:   1024
+lr:        8e-5
+LoRA:      r=16, alpha=32
+```
+
+Training completed and uploaded the adapter successfully:
+
+```text
+uploaded_to: 77ethers/gridops-models/sft_qwen25_15b_gridops_strategy_v7
+adapter_model.safetensors: 37.0 MB
+```
+
+Partial holdout logs available while the final crisis seed was still running:
+
+```text
+task_1_normal seed 7001: 0.7936, valid_strategy_rate 1.0000
+task_1_normal seed 7002: 0.8100, valid_strategy_rate 1.0000
+task_1_normal seed 7003: 0.7947, valid_strategy_rate 1.0000
+
+task_2_heatwave seed 7001: 0.8208, valid_strategy_rate 1.0000
+task_2_heatwave seed 7002: 0.8257, valid_strategy_rate 1.0000
+task_2_heatwave seed 7003: 0.8206, valid_strategy_rate 1.0000
+
+task_3_crisis seed 7001: 0.7374, valid_strategy_rate 1.0000
+task_3_crisis seed 7002: 0.7354, valid_strategy_rate 1.0000
+```
+
+Interpretation from partial eval:
+
+- the strategy interface is solved: no invalid strategy JSON in observed logs;
+- normal and heatwave match the deterministic v7 strategy-controller almost
+  exactly;
+- crisis is valid but slightly softer than deterministic v7, likely because
+  the tiny model learned the schema and common strategy choices but not all
+  crisis-specific switching points;
+- even the softer crisis result is far above v5.1 model-only crisis
+  `0.6484`, confirming the harness shift is doing real work.
+
+Promotion decision is pending the final uploaded holdout JSON. If the final
+average is close to deterministic v7, the 1.5B strategy selector becomes the
+preferred model-facing policy. If crisis remains below the deterministic
+controller by more than a small margin, deploy deterministic v7 and run a small
+crisis-weighted strategy repair.
