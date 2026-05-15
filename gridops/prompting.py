@@ -248,3 +248,53 @@ def validate_reason_action_completion(text: str) -> tuple[bool, str]:
     except (TypeError, ValueError, ValidationError) as exc:
         return False, f"invalid_action:{type(exc).__name__}"
     return True, "ok"
+
+
+def normalize_reason_action_completion(text: str) -> tuple[str, bool, str]:
+    """Normalize common model-specific reason/action tag drift.
+
+    Qwen3 instruct models have a strong prior for ``<tool_call>`` tags. In our
+    traces the reasoning block is not a function call, but Qwen3 can replace
+    ``<think>`` with ``<tool_call>`` while still emitting valid final action
+    JSON. This helper rewrites only non-JSON tool-call blocks that precede an
+    ``<action>`` block, leaving real tool calls untouched.
+    """
+
+    original = text or ""
+    stripped = original.strip()
+    if "<think>" in stripped:
+        return original, False, "already_reason_action"
+    if "<action>" not in stripped or "</action>" not in stripped:
+        return original, False, "missing_action_block"
+
+    action_pos = stripped.find("<action>")
+    before_action = stripped[:action_pos].strip()
+    if not before_action:
+        return original, False, "missing_reasoning_block"
+
+    normalized_reasoning = before_action
+    changed = False
+    tool_match = re.fullmatch(r"</?tool_call>\s*(.*?)\s*</tool_call>", before_action, flags=re.DOTALL)
+    if tool_match:
+        normalized_reasoning = tool_match.group(1).strip()
+        changed = True
+    elif before_action.startswith("<tool_call>"):
+        normalized_reasoning = before_action[len("<tool_call>") :].strip()
+        changed = True
+    elif before_action.startswith("</tool_call>"):
+        normalized_reasoning = before_action[len("</tool_call>") :].strip()
+        changed = True
+    elif before_action.endswith("</tool_call>"):
+        normalized_reasoning = before_action[: -len("</tool_call>")].strip()
+        changed = True
+
+    if not changed:
+        return original, False, "no_normalizable_reasoning_block"
+    if '"name"' in normalized_reasoning and '"arguments"' in normalized_reasoning:
+        return original, False, "looks_like_real_tool_call"
+
+    normalized = f"<think>\n{normalized_reasoning}\n</think>\n{stripped[action_pos:]}"
+    valid, reason = validate_reason_action_completion(normalized)
+    if not valid:
+        return original, False, reason
+    return normalized, True, "normalized_tool_call_to_think"

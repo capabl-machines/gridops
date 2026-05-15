@@ -20,6 +20,7 @@ from gridops.prompting import (
     extract_action_json,
     messages_for_observation,
     messages_for_reason_action_observation,
+    normalize_reason_action_completion,
     parse_action,
     validate_completion,
     validate_reason_action_completion,
@@ -29,12 +30,14 @@ from gridops.tasks.definitions import TASKS
 from gridops.tool_agent import derive_control_context, previous_outcome_from_observation
 
 
-def invalid_action_diagnostics(reply: str) -> dict[str, Any]:
+def invalid_action_diagnostics(reply: str, normalized_reply: str | None = None) -> dict[str, Any]:
     """Return extra debugging context for invalid model completions."""
     payload = extract_action_json(reply)
     parsed_action = parse_action(reply, default=GridOpsAction())
+    normalized_reply = normalized_reply or reply
     diagnostics: dict[str, Any] = {
         "reply": reply,
+        "normalized_reply": normalized_reply if normalized_reply != reply else "",
         "reply_chars": len(reply or ""),
         "action_payload": payload,
         "parsed_action": parsed_action.model_dump(),
@@ -119,7 +122,8 @@ def generate_action(
     prompt_mode: str = "json",
     previous_action: dict[str, Any] | None = None,
     previous_outcome: dict[str, Any] | None = None,
-) -> tuple[str, GridOpsAction, bool, str]:
+    normalize_reason_action_tags: bool = False,
+) -> tuple[str, GridOpsAction, bool, str, bool, str]:
     prompt = tokenizer.apply_chat_template(
         build_messages(obs, task_id, prompt_mode, previous_action, previous_outcome),
         tokenize=False,
@@ -135,12 +139,22 @@ def generate_action(
     )
     new_tokens = outputs[0, inputs["input_ids"].shape[-1] :]
     reply = tokenizer.decode(new_tokens, skip_special_tokens=True).strip()
+    normalized = reply
+    normalized_used = False
+    raw_reason = "not_checked"
     if prompt_mode == "reason_action":
         valid, reason = validate_reason_action_completion(reply)
+        raw_reason = reason
+        if not valid and normalize_reason_action_tags:
+            normalized, normalized_used, normalized_reason = normalize_reason_action_completion(reply)
+            if normalized_used:
+                valid, reason = validate_reason_action_completion(normalized)
+            else:
+                reason = f"{reason};normalizer:{normalized_reason}"
     else:
         valid, reason = validate_completion(reply)
-    action = parse_action(reply, default=GridOpsAction())
-    return reply, action, valid, reason
+    action = parse_action(normalized, default=GridOpsAction())
+    return reply, action, valid, reason, normalized_used, raw_reason
 
 
 def rollout(
@@ -152,10 +166,13 @@ def rollout(
     sample_limit: int,
     prompt_mode: str,
     horizon: int,
+    normalize_reason_action_tags: bool,
 ) -> dict[str, Any]:
     env = GridOpsEnvironment()
     obs = env.reset(seed=seed, task_id=task_id)
     valid_actions = 0
+    raw_valid_actions = 0
+    normalized_actions = 0
     total_actions = 0
     invalid_examples: list[dict[str, Any]] = []
     samples: list[dict[str, Any]] = []
@@ -169,7 +186,7 @@ def rollout(
         if prior_obs is not None and prior_model_action is not None:
             previous_outcome = previous_outcome_from_observation(obs_dict)
             previous_action = prior_model_action.model_dump()
-        reply, action, valid, reason = generate_action(
+        reply, action, valid, reason, normalized_used, raw_reason = generate_action(
             tokenizer,
             model,
             obs_dict,
@@ -178,8 +195,11 @@ def rollout(
             prompt_mode=prompt_mode,
             previous_action=previous_action,
             previous_outcome=previous_outcome,
+            normalize_reason_action_tags=normalize_reason_action_tags,
         )
         valid_actions += int(valid)
+        raw_valid_actions += int(valid and not normalized_used)
+        normalized_actions += int(normalized_used)
         total_actions += 1
         if valid and len(samples) < sample_limit:
             samples.append(
@@ -189,16 +209,22 @@ def rollout(
                     "seed": seed,
                     "reply": reply,
                     "action": action.model_dump(),
+                    "normalized_used": normalized_used,
                 }
             )
         if not valid and len(invalid_examples) < 10:
+            normalized_reply = ""
+            if normalize_reason_action_tags:
+                normalized_reply, _, _ = normalize_reason_action_completion(reply)
             invalid_examples.append(
                 {
                     "hour": obs_dict["hour"],
                     "task_id": task_id,
                     "seed": seed,
                     "reason": reason,
-                    **invalid_action_diagnostics(reply),
+                    "raw_reason": raw_reason,
+                    "normalized_used": normalized_used,
+                    **invalid_action_diagnostics(reply, normalized_reply),
                 }
             )
         prior_obs = obs_dict
@@ -213,8 +239,12 @@ def rollout(
         "seed": seed,
         "score": grade.get("score", 0.0),
         "valid_actions": valid_actions,
+        "raw_valid_actions": raw_valid_actions,
+        "normalized_actions": normalized_actions,
         "total_actions": total_actions,
         "valid_action_rate": valid_actions / max(total_actions, 1),
+        "raw_valid_action_rate": raw_valid_actions / max(total_actions, 1),
+        "normalized_action_rate": normalized_actions / max(total_actions, 1),
         "invalid_examples": invalid_examples,
         "samples": samples,
         "grade": grade,
@@ -225,10 +255,19 @@ def summarize(name: str, rows: list[dict[str, Any]]) -> dict[str, Any]:
     by_task = {}
     for task_id in TASKS:
         task_rows = [row for row in rows if row["task_id"] == task_id]
+        task_total_actions = sum(row["total_actions"] for row in task_rows)
         by_task[task_id] = {
             "score": round(sum(row["score"] for row in task_rows) / max(len(task_rows), 1), 4),
             "valid_action_rate": round(
-                sum(row["valid_actions"] for row in task_rows) / max(sum(row["total_actions"] for row in task_rows), 1),
+                sum(row["valid_actions"] for row in task_rows) / max(task_total_actions, 1),
+                4,
+            ),
+            "raw_valid_action_rate": round(
+                sum(row.get("raw_valid_actions", 0) for row in task_rows) / max(task_total_actions, 1),
+                4,
+            ),
+            "normalized_action_rate": round(
+                sum(row.get("normalized_actions", 0) for row in task_rows) / max(task_total_actions, 1),
                 4,
             ),
             "blackout_kwh": round(
@@ -245,11 +284,15 @@ def summarize(name: str, rows: list[dict[str, Any]]) -> dict[str, Any]:
             ),
         }
     total_valid = sum(row["valid_actions"] for row in rows)
+    total_raw_valid = sum(row.get("raw_valid_actions", 0) for row in rows)
+    total_normalized = sum(row.get("normalized_actions", 0) for row in rows)
     total_actions = sum(row["total_actions"] for row in rows)
     return {
         "name": name,
         "average_score": round(sum(row["score"] for row in rows) / max(len(rows), 1), 4),
         "valid_action_rate": round(total_valid / max(total_actions, 1), 4),
+        "raw_valid_action_rate": round(total_raw_valid / max(total_actions, 1), 4),
+        "normalized_action_rate": round(total_normalized / max(total_actions, 1), 4),
         "by_task": by_task,
         "rows": rows,
     }
@@ -268,6 +311,7 @@ def main() -> None:
     parser.add_argument("--output", default="evals/gridops_sft_adapter_eval.json")
     parser.add_argument("--invalid-output", default="")
     parser.add_argument("--samples-output", default="")
+    parser.add_argument("--normalize-reason-action-tags", action="store_true")
     parser.add_argument("--no-4bit", action="store_true")
     args = parser.parse_args()
 
@@ -294,6 +338,7 @@ def main() -> None:
                 args.sample_limit,
                 args.prompt_mode,
                 args.horizon,
+                args.normalize_reason_action_tags,
             )
             rows.append(result)
             with invalid_output.open("a", encoding="utf-8") as handle:
@@ -310,6 +355,8 @@ def main() -> None:
                         "seed": seed,
                         "score": result["score"],
                         "valid_action_rate": round(result["valid_action_rate"], 4),
+                        "raw_valid_action_rate": round(result["raw_valid_action_rate"], 4),
+                        "normalized_action_rate": round(result["normalized_action_rate"], 4),
                         "first_invalid_reason": first_invalid.get("reason") if first_invalid else None,
                         "first_invalid_flags": {
                             "has_think": first_invalid.get("has_think") if first_invalid else None,

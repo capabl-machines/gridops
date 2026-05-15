@@ -1,7 +1,13 @@
 import json
 
 from gridops.models import GridOpsAction
-from gridops.prompting import action_to_json, parse_action, validate_completion, validate_reason_action_completion
+from gridops.prompting import (
+    action_to_json,
+    normalize_reason_action_completion,
+    parse_action,
+    validate_completion,
+    validate_reason_action_completion,
+)
 
 
 def test_action_json_round_trip():
@@ -47,3 +53,24 @@ decision: Use backup supply.
     valid, reason = validate_reason_action_completion(text)
     assert valid, reason
     assert parse_action(text) == GridOpsAction(battery_dispatch=1.0, diesel_dispatch=0.4, demand_shedding=0.0)
+
+
+def test_reason_action_normalizer_maps_qwen3_tool_call_reasoning():
+    text = """<tool_call>
+time_context: Overnight.
+1st_order: Current supply is enough.
+2nd_order: Avoid unnecessary fuel.
+previous_action: None.
+decision: Hold.
+</tool_call>
+<action>
+{"battery_dispatch":0.0,"diesel_dispatch":0.0,"demand_shedding":0.0}
+</action>"""
+
+    normalized, changed, reason = normalize_reason_action_completion(text)
+    assert changed, reason
+    assert reason == "normalized_tool_call_to_think"
+    valid, valid_reason = validate_reason_action_completion(normalized)
+    assert valid, valid_reason
+    assert "<tool_call>" not in normalized
+    assert "<think>" in normalized

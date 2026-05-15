@@ -66,6 +66,7 @@ python scripts/evaluate_gridops_adapter.py \\
   --tasks {shlex.quote(args.tasks)} \\
   --horizon {int(args.horizon)} \\
   --sample-limit {int(args.sample_limit)} \\
+  --normalize-reason-action-tags \\
   --output {shlex.quote(output_stem + ".json")}
 python - <<'PY'
 import os

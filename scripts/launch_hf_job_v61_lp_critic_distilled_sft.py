@@ -84,6 +84,7 @@ if [[ "${GRIDOPS_RUN_EVAL}" == "1" ]]; then
     --prompt-mode reason_action \
     --max-new-tokens 384 \
     --seeds "${GRIDOPS_EVAL_SEEDS}" \
+    --normalize-reason-action-tags \
     --output "evals/${GRIDOPS_RUN_LABEL}_holdout.json"
   python - <<'PY'
 import os
