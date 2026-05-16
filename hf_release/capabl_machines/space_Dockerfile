@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir numpy scipy pydantic fastapi "uvicorn[standard]" websockets openai requests openenv-core
+
+COPY gridops/ gridops/
+COPY server/ server/
+COPY assets/ assets/
+COPY evals/ evals/
+COPY inference.py openenv.yaml README.md ./
+
+EXPOSE 8000
+
+ENV WORKERS=1
+ENV MAX_CONCURRENT_ENVS=10
+
+CMD ["uvicorn", "gridops.server.app:app", "--host", "0.0.0.0", "--port", "8000"]
