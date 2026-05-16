@@ -1,0 +1,3167 @@
+{
+  "name": "google/gemma-4-26b-a4b-it",
+  "average_score": 0.7906,
+  "valid_strategy_rate": 1.0,
+  "lp_ceiling_capture": 0.9602,
+  "usage": {
+    "prompt_tokens": 334993,
+    "completion_tokens": 22899,
+    "total_tokens": 357892
+  },
+  "by_task": {
+    "task_1_normal": {
+      "score": 0.8007,
+      "valid_strategy_rate": 1.0,
+      "lp_ceiling_capture": 0.9564,
+      "blackout_kwh": 0.0,
+      "diesel_kwh": 0.0,
+      "cost": 35125.55
+    },
+    "task_2_heatwave": {
+      "score": 0.8226,
+      "valid_strategy_rate": 1.0,
+      "lp_ceiling_capture": 0.9775,
+      "blackout_kwh": 0.01,
+      "diesel_kwh": 101.5,
+      "cost": 68843.78
+    },
+    "task_3_crisis": {
+      "score": 0.7483,
+      "valid_strategy_rate": 1.0,
+      "lp_ceiling_capture": 0.9458,
+      "blackout_kwh": 362.32,
+      "diesel_kwh": 768.03,
+      "cost": 219494.74
+    }
+  },
+  "baselines": {
+    "v51_model_only": {
+      "average_score": 0.7354,
+      "task_1_normal": 0.7896,
+      "task_2_heatwave": 0.7681,
+      "task_3_crisis": 0.6484
+    },
+    "v7_deterministic_strategy_controller": {
+      "average_score": 0.7907,
+      "task_1_normal": 0.7995,
+      "task_2_heatwave": 0.8224,
+      "task_3_crisis": 0.7503
+    },
+    "untuned_qwen25_15b_strategy_harness": {
+      "average_score": 0.7911,
+      "task_1_normal": 0.7993,
+      "task_2_heatwave": 0.8223,
+      "task_3_crisis": 0.7517
+    },
+    "v73_trained_strategy_selector": {
+      "average_score": 0.7888,
+      "task_1_normal": 0.7993,
+      "task_2_heatwave": 0.8223,
+      "task_3_crisis": 0.7449
+    },
+    "full_episode_lp_ceiling": {
+      "average_score": 0.8233,
+      "task_1_normal": 0.8372,
+      "task_2_heatwave": 0.8416,
+      "task_3_crisis": 0.7912
+    }
+  },
+  "rows": [
+    {
+      "task_id": "task_1_normal",
+      "seed": 7001,
+      "score": 0.7943,
+      "valid_strategies": 72,
+      "total_steps": 72,
+      "valid_strategy_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 0
+          },
+          "meta": {
+            "id": "gen-1778961638-NV3NpONzHw7uLfFdVtmq",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 486,
+              "completion_tokens": 33,
+              "total_tokens": 519,
+              "cost": 8.05e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 112,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 8.05e-05,
+                "upstream_inference_prompt_cost": 6.73e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"battery_bias\":\"charge\",\"diesel_policy\":\"conserve\",\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "conserve",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 20.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 16.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "conserve",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 1
+          },
+          "meta": {
+            "id": "gen-1778961639-YS4tHZirplcZAu8wsC0y",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 492,
+              "completion_tokens": 36,
+              "total_tokens": 528,
+              "cost": 7.344e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.344e-05,
+                "upstream_inference_prompt_cost": 5.904e-05,
+                "upstream_inference_completions_cost": 1.44e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 2
+          },
+          "meta": {
+            "id": "gen-1778961641-P8gCHcz5zrLz8Aeukiza",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 496,
+              "completion_tokens": 33,
+              "total_tokens": 529,
+              "cost": 7.768e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.768e-05,
+                "upstream_inference_prompt_cost": 6.448e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 3
+          },
+          "meta": {
+            "id": "gen-1778961643-QPW3dNRA7ZFkFDqygSXp",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 497,
+              "completion_tokens": 33,
+              "total_tokens": 530,
+              "cost": 6.757e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 6.757e-05,
+                "upstream_inference_prompt_cost": 5.437e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_1_normal",
+          "seed": 7001,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": -1.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 4
+          },
+          "meta": {
+            "id": "gen-1778961645-jqBrU6O6VDNhRtS5x8QA",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 520,
+              "completion_tokens": 33,
+              "total_tokens": 553,
+              "cost": 7.056e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.056e-05,
+                "upstream_inference_prompt_cost": 5.736e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 36407,
+        "completion_tokens": 2452,
+        "total_tokens": 38859
+      },
+      "grade": {
+        "score": 0.7943,
+        "reliability": 1.0,
+        "cost_efficiency": 0.5887,
+        "green_score": 1.0,
+        "baseline_cost": 85327.88,
+        "actual_cost": 35097.53,
+        "total_blackout_kwh": 0.01,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8446.6,
+        "battery_throughput_kwh": 2237.3
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7002,
+      "score": 0.81,
+      "valid_strategies": 72,
+      "total_steps": 72,
+      "valid_strategy_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 0
+          },
+          "meta": {
+            "id": "gen-1778961802-ZSjMaGopEeDmjUIUgnTn",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 487,
+              "completion_tokens": 33,
+              "total_tokens": 520,
+              "cost": 7.651e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.651e-05,
+                "upstream_inference_prompt_cost": 6.331e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 1
+          },
+          "meta": {
+            "id": "gen-1778961804-ZAMmWP7hIRU2I9teQnJT",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 489,
+              "completion_tokens": 33,
+              "total_tokens": 522,
+              "cost": 4.545e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.545e-05,
+                "upstream_inference_prompt_cost": 3.423e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 2
+          },
+          "meta": {
+            "id": "gen-1778961806-VzQCtmAlnOIvAqNRX0jG",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 498,
+              "completion_tokens": 33,
+              "total_tokens": 531,
+              "cost": 4.608e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.608e-05,
+                "upstream_inference_prompt_cost": 3.486e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 3
+          },
+          "meta": {
+            "id": "gen-1778961808-ZuCvrvqv20SIvAExgsvy",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 500,
+              "completion_tokens": 33,
+              "total_tokens": 533,
+              "cost": 9.775e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 9.775e-05,
+                "upstream_inference_prompt_cost": 8.125e-05,
+                "upstream_inference_completions_cost": 1.65e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_1_normal",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 4
+          },
+          "meta": {
+            "id": "gen-1778961810-Z17tDsFeTlbkNkr37s6G",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 518,
+              "completion_tokens": 33,
+              "total_tokens": 551,
+              "cost": 8.53e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 112,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 8.53e-05,
+                "upstream_inference_prompt_cost": 7.21e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 36443,
+        "completion_tokens": 2442,
+        "total_tokens": 38885
+      },
+      "grade": {
+        "score": 0.81,
+        "reliability": 1.0,
+        "cost_efficiency": 0.62,
+        "green_score": 1.0,
+        "baseline_cost": 91634.8,
+        "actual_cost": 34825.21,
+        "total_blackout_kwh": 0.0,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8418.37,
+        "battery_throughput_kwh": 2237.3
+      }
+    },
+    {
+      "task_id": "task_1_normal",
+      "seed": 7003,
+      "score": 0.7979,
+      "valid_strategies": 72,
+      "total_steps": 72,
+      "valid_strategy_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 0
+          },
+          "meta": {
+            "id": "gen-1778961949-aUnX66u1fJk3DSOhnTVS",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 484,
+              "completion_tokens": 33,
+              "total_tokens": 517,
+              "cost": 4.51e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.51e-05,
+                "upstream_inference_prompt_cost": 3.388e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 1
+          },
+          "meta": {
+            "id": "gen-1778961950-70aoFAg6XBnKTXneVH6i",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 492,
+              "completion_tokens": 35,
+              "total_tokens": 527,
+              "cost": 7.304e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.304e-05,
+                "upstream_inference_prompt_cost": 5.904e-05,
+                "upstream_inference_completions_cost": 1.4e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 2
+          },
+          "meta": {
+            "id": "gen-1778961952-4I0bHMe9VDOcqOvwAVK0",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 494,
+              "completion_tokens": 33,
+              "total_tokens": 527,
+              "cost": 4.58e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.58e-05,
+                "upstream_inference_prompt_cost": 3.458e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 3
+          },
+          "meta": {
+            "id": "gen-1778961954-ipD9AySx8gYGpjYW7pKX",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 498,
+              "completion_tokens": 33,
+              "total_tokens": 531,
+              "cost": 8.23e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 112,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 8.23e-05,
+                "upstream_inference_prompt_cost": 6.91e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_1_normal",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_1_normal",
+            "hour": 4
+          },
+          "meta": {
+            "id": "gen-1778961956-k9o5yQPlUg5QExYuWbJY",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 520,
+              "completion_tokens": 33,
+              "total_tokens": 553,
+              "cost": 4.762e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.762e-05,
+                "upstream_inference_prompt_cost": 3.64e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 36442,
+        "completion_tokens": 2455,
+        "total_tokens": 38897
+      },
+      "grade": {
+        "score": 0.7979,
+        "reliability": 1.0,
+        "cost_efficiency": 0.5958,
+        "green_score": 1.0,
+        "baseline_cost": 87711.23,
+        "actual_cost": 35453.91,
+        "total_blackout_kwh": 0.0,
+        "total_diesel_kwh": 0.0,
+        "total_demand_kwh": 8480.72,
+        "battery_throughput_kwh": 2016.38
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7001,
+      "score": 0.8208,
+      "valid_strategies": 72,
+      "total_steps": 72,
+      "valid_strategy_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 0
+          },
+          "meta": {
+            "id": "gen-1778962126-toEWN5LCgt9dWEK3xTk9",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 487,
+              "completion_tokens": 33,
+              "total_tokens": 520,
+              "cost": 4.531e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.531e-05,
+                "upstream_inference_prompt_cost": 3.409e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 1
+          },
+          "meta": {
+            "id": "gen-1778962127-a8btEgGMWPWTRumHWjhu",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 497,
+              "completion_tokens": 35,
+              "total_tokens": 532,
+              "cost": 7.364e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.364e-05,
+                "upstream_inference_prompt_cost": 5.964e-05,
+                "upstream_inference_completions_cost": 1.4e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 2
+          },
+          "meta": {
+            "id": "gen-1778962129-I319fnv91iH4cbOx6njC",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 500,
+              "completion_tokens": 33,
+              "total_tokens": 533,
+              "cost": 9.775e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 9.775e-05,
+                "upstream_inference_prompt_cost": 8.125e-05,
+                "upstream_inference_completions_cost": 1.65e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 3
+          },
+          "meta": {
+            "id": "gen-1778962134-x4qS20icDJmSESQIoMKo",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 503,
+              "completion_tokens": 33,
+              "total_tokens": 536,
+              "cost": 4.643e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.643e-05,
+                "upstream_inference_prompt_cost": 3.521e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7001,
+          "reply": "{\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": -1.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 4
+          },
+          "meta": {
+            "id": "gen-1778962135-qTF44BZcVzPpVpc3Swld",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 524,
+              "completion_tokens": 35,
+              "total_tokens": 559,
+              "cost": 7.688e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.688e-05,
+                "upstream_inference_prompt_cost": 6.288e-05,
+                "upstream_inference_completions_cost": 1.4e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 37072,
+        "completion_tokens": 2497,
+        "total_tokens": 39569
+      },
+      "grade": {
+        "score": 0.8208,
+        "reliability": 1.0,
+        "cost_efficiency": 0.6459,
+        "green_score": 0.9913,
+        "baseline_cost": 192472.73,
+        "actual_cost": 68151.06,
+        "total_blackout_kwh": 0.01,
+        "total_diesel_kwh": 88.05,
+        "total_demand_kwh": 10129.09,
+        "battery_throughput_kwh": 2601.53
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7002,
+      "score": 0.8256,
+      "valid_strategies": 72,
+      "total_steps": 72,
+      "valid_strategy_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 0
+          },
+          "meta": {
+            "id": "gen-1778962340-xJLhqgMag6w5d8YLhhjt",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 490,
+              "completion_tokens": 33,
+              "total_tokens": 523,
+              "cost": 4.552e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.552e-05,
+                "upstream_inference_prompt_cost": 3.43e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 1
+          },
+          "meta": {
+            "id": "gen-1778962342-fiqnhJwJS804gyh8RWO2",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 497,
+              "completion_tokens": 35,
+              "total_tokens": 532,
+              "cost": 7.364e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.364e-05,
+                "upstream_inference_prompt_cost": 5.964e-05,
+                "upstream_inference_completions_cost": 1.4e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 2
+          },
+          "meta": {
+            "id": "gen-1778962345-pEoD9nkZj3BLsup8ts0z",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 501,
+              "completion_tokens": 33,
+              "total_tokens": 534,
+              "cost": 8.195e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 8.195e-05,
+                "upstream_inference_prompt_cost": 6.875e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 3
+          },
+          "meta": {
+            "id": "gen-1778962349-0kRjkGReu3SdhoddylOx",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 504,
+              "completion_tokens": 33,
+              "total_tokens": 537,
+              "cost": 4.65e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.65e-05,
+                "upstream_inference_prompt_cost": 3.528e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 4
+          },
+          "meta": {
+            "id": "gen-1778962351-0Jx1VUIi2F6o7ZJswjjZ",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 522,
+              "completion_tokens": 33,
+              "total_tokens": 555,
+              "cost": 7.082e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.082e-05,
+                "upstream_inference_prompt_cost": 5.762e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 37133,
+        "completion_tokens": 2520,
+        "total_tokens": 39653
+      },
+      "grade": {
+        "score": 0.8256,
+        "reliability": 1.0,
+        "cost_efficiency": 0.6561,
+        "green_score": 0.9899,
+        "baseline_cost": 199282.94,
+        "actual_cost": 68523.45,
+        "total_blackout_kwh": 0.0,
+        "total_diesel_kwh": 101.51,
+        "total_demand_kwh": 10089.03,
+        "battery_throughput_kwh": 2794.48
+      }
+    },
+    {
+      "task_id": "task_2_heatwave",
+      "seed": 7003,
+      "score": 0.8215,
+      "valid_strategies": 72,
+      "total_steps": 72,
+      "valid_strategy_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 0
+          },
+          "meta": {
+            "id": "gen-1778962514-yFokTmVQsFMPyv5QmaKR",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 486,
+              "completion_tokens": 33,
+              "total_tokens": 519,
+              "cost": 6.614e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 6.614e-05,
+                "upstream_inference_prompt_cost": 5.294e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 1
+          },
+          "meta": {
+            "id": "gen-1778962514-yrPuzyt41Es1QS5DYkdf",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 497,
+              "completion_tokens": 33,
+              "total_tokens": 530,
+              "cost": 4.601e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.601e-05,
+                "upstream_inference_prompt_cost": 3.479e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 2
+          },
+          "meta": {
+            "id": "gen-1778962516-HOEWBcrpLXr1vbHn4rd4",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 499,
+              "completion_tokens": 33,
+              "total_tokens": 532,
+              "cost": 8.245e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 112,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 8.245e-05,
+                "upstream_inference_prompt_cost": 6.925e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 3
+          },
+          "meta": {
+            "id": "gen-1778962519-8JaNpDScyAJrK6jmZh02",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 502,
+              "completion_tokens": 33,
+              "total_tokens": 535,
+              "cost": 7.846e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.846e-05,
+                "upstream_inference_prompt_cost": 6.526e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_2_heatwave",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_2_heatwave",
+            "hour": 4
+          },
+          "meta": {
+            "id": "gen-1778962523-c6smvgwGsfneuzjSAfBd",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 523,
+              "completion_tokens": 33,
+              "total_tokens": 556,
+              "cost": 8.605e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 112,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 8.605e-05,
+                "upstream_inference_prompt_cost": 7.285e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 37116,
+        "completion_tokens": 2527,
+        "total_tokens": 39643
+      },
+      "grade": {
+        "score": 0.8215,
+        "reliability": 1.0,
+        "cost_efficiency": 0.6487,
+        "green_score": 0.9887,
+        "baseline_cost": 198844.53,
+        "actual_cost": 69856.83,
+        "total_blackout_kwh": 0.01,
+        "total_diesel_kwh": 114.95,
+        "total_demand_kwh": 10186.37,
+        "battery_throughput_kwh": 2634.78
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7001,
+      "score": 0.7516,
+      "valid_strategies": 72,
+      "total_steps": 72,
+      "valid_strategy_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 0
+          },
+          "meta": {
+            "id": "gen-1778962690-BKmMzalrXwg3b8l74DHv",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 490,
+              "completion_tokens": 33,
+              "total_tokens": 523,
+              "cost": 6.666e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 6.666e-05,
+                "upstream_inference_prompt_cost": 5.346e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 1
+          },
+          "meta": {
+            "id": "gen-1778962694-CPrZRh35tKZ8eIc6C9Rr",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 513,
+              "completion_tokens": 33,
+              "total_tokens": 546,
+              "cost": 4.713e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.713e-05,
+                "upstream_inference_prompt_cost": 3.591e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 2
+          },
+          "meta": {
+            "id": "gen-1778962696-0fPD1xr0NK2HaVdCJwrA",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 512,
+              "completion_tokens": 37,
+              "total_tokens": 549,
+              "cost": 7.624e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 7.624e-05,
+                "upstream_inference_prompt_cost": 6.144e-05,
+                "upstream_inference_completions_cost": 1.48e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 3
+          },
+          "meta": {
+            "id": "gen-1778962698-fX7k0icEOg7Xjda1P0NE",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 513,
+              "completion_tokens": 33,
+              "total_tokens": 546,
+              "cost": 4.713e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.713e-05,
+                "upstream_inference_prompt_cost": 3.591e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_3_crisis",
+          "seed": 7001,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": -1.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 4
+          },
+          "meta": {
+            "id": "gen-1778962700-plMvGqnJb3DPXfueEdk7",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 511,
+              "completion_tokens": 33,
+              "total_tokens": 544,
+              "cost": 4.699e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.699e-05,
+                "upstream_inference_prompt_cost": 3.577e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 38155,
+        "completion_tokens": 2671,
+        "total_tokens": 40826
+      },
+      "grade": {
+        "score": 0.7516,
+        "reliability": 0.9726,
+        "cost_efficiency": 0.5456,
+        "green_score": 0.9427,
+        "baseline_cost": 472588.83,
+        "actual_cost": 214732.92,
+        "total_blackout_kwh": 347.29,
+        "total_diesel_kwh": 726.42,
+        "total_demand_kwh": 12669.91,
+        "battery_throughput_kwh": 2986.39
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7002,
+      "score": 0.7395,
+      "valid_strategies": 72,
+      "total_steps": 72,
+      "valid_strategy_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 0
+          },
+          "meta": {
+            "id": "gen-1778962866-VmY5nRvxfDt5gCLQwlae",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 492,
+              "completion_tokens": 33,
+              "total_tokens": 525,
+              "cost": 8.14e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 112,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 8.14e-05,
+                "upstream_inference_prompt_cost": 6.82e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 1
+          },
+          "meta": {
+            "id": "gen-1778962867-RF5IcbGvrITnt2uqd8vY",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 513,
+              "completion_tokens": 33,
+              "total_tokens": 546,
+              "cost": 4.713e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.713e-05,
+                "upstream_inference_prompt_cost": 3.591e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 2
+          },
+          "meta": {
+            "id": "gen-1778962869-1QJGrhL2UBkiPgVjTyA3",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 509,
+              "completion_tokens": 33,
+              "total_tokens": 542,
+              "cost": 4.685e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.685e-05,
+                "upstream_inference_prompt_cost": 3.563e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 3
+          },
+          "meta": {
+            "id": "gen-1778962871-aQgrtaCH9b6TNRHrzecY",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 509,
+              "completion_tokens": 33,
+              "total_tokens": 542,
+              "cost": 6.913e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 128,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 6.913e-05,
+                "upstream_inference_prompt_cost": 5.593e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_3_crisis",
+          "seed": 7002,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 4
+          },
+          "meta": {
+            "id": "gen-1778962874-NteaNvs5BJkqpqRe80DQ",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 511,
+              "completion_tokens": 33,
+              "total_tokens": 544,
+              "cost": 4.699e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.699e-05,
+                "upstream_inference_prompt_cost": 3.577e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 38100,
+        "completion_tokens": 2675,
+        "total_tokens": 40775
+      },
+      "grade": {
+        "score": 0.7395,
+        "reliability": 0.9692,
+        "cost_efficiency": 0.5258,
+        "green_score": 0.9373,
+        "baseline_cost": 479033.37,
+        "actual_cost": 227181.11,
+        "total_blackout_kwh": 388.36,
+        "total_diesel_kwh": 792.0,
+        "total_demand_kwh": 12627.55,
+        "battery_throughput_kwh": 3156.24
+      }
+    },
+    {
+      "task_id": "task_3_crisis",
+      "seed": 7003,
+      "score": 0.7538,
+      "valid_strategies": 72,
+      "total_steps": 72,
+      "valid_strategy_rate": 1.0,
+      "invalid_examples": [],
+      "samples": [
+        {
+          "hour": 0.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 0
+          },
+          "meta": {
+            "id": "gen-1778963048-O3gHLnwVYfcVBw6QgFIZ",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 491,
+              "completion_tokens": 33,
+              "total_tokens": 524,
+              "cost": 4.559e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.559e-05,
+                "upstream_inference_prompt_cost": 3.437e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 1.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 1
+          },
+          "meta": {
+            "id": "gen-1778963050-mpSvNyGbGO9r91hPUUPN",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 513,
+              "completion_tokens": 33,
+              "total_tokens": 546,
+              "cost": 4.713e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.713e-05,
+                "upstream_inference_prompt_cost": 3.591e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 2.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"charge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "charge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 28.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "charge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 2
+          },
+          "meta": {
+            "id": "gen-1778963052-p5CUTtTjfV3T0yGeSnV6",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 510,
+              "completion_tokens": 33,
+              "total_tokens": 543,
+              "cost": 4.692e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.692e-05,
+                "upstream_inference_prompt_cost": 3.57e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 3.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"discharge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "discharge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 14.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "discharge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 3
+          },
+          "meta": {
+            "id": "gen-1778963054-qWO1l5FGNQTo4bt9cih5",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 513,
+              "completion_tokens": 33,
+              "total_tokens": 546,
+              "cost": 4.713e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 4.713e-05,
+                "upstream_inference_prompt_cost": 3.591e-05,
+                "upstream_inference_completions_cost": 1.122e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        },
+        {
+          "hour": 4.0,
+          "task_id": "task_3_crisis",
+          "seed": 7003,
+          "reply": "{\"mode\":\"cost_saving\",\"risk_level\":\"low\",\"battery_bias\":\"discharge\",\"diesel_policy\":\"avoid\",\"shedding_policy\":\"never\"}",
+          "strategy": {
+            "mode": "cost_saving",
+            "risk_level": "low",
+            "battery_bias": "discharge",
+            "diesel_policy": "avoid",
+            "shedding_policy": "never"
+          },
+          "selected_action": {
+            "battery_dispatch": 0.0,
+            "diesel_dispatch": 0.0,
+            "demand_shedding": 0.0
+          },
+          "optimizer_config": {
+            "horizon": 12,
+            "blackout_weight": 1.75,
+            "diesel_green_weight": 18.0,
+            "soc_deficit_weight": 14.0,
+            "fuel_deficit_weight": 8.0,
+            "shedding_policy": "never",
+            "strategy": {
+              "mode": "cost_saving",
+              "risk_level": "low",
+              "battery_bias": "discharge",
+              "diesel_policy": "avoid",
+              "shedding_policy": "never"
+            },
+            "task_id": "task_3_crisis",
+            "hour": 4
+          },
+          "meta": {
+            "id": "gen-1778963055-UIU0Rn3LwM7ESybYy7Eh",
+            "model": "google/gemma-4-26b-a4b-it-20260403",
+            "usage": {
+              "prompt_tokens": 512,
+              "completion_tokens": 33,
+              "total_tokens": 545,
+              "cost": 8.44e-05,
+              "is_byok": false,
+              "prompt_tokens_details": {
+                "cached_tokens": 112,
+                "cache_write_tokens": 0,
+                "audio_tokens": 0,
+                "video_tokens": 0
+              },
+              "cost_details": {
+                "upstream_inference_cost": 8.44e-05,
+                "upstream_inference_prompt_cost": 7.12e-05,
+                "upstream_inference_completions_cost": 1.32e-05
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "image_tokens": 0,
+                "audio_tokens": 0
+              }
+            },
+            "finish_reason": "stop"
+          }
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 38125,
+        "completion_tokens": 2660,
+        "total_tokens": 40785
+      },
+      "grade": {
+        "score": 0.7538,
+        "reliability": 0.9724,
+        "cost_efficiency": 0.5523,
+        "green_score": 0.9382,
+        "baseline_cost": 483769.17,
+        "actual_cost": 216570.18,
+        "total_blackout_kwh": 351.31,
+        "total_diesel_kwh": 785.67,
+        "total_demand_kwh": 12721.08,
+        "battery_throughput_kwh": 3057.68
+      }
+    }
+  ],
+  "openrouter_model_info": {
+    "id": "google/gemma-4-26b-a4b-it",
+    "name": "Google: Gemma 4 26B A4B ",
+    "context_length": 262144,
+    "pricing": {
+      "prompt": "0.00000006",
+      "completion": "0.00000033"
+    }
+  }
+}
