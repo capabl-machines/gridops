@@ -6,6 +6,8 @@ from gridops.strategy import validate_strategy_payload
 from scripts.build_gridops_strategy_dpo_pairs import (
     build_pairs,
     canonical_strategy_candidates,
+    parse_seed_values,
+    parse_task_seed_map,
     score_strategy_candidate,
 )
 
@@ -45,14 +47,29 @@ def test_score_strategy_candidate_does_not_mutate_env():
     assert scored["actions"]
 
 
+def test_parse_task_seed_map_supports_ranges_and_defaults():
+    assert parse_seed_values("7001,7003-7005") == [7001, 7003, 7004, 7005]
+
+    mapped = parse_task_seed_map(
+        "task_3_crisis=7801-7803;task_1_normal=8001",
+        tasks=["task_1_normal", "task_3_crisis"],
+        seeds=[1, 2],
+    )
+
+    assert mapped["task_3_crisis"] == [7801, 7802, 7803]
+    assert mapped["task_1_normal"] == [8001]
+
+
 def test_build_dpo_pairs_outputs_chosen_and_rejected_strategy_json():
     rows, summary = build_pairs(
         tasks=["task_1_normal", "task_3_crisis"],
         seeds=[7701],
+        task_seed_map={"task_1_normal": [7701], "task_3_crisis": [7701, 7702]},
         stride=24,
         horizon=3,
         optimizer_horizon=4,
         min_margin=0.0,
+        pairs_per_state=2,
         max_pairs=None,
         rng_seed=17,
         shuffle=False,
@@ -60,6 +77,9 @@ def test_build_dpo_pairs_outputs_chosen_and_rejected_strategy_json():
 
     assert rows
     assert summary["validation_failures"] == []
+    assert summary["pairs_per_state"] == 2
+    assert summary["task_seed_map"]["task_3_crisis"] == [7701, 7702]
+    assert sum(1 for row in rows if row["task_id"] == "task_3_crisis") > sum(1 for row in rows if row["task_id"] == "task_1_normal")
     ids = [row["id"] for row in rows]
     assert len(ids) == len(set(ids))
     for row in rows:
@@ -68,3 +88,4 @@ def test_build_dpo_pairs_outputs_chosen_and_rejected_strategy_json():
         assert row["chosen"] != row["rejected"]
         assert row["raw"]["chosen_score"] >= row["raw"]["rejected_score"]
         assert row["raw"]["candidate_count"] >= 2
+        assert row["raw"]["pair_kind"] in {"near_miss", "plausible_contrast", "strong_contrast", "worst_contrast"}

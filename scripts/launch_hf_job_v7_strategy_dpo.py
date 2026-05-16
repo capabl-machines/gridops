@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Launch GridOps v7.2 strategy DPO as a Hugging Face Job."""
+"""Launch GridOps v7 strategy DPO as a Hugging Face Job."""
 
 from __future__ import annotations
 
@@ -16,8 +16,9 @@ from huggingface_hub import run_job
 DEFAULT_IMAGE = "pytorch/pytorch:2.6.0-cuda12.4-cudnn9-devel"
 DEFAULT_REPO_URL = "https://github.com/capabl-machines/gridops.git"
 DEFAULT_BRANCH = "codex/gridops-v7-strategy-sft"
-DEFAULT_INIT_ADAPTER = "77ethers/gridops-models/sft_qwen25_15b_gridops_strategy_v7"
-DEFAULT_RUN_LABEL = "dpo_qwen25_15b_gridops_strategy_v72"
+DEFAULT_INIT_ADAPTER = "77ethers/gridops-models/dpo_qwen25_15b_gridops_strategy_v72"
+DEFAULT_RUN_LABEL = "dpo_qwen25_15b_gridops_strategy_v73_crisis"
+DEFAULT_TASK_SEED_MAP = "task_3_crisis=7801-7824;task_2_heatwave=7901-7908;task_1_normal=8001-8004"
 
 
 def load_env_token() -> str:
@@ -67,10 +68,12 @@ def build_job_command(args: argparse.Namespace) -> str:
         "GRIDOPS_UPLOAD": "1",
         "GRIDOPS_DPO_TASKS": args.tasks,
         "GRIDOPS_DPO_SEEDS": args.seeds,
+        "GRIDOPS_DPO_TASK_SEED_MAP": args.task_seed_map,
         "GRIDOPS_DPO_STRIDE": str(args.stride),
         "GRIDOPS_DPO_HORIZON": str(args.horizon),
         "GRIDOPS_DPO_OPTIMIZER_HORIZON": str(args.optimizer_horizon),
         "GRIDOPS_DPO_MIN_MARGIN": str(args.min_margin),
+        "GRIDOPS_DPO_PAIRS_PER_STATE": str(args.pairs_per_state),
         "GRIDOPS_DPO_MAX_PAIRS": str(args.max_pairs),
         "GRIDOPS_EVAL_SEEDS": args.eval_seeds,
         "GRIDOPS_RUN_EVAL": "1" if args.run_eval else "0",
@@ -100,7 +103,7 @@ for suffix in ["", ".invalid_examples", ".valid_samples"]:
         path_in_repo=f"{run_label}/evals/holdout/{os.path.basename(path)}",
         repo_id=repo,
         repo_type="model",
-        commit_message=f"Upload GridOps v7.2 DPO eval {run_label}",
+        commit_message=f"Upload GridOps strategy DPO eval {run_label}",
     )
 PY
 fi
@@ -121,13 +124,15 @@ fi
             "python scripts/build_gridops_strategy_dpo_pairs.py "
             '--tasks "$GRIDOPS_DPO_TASKS" '
             '--seeds "$GRIDOPS_DPO_SEEDS" '
+            '--task-seed-map "$GRIDOPS_DPO_TASK_SEED_MAP" '
             '--stride "$GRIDOPS_DPO_STRIDE" '
             '--horizon "$GRIDOPS_DPO_HORIZON" '
             '--optimizer-horizon "$GRIDOPS_DPO_OPTIMIZER_HORIZON" '
             '--min-margin "$GRIDOPS_DPO_MIN_MARGIN" '
+            '--pairs-per-state "$GRIDOPS_DPO_PAIRS_PER_STATE" '
             f"{max_pairs_arg}"
             '--output "$GRIDOPS_DPO_PAIR_PATH" '
-            '--summary "evals/gridops_strategy_dpo_pairs_v1_summary.json"',
+            '--summary "evals/gridops_strategy_dpo_pairs_v73_summary.json"',
             "python scripts/hf_dpo_gridops_strategy.py",
             eval_block,
         ]
@@ -158,20 +163,22 @@ def main() -> None:
     parser.add_argument("--model-repo", default="77ethers/gridops-models")
     parser.add_argument("--base-model", default="Qwen/Qwen2.5-1.5B-Instruct")
     parser.add_argument("--init-adapter", default=DEFAULT_INIT_ADAPTER)
-    parser.add_argument("--pair-path", default="sft_traces/gridops_strategy_dpo_pairs_v1.jsonl")
-    parser.add_argument("--steps", type=int, default=80)
-    parser.add_argument("--beta", default="0.1")
-    parser.add_argument("--learning-rate", default="5e-6")
+    parser.add_argument("--pair-path", default="sft_traces/gridops_strategy_dpo_pairs_v73_crisis.jsonl")
+    parser.add_argument("--steps", type=int, default=100)
+    parser.add_argument("--beta", default="0.08")
+    parser.add_argument("--learning-rate", default="3e-6")
     parser.add_argument("--batch-size", type=int, default=2)
     parser.add_argument("--grad-accum", type=int, default=8)
     parser.add_argument("--max-length", type=int, default=1024)
     parser.add_argument("--max-prompt-length", type=int, default=768)
     parser.add_argument("--tasks", default="task_1_normal,task_2_heatwave,task_3_crisis")
     parser.add_argument("--seeds", default=",".join(str(seed) for seed in range(7701, 7713)))
+    parser.add_argument("--task-seed-map", default=DEFAULT_TASK_SEED_MAP)
     parser.add_argument("--stride", type=int, default=2)
-    parser.add_argument("--horizon", type=int, default=6)
-    parser.add_argument("--optimizer-horizon", type=int, default=12)
-    parser.add_argument("--min-margin", default="0.05")
+    parser.add_argument("--horizon", type=int, default=5)
+    parser.add_argument("--optimizer-horizon", type=int, default=10)
+    parser.add_argument("--min-margin", default="0.01")
+    parser.add_argument("--pairs-per-state", type=int, default=3)
     parser.add_argument("--max-pairs", type=int, default=2400)
     parser.add_argument("--eval-seeds", default="7001,7002,7003")
     parser.add_argument("--run-eval", action="store_true")
@@ -195,6 +202,8 @@ def main() -> None:
         "pair_path": args.pair_path,
         "tasks": args.tasks,
         "seeds": args.seeds,
+        "task_seed_map": args.task_seed_map,
+        "pairs_per_state": args.pairs_per_state,
         "max_pairs": args.max_pairs,
         "steps": args.steps,
         "run_eval": args.run_eval,

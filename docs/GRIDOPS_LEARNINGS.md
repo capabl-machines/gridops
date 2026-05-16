@@ -78,6 +78,21 @@ task_3_crisis:      0.7421
 LP ceiling capture: 95.71%
 ```
 
+Latest preference-tuned strategy selector:
+
+```text
+77ethers/gridops-models/dpo_qwen25_15b_gridops_strategy_v72
+base_model: Qwen/Qwen2.5-1.5B-Instruct
+init_adapter: 77ethers/gridops-models/sft_qwen25_15b_gridops_strategy_v7
+output: strict GridOpsStrategy JSON
+average_score:       0.7888
+valid_strategy_rate: 1.0000
+task_1_normal:       0.7993
+task_2_heatwave:     0.8223
+task_3_crisis:       0.7449
+LP ceiling capture:  95.81%
+```
+
 Historical model to preserve:
 
 ```text
@@ -1155,3 +1170,90 @@ no task below v5.1 model-only baseline
 If DPO improves crisis without hurting validity, continue with a larger
 crisis-weighted pair set. If DPO regresses format or heatwave, stop and keep
 v7.1 plus deterministic v7 fallback.
+
+## v7.2 DPO Result
+
+The first DPO run worked, but it was underfed.
+
+```text
+job:         6a0838f03308d79117b90f95
+model:       77ethers/gridops-models/dpo_qwen25_15b_gridops_strategy_v72
+pair rows:   179
+steps:       80
+beta:        0.1
+lr:          5e-6
+```
+
+Holdout:
+
+```text
+average_score:       0.7888  (+0.0008 vs v7.1)
+valid_strategy_rate: 1.0000
+task_1_normal:       0.7993
+task_2_heatwave:     0.8223
+task_3_crisis:       0.7449  (+0.0028 vs v7.1)
+```
+
+Interpretation:
+
+- DPO did not damage format validity.
+- It moved crisis in the right direction.
+- The improvement was small because only 179 preference pairs survived the
+  original high-margin one-pair-per-state filter.
+- The next DPO dataset should be larger, crisis-weighted, and should include
+  near-miss, plausible, and obvious bad contrasts per state.
+
+## v7.3 Crisis-Weighted DPO Plan
+
+v7.3 keeps the v7 architecture unchanged:
+
+```text
+LLM -> strategy JSON -> causal strategy controller -> GridOpsAction -> OpenEnv
+```
+
+The only change is the preference curriculum. Instead of one best-vs-worst pair
+per state, the builder now supports multiple rejected strategies per sampled
+state:
+
+```text
+near_miss:          valid but slightly worse strategy
+plausible_contrast: believable but materially worse strategy
+strong_contrast:    clearly worse strategy
+worst_contrast:     worst valid strategy among candidates
+```
+
+Default v7.3 dataset shape:
+
+```text
+source adapter:     77ethers/gridops-models/dpo_qwen25_15b_gridops_strategy_v72
+run label:          dpo_qwen25_15b_gridops_strategy_v73_crisis
+task seed map:      task_3_crisis=7801-7824
+                    task_2_heatwave=7901-7908
+                    task_1_normal=8001-8004
+pairs per state:    3
+max pairs:          2400
+horizon:            5
+optimizer horizon:  10
+min margin:         0.01
+steps:              100
+beta:               0.08
+lr:                 3e-6
+```
+
+Why this shape:
+
+- crisis is still the largest gap versus deterministic v7;
+- normal and heatwave stay in the mix as anti-regression anchors;
+- multiple contrasts teach boundaries, not just one obvious preference;
+- lower learning rate and beta should refine v7.2 without overriding its
+  already-stable schema behavior.
+
+Promotion gate:
+
+```text
+valid_strategy_rate >= 0.995
+average_score > 0.7900 preferred
+task_3_crisis >= 0.7500 target
+task_2_heatwave >= 0.8220
+task_1_normal >= 0.7980
+```
