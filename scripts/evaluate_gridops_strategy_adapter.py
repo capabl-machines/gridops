@@ -56,8 +56,10 @@ def model_path_kwargs(path: str) -> tuple[str, dict[str, str]]:
 
 
 def load_model(base_model: str, adapter_path: str, token: str | None, load_4bit: bool, use_adapter: bool = True):
-    from peft import PeftModel
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+
+    if use_adapter:
+        from peft import PeftModel
 
     adapter_id, adapter_kwargs = model_path_kwargs(adapter_path)
     if use_adapter:
