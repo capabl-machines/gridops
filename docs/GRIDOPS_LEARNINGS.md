@@ -1053,3 +1053,105 @@ scripts/build_gridops_strategy_dpo_pairs.py
 The builder should sample strategy candidates per state, score each through the
 same controller/evaluator path, keep high-margin pairs, and write standard
 DPO rows without ever changing the OpenEnv action/observation contract.
+
+## v7.2 DPO Plan
+
+DPO is the next safer learning step. In GridOps terms:
+
+```text
+DPO = senior operator preference review
+For the same observation, show two strategy cards.
+Chosen is the card whose controller rollout performed better.
+Rejected is a valid but worse card.
+The model learns which operating intent to prefer.
+```
+
+This is different from GRPO:
+
+```text
+GRPO = online bonus system
+The model proposes several strategies, OpenEnv scores them, and reward pushes
+the model toward higher-scoring samples.
+```
+
+Because v7.1 already has perfect strategy-format validity, DPO lets us teach
+better crisis timing without exposing the model to noisy online reward updates
+first.
+
+Implemented DPO files:
+
+```text
+scripts/build_gridops_strategy_dpo_pairs.py
+scripts/hf_dpo_gridops_strategy.py
+scripts/launch_hf_job_v7_strategy_dpo.py
+tests/test_strategy_dpo_pairs.py
+```
+
+DPO pair builder:
+
+```text
+OpenEnv state
+-> generate multiple valid GridOpsStrategy candidates
+-> execute each through the causal strategy controller on a copied env
+-> roll forward short horizon
+-> choose best strategy JSON
+-> reject worst useful strategy JSON
+```
+
+Smoke command:
+
+```bash
+.venv/bin/python scripts/build_gridops_strategy_dpo_pairs.py \
+  --tasks task_1_normal,task_2_heatwave,task_3_crisis \
+  --seeds 7701 \
+  --stride 12 \
+  --horizon 4 \
+  --optimizer-horizon 6 \
+  --min-margin 0.0 \
+  --output /tmp/gridops_strategy_dpo_pairs_smoke.jsonl \
+  --summary /tmp/gridops_strategy_dpo_pairs_smoke_summary.json
+```
+
+Smoke result:
+
+```text
+rows: 18
+validation_failures: []
+task_1_normal: 6
+task_2_heatwave: 6
+task_3_crisis: 6
+```
+
+HF DPO dry run:
+
+```bash
+.venv/bin/python scripts/launch_hf_job_v7_strategy_dpo.py \
+  --dry-run \
+  --run-eval
+```
+
+Default DPO run:
+
+```text
+init_adapter: 77ethers/gridops-models/sft_qwen25_15b_gridops_strategy_v7
+run_label:    dpo_qwen25_15b_gridops_strategy_v72
+base_model:   Qwen/Qwen2.5-1.5B-Instruct
+pairs:        up to 2400
+steps:        80
+beta:         0.1
+lr:           5e-6
+```
+
+Promotion gate:
+
+```text
+valid_strategy_rate >= 0.995
+average_score > v7.1 0.7880
+task_3_crisis > v7.1 0.7421
+task_2_heatwave >= 0.8220
+no task below v5.1 model-only baseline
+```
+
+If DPO improves crisis without hurting validity, continue with a larger
+crisis-weighted pair set. If DPO regresses format or heatwave, stop and keep
+v7.1 plus deterministic v7 fallback.
