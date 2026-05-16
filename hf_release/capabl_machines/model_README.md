@@ -92,6 +92,8 @@ this model as the learned strategy selector.
 
 Holdout seeds: `7001,7002,7003`.
 
+![GridOps holdout task scores](assets/gridops_v7_task_scores.png)
+
 | System | Avg score | Valid strategy/action | Task 1 normal | Task 2 heatwave | Task 3 crisis | LP capture |
 |---|---:|---:|---:|---:|---:|---:|
 | v5.1 direct action model | 0.7354 | 0.9969 action | 0.7896 | 0.7681 | 0.6484 | - |
@@ -100,6 +102,17 @@ Holdout seeds: `7001,7002,7003`.
 | v7.2 DPO strategy selector | 0.7888 | 1.0000 strategy | 0.7993 | 0.8223 | 0.7449 | 95.81% |
 | v7.3 DPO strategy selector | 0.7888 | 1.0000 strategy | 0.7993 | 0.8223 | 0.7449 | 95.81% |
 | Full-episode LP ceiling | 0.8233 | - | 0.8372 | 0.8416 | 0.7912 | 100.00% |
+
+![GridOps LP ceiling capture](assets/gridops_v7_lp_capture.png)
+
+## Operational Footprint
+
+The crisis task is the real stress test: haze reduces solar, demand rises,
+diesel is limited, and the grid outage forces islanded operation. The learned
+selector stays close to the deterministic controller, but the remaining gap to
+LP is mostly crisis blackout and cost.
+
+![GridOps crisis operational footprint](assets/gridops_v7_crisis_footprint.png)
 
 ## Why This Is Useful
 
