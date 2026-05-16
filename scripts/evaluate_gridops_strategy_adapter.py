@@ -55,14 +55,17 @@ def model_path_kwargs(path: str) -> tuple[str, dict[str, str]]:
     return path, {}
 
 
-def load_model(base_model: str, adapter_path: str, token: str | None, load_4bit: bool):
+def load_model(base_model: str, adapter_path: str, token: str | None, load_4bit: bool, use_adapter: bool = True):
     from peft import PeftModel
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
     adapter_id, adapter_kwargs = model_path_kwargs(adapter_path)
-    try:
-        tokenizer = AutoTokenizer.from_pretrained(adapter_id, token=token, **adapter_kwargs)
-    except Exception:
+    if use_adapter:
+        try:
+            tokenizer = AutoTokenizer.from_pretrained(adapter_id, token=token, **adapter_kwargs)
+        except Exception:
+            tokenizer = AutoTokenizer.from_pretrained(base_model, token=token)
+    else:
         tokenizer = AutoTokenizer.from_pretrained(base_model, token=token)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -81,7 +84,8 @@ def load_model(base_model: str, adapter_path: str, token: str | None, load_4bit:
         device_map="auto",
         token=token,
     )
-    model = PeftModel.from_pretrained(model, adapter_id, token=token, **adapter_kwargs)
+    if use_adapter:
+        model = PeftModel.from_pretrained(model, adapter_id, token=token, **adapter_kwargs)
     model.eval()
     return tokenizer, model
 
@@ -251,6 +255,7 @@ def main() -> None:
     parser.add_argument("--output", default="evals/gridops_strategy_adapter_eval.json")
     parser.add_argument("--invalid-output", default="")
     parser.add_argument("--samples-output", default="")
+    parser.add_argument("--no-adapter", action="store_true", help="Evaluate the untouched base model without loading a LoRA adapter.")
     parser.add_argument("--no-4bit", action="store_true")
     args = parser.parse_args()
 
@@ -258,7 +263,13 @@ def main() -> None:
     seeds = [int(x.strip()) for x in args.seeds.split(",") if x.strip()]
     task_ids = [x.strip() for x in args.tasks.split(",") if x.strip()]
 
-    tokenizer, model = load_model(args.base_model, args.adapter_path, token, load_4bit=not args.no_4bit)
+    tokenizer, model = load_model(
+        args.base_model,
+        args.adapter_path,
+        token,
+        load_4bit=not args.no_4bit,
+        use_adapter=not args.no_adapter,
+    )
     rows = []
     invalid_output = Path(args.invalid_output) if args.invalid_output else Path(args.output).with_suffix(".invalid_examples.jsonl")
     samples_output = Path(args.samples_output) if args.samples_output else Path(args.output).with_suffix(".valid_samples.jsonl")
@@ -301,7 +312,10 @@ def main() -> None:
                 flush=True,
             )
 
-    report = summarize(args.adapter_path, rows)
+    report_name = args.base_model if args.no_adapter else args.adapter_path
+    report = summarize(report_name, rows)
+    report["base_model"] = args.base_model
+    report["adapter_path"] = None if args.no_adapter else args.adapter_path
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2) + "\n")
