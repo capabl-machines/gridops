@@ -1014,3 +1014,42 @@ Promotion decision:
 - do not return to direct action-float SFT as the main path;
 - next improvement should be a small crisis-weighted strategy repair or a
   DPO-style preference set over strategy choices, not a bigger action model.
+
+## Controller And Evaluator Readiness For DPO
+
+Before DPO/GRPO, the scoring loop itself must be trusted. The DPO target will
+be strategy preferences, so the evaluator must do three things consistently:
+
+```text
+model reply -> strict GridOpsStrategy parse
+strategy -> causal LP/MPC controller -> GridOpsAction
+GridOpsAction -> copied or live OpenEnv rollout -> score/regret
+```
+
+Checks now covered locally:
+
+- strict strategy JSON parsing succeeds for valid replies;
+- invalid strategy replies fall back cleanly instead of crashing;
+- controller-generated actions remain bounded by `GridOpsAction`;
+- strategy planning does not mutate the environment when used as a planner;
+- evaluator summaries include v5.1, deterministic v7, and LP-ceiling baselines;
+- valid-strategy rate is tracked separately from environment score.
+
+This gives us a stable base for DPO pair generation:
+
+```text
+prompt:   observation + derived control context + previous outcome
+chosen:   strategy JSON with better copied-rollout score
+rejected: valid but worse strategy JSON
+reward:   OpenEnv outcome after controller execution, not textual preference
+```
+
+Next implementation target:
+
+```text
+scripts/build_gridops_strategy_dpo_pairs.py
+```
+
+The builder should sample strategy candidates per state, score each through the
+same controller/evaluator path, keep high-margin pairs, and write standard
+DPO rows without ever changing the OpenEnv action/observation contract.

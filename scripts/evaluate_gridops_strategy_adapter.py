@@ -11,8 +11,6 @@ from pathlib import Path
 from typing import Any
 
 import torch
-from peft import PeftModel
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -58,6 +56,9 @@ def model_path_kwargs(path: str) -> tuple[str, dict[str, str]]:
 
 
 def load_model(base_model: str, adapter_path: str, token: str | None, load_4bit: bool):
+    from peft import PeftModel
+    from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+
     adapter_id, adapter_kwargs = model_path_kwargs(adapter_path)
     try:
         tokenizer = AutoTokenizer.from_pretrained(adapter_id, token=token, **adapter_kwargs)
