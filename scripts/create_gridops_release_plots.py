@@ -27,6 +27,13 @@ SYSTEMS = {
         "task_3_crisis": 0.7503,
         "lp_capture": 0.9604,
     },
+    "Untuned 1.5B\n+ harness": {
+        "average": 0.7911,
+        "task_1_normal": 0.7993,
+        "task_2_heatwave": 0.8223,
+        "task_3_crisis": 0.7517,
+        "lp_capture": 0.9609,
+    },
     "v7.1 SFT\nselector": {
         "average": 0.7880,
         "task_1_normal": 0.7994,
@@ -55,6 +62,11 @@ FOOTPRINT = {
         "blackout_kwh": 338.7,
         "diesel_kwh": 760.2,
         "cost_rs": 217_690.0,
+    },
+    "Untuned 1.5B\n+ harness": {
+        "blackout_kwh": 356.85,
+        "diesel_kwh": 757.0,
+        "cost_rs": 216_568.16,
     },
     "v7.3 DPO\nselector": {
         "blackout_kwh": 404.68,
@@ -112,7 +124,7 @@ def plot_task_scores() -> None:
     width = 0.24
     colors = ["#2f8f83", "#e8a33a", "#d95f59"]
 
-    fig, ax = plt.subplots(figsize=(13, 6.2))
+    fig, ax = plt.subplots(figsize=(14.2, 6.2))
     for index, (key, label) in enumerate(tasks):
         values = [SYSTEMS[name][key] for name in labels]
         bars = ax.bar(x + (index - 1) * width, values, width, label=label, color=colors[index])
@@ -139,8 +151,8 @@ def plot_task_scores() -> None:
 def plot_lp_capture() -> None:
     labels = [label for label, row in SYSTEMS.items() if row["lp_capture"] is not None]
     values = [SYSTEMS[label]["lp_capture"] * 100 for label in labels]
-    colors = ["#2f8f83", "#61a6d8", "#8d73d8", "#242424"]
-    fig, ax = plt.subplots(figsize=(11.5, 5.8))
+    colors = ["#2f8f83", "#d6a13b", "#61a6d8", "#8d73d8", "#242424"]
+    fig, ax = plt.subplots(figsize=(12.4, 5.8))
     bars = ax.bar(labels, values, color=colors)
     annotate_bars(ax, bars, fmt="{:.2f}%", offset=0.5)
     ax.set_ylim(90, 102)
@@ -150,7 +162,7 @@ def plot_lp_capture() -> None:
     fig.text(
         0.01,
         0.01,
-        "The learned selector captures 95.81% of the full-episode LP ceiling while keeping 100% strategy validity.",
+        "The strategy harness is the main unlock: even an untuned 1.5B model reaches 96.09% LP capture with strict strategy JSON.",
         fontsize=9,
         color="#555",
     )
@@ -167,7 +179,7 @@ def plot_operational_footprint() -> None:
     ]
     x = np.arange(len(labels))
     width = 0.25
-    fig, ax = plt.subplots(figsize=(11.5, 6.0))
+    fig, ax = plt.subplots(figsize=(12.4, 6.0))
     for index, (key, name, color, scale) in enumerate(metrics):
         values = [FOOTPRINT[label][key] / scale for label in labels]
         bars = ax.bar(x + (index - 1) * width, values, width, label=name, color=color)

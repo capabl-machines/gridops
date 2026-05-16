@@ -112,6 +112,7 @@ OpenEnv: score the result
 ```text
 100% valid strategy outputs from the learned selector
 96.04% LP ceiling capture from the strategy-controller system
+96.09% LP ceiling capture from an untuned 1.5B model using the same harness
 3 tested operating regimes: normal, heatwave, crisis/outage
 ```
 
@@ -119,9 +120,17 @@ The strongest deployable system today is the deterministic v7
 strategy-controller. The learned v7.3 selector nearly matches it while producing
 perfectly valid strategy JSON on the holdout set.
 
+We also ran the most important sanity check: the untouched base model with the
+same v7 strategy prompt and controller. It scored `0.7911`, slightly above the
+released adapter's `0.7888`. That is not a failure of fine-tuning; it is the
+central engineering result. The strategy abstraction and optimizer harness do
+most of the heavy lifting. The adapter is the packaged, reproducible, audited
+selector from the training pipeline, but the architecture is the real unlock.
+
 | Release highlight | Value |
 |---|---:|
 | v7 deterministic controller average score | 0.7907 |
+| untuned Qwen 2.5 1.5B + v7 harness average score | 0.7911 |
 | v7.3 learned selector average score | 0.7888 |
 | v7.3 valid strategy rate | 100.00% |
 | v7.3 LP ceiling capture | 95.81% |
@@ -197,7 +206,8 @@ Holdout seeds: `7001,7002,7003`.
 | System | Avg score | Valid strategy/action | Task 1 normal | Task 2 heatwave | Task 3 crisis | LP capture |
 |---|---:|---:|---:|---:|---:|---:|
 | v5.1 direct action model | 0.7354 | 0.9969 action | 0.7896 | 0.7681 | 0.6484 | - |
-| v7 deterministic strategy-controller | **0.7907** | 1.0000 action | **0.7995** | **0.8224** | **0.7503** | **96.04%** |
+| v7 deterministic strategy-controller | 0.7907 | 1.0000 action | **0.7995** | **0.8224** | 0.7503 | 96.04% |
+| untuned Qwen 2.5 1.5B + v7 harness | **0.7911** | 1.0000 strategy | 0.7993 | 0.8223 | **0.7517** | **96.09%** |
 | v7.1 SFT strategy selector | 0.7880 | 1.0000 strategy | 0.7994 | 0.8224 | 0.7421 | 95.71% |
 | v7.2 DPO strategy selector | 0.7888 | 1.0000 strategy | 0.7993 | 0.8223 | 0.7449 | 95.81% |
 | v7.3 DPO strategy selector | 0.7888 | 1.0000 strategy | 0.7993 | 0.8223 | 0.7449 | 95.81% |
@@ -209,16 +219,18 @@ Holdout seeds: `7001,7002,7003`.
 
 The crisis task is the real stress test: haze reduces solar, demand rises,
 diesel is limited, and the grid outage forces islanded operation. The learned
-selector stays close to the deterministic controller, but the remaining gap to
-LP is mostly crisis blackout and cost.
+selector and the untuned base model both stay close to the deterministic
+controller, but the remaining gap to LP is mostly crisis blackout and cost.
 
 ![GridOps crisis operational footprint](assets/gridops_v7_crisis_footprint.png)
 
 ## Why This Is Useful
 
 The learned model is small, stable, and schema-reliable. The controller is the
-stronger deployable policy. Together they show a practical pattern for domain
-AI systems:
+stronger deployable policy. The base-model comparison makes the lesson sharper:
+we did not merely train a checkpoint, we found the right interface between an
+LLM and an optimization system. Together they show a practical pattern for
+domain AI systems:
 
 ```text
 Do not force the model to be the whole controller.
