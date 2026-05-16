@@ -31,6 +31,10 @@ microgrids: a small learned strategy selector, a deterministic optimizer, and a
 simulated OpenEnv world where every decision is scored by cost, reliability,
 and diesel use.
 
+GridOps is also a case study in the Capabl Machines thesis: climate-heavy
+problems need more than a checkpoint. They need a harness where models,
+optimizers, simulators, validators, rewards, and evaluation loops work together.
+
 GridOps Strategy Selector v7 is the learned part of that system. It does not
 pretend to be the whole grid engineer. It reads a GridOps/OpenEnv observation
 and emits strict strategy JSON. A causal optimizer then converts that strategy
@@ -47,6 +51,29 @@ microgrid state
 
 That split keeps the language model focused on contextual judgment while
 leaving constrained numerical dispatch to an optimizer.
+
+## What Capabl Machines Provides
+
+This release should not be read as "a LoRA beat every baseline." It should be
+read as evidence for a stronger company pattern:
+
+```text
+Capabl Machines builds climate AI operating harnesses.
+
+The harness defines:
+  - the environment where decisions are tested;
+  - the schema for valid actions;
+  - the tools that handle physics and constraints;
+  - the critics and rewards that judge outcomes;
+  - the datasets that teach useful behavior;
+  - the model layer that selects intent or strategy;
+  - the evals that decide whether the system is actually better.
+```
+
+For some domains, the trained model will be the main breakthrough. For others,
+as GridOps shows, the harness and model interface may be the breakthrough. The
+customer still gets the thing that matters: an accountable AI operating system
+for a real climate workflow.
 
 ## Why This Matters
 
@@ -74,6 +101,10 @@ tools for physics
 environment for truth
 metrics for accountability
 ```
+
+That is the product direction: not model magic, but tested climate-AI systems
+that can be adapted to energy, water, agriculture, logistics, robotics, and
+resilient infrastructure.
 
 ## What We Built
 
@@ -126,6 +157,12 @@ released adapter's `0.7888`. That is not a failure of fine-tuning; it is the
 central engineering result. The strategy abstraction and optimizer harness do
 most of the heavy lifting. The adapter is the packaged, reproducible, audited
 selector from the training pipeline, but the architecture is the real unlock.
+
+This is exactly why Capabl Machines focuses on the harness and model together.
+If a base model is already strong once the interface is correct, we should use
+that. If a domain needs post-training, we should fine-tune. The job is not to
+force model training into every problem; the job is to deliver the most reliable
+AI operating loop for the climate system in front of us.
 
 | Release highlight | Value |
 |---|---:|
