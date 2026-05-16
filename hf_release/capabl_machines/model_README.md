@@ -22,32 +22,110 @@ metrics:
 
 # GridOps Strategy Selector v7
 
-GridOps Strategy Selector v7 is a small learned policy for community microgrid
-operation. It does not directly output dispatch floats. Instead, it reads a
-GridOps/OpenEnv observation and emits strict strategy JSON. A deterministic
-causal optimizer converts that strategy into the final bounded GridOps action.
+India does not only need more solar panels. It needs intelligence between the
+panel, the battery, the grid, the diesel backup, and the people depending on
+power.
+
+GridOps is our attempt to build that intelligence layer for community
+microgrids: a small learned strategy selector, a deterministic optimizer, and a
+simulated OpenEnv world where every decision is scored by cost, reliability,
+and diesel use.
+
+GridOps Strategy Selector v7 is the learned part of that system. It does not
+pretend to be the whole grid engineer. It reads a GridOps/OpenEnv observation
+and emits strict strategy JSON. A causal optimizer then converts that strategy
+into the final bounded dispatch action.
 
 This is the central release lesson:
 
 ```text
-LLM -> high-level operating strategy -> causal optimizer -> GridOpsAction -> OpenEnv
+microgrid state
+  -> small AI chooses operating strategy
+  -> optimizer converts strategy into safe dispatch
+  -> OpenEnv scores cost, reliability, diesel, blackout
 ```
 
 That split keeps the language model focused on contextual judgment while
 leaving constrained numerical dispatch to an optimizer.
 
-## Problem
+## Why This Matters
 
-Indian apartments, housing societies, campuses, and community microgrids are
-increasingly operating with rooftop solar, batteries, diesel backup, grid price
-variation, demand spikes, and outage risk. The operator must decide every hour
-when to charge, preserve, discharge, run diesel, or tolerate limited demand
-response.
+Distributed solar is scaling quickly across Indian apartments, societies,
+campuses, factories, and local energy systems. That creates a second-order
+problem: who operates the system once it exists?
+
+A local operator now has to answer questions like:
+
+- Should the battery charge now because grid power is cheap?
+- Should it preserve charge for the evening peak?
+- Should diesel be allowed during a crisis, or conserved for an outage?
+- Should demand response be used, knowing it rebounds later?
+- How do we keep the lights on while still reducing cost and diesel?
+
+Bad control turns clean infrastructure into higher bills, battery misuse,
+blackouts, or unnecessary diesel. Good control makes the same infrastructure
+more useful.
+
+GridOps explores a practical pattern for sustainable infrastructure AI:
+
+```text
+model for judgment
+tools for physics
+environment for truth
+metrics for accountability
+```
+
+## What We Built
+
+The environment is a 72-hour community microgrid simulation with three regimes:
+
+| Task | Situation | What it tests |
+|---|---|---|
+| Task 1 normal | Normal summer demand and solar | basic battery arbitrage |
+| Task 2 heatwave | demand spike plus price stress | forecast-aware peak planning |
+| Task 3 crisis | haze, heatwave, limited diesel, grid outage | islanding and reliability |
+
+The action space remains the real OpenEnv dispatch contract:
+
+```json
+{"battery_dispatch":0.0,"diesel_dispatch":0.0,"demand_shedding":0.0}
+```
+
+But the model is not asked to emit those floats directly. That was the wrong
+abstraction.
 
 Directly asking a small model to output exact battery/diesel/shedding floats
 proved brittle. The model could learn JSON, but the optimization burden was too
 large for a small SFT policy. GridOps v7 turns the model into a strategy
 selector and lets a causal LP/MPC controller execute the details.
+
+This is the mature pattern we arrived at:
+
+```text
+LLM: choose operating intent
+Optimizer: satisfy constraints and choose dispatch
+OpenEnv: score the result
+```
+
+## Key Results
+
+```text
+100% valid strategy outputs from the learned selector
+96.04% LP ceiling capture from the strategy-controller system
+3 tested operating regimes: normal, heatwave, crisis/outage
+```
+
+The strongest deployable system today is the deterministic v7
+strategy-controller. The learned v7.3 selector nearly matches it while producing
+perfectly valid strategy JSON on the holdout set.
+
+| Release highlight | Value |
+|---|---:|
+| v7 deterministic controller average score | 0.7907 |
+| v7.3 learned selector average score | 0.7888 |
+| v7.3 valid strategy rate | 100.00% |
+| v7.3 LP ceiling capture | 95.81% |
+| v5.1 direct-action baseline average score | 0.7354 |
 
 ## Output Schema
 
@@ -88,6 +166,28 @@ stable and matched v7.2, but did not beat the deterministic controller. The
 recommended production policy is therefore the strategy-controller harness, with
 this model as the learned strategy selector.
 
+## Engineering Journey
+
+The most important result was not one checkpoint. It was the discovery of the
+right interface.
+
+```text
+v4:    direct action SFT from reasoning traces
+v5:    causal LP teacher imitation
+v5.1:  crisis repair continuation
+v6:    tool-corrected action SFT, not promoted
+v6.1:  clean LP-critic action SFT, not promoted
+v7:    strategy-first harness
+v7.1:  SFT strategy selector
+v7.2:  DPO preference tuning
+v7.3:  crisis-weighted DPO release checkpoint
+```
+
+The lesson:
+
+> The model does not need to become the entire operator. It needs to learn the
+> operating language that lets deterministic tools act safely.
+
 ## Evaluation
 
 Holdout seeds: `7001,7002,7003`.
@@ -125,6 +225,20 @@ Do not force the model to be the whole controller.
 Teach it the decision language.
 Use tools for physics, constraints, validation, and scoring.
 ```
+
+That pattern is bigger than microgrids. The same structure can apply to:
+
+- apartment and society energy systems;
+- water pump scheduling;
+- cold chains;
+- EV charging depots;
+- factory energy optimization;
+- farm irrigation and storage;
+- disaster-resilient local infrastructure.
+
+GridOps is one case study in a broader Capabl Machines thesis: useful AI for
+physical systems should be trained and evaluated inside the world it claims to
+operate.
 
 ## Usage
 
