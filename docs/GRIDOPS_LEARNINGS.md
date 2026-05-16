@@ -70,7 +70,12 @@ Latest strategy-selector experiment:
 77ethers/gridops-models/sft_qwen25_15b_gridops_strategy_v7
 base_model: Qwen/Qwen2.5-1.5B-Instruct
 output: strict GridOpsStrategy JSON
-status: trained and uploaded; final holdout eval still running at this note
+average_score:      0.7880
+valid_strategy_rate: 1.0000
+task_1_normal:      0.7994
+task_2_heatwave:    0.8224
+task_3_crisis:      0.7421
+LP ceiling capture: 95.71%
 ```
 
 Historical model to preserve:
@@ -955,7 +960,7 @@ uploaded_to: 77ethers/gridops-models/sft_qwen25_15b_gridops_strategy_v7
 adapter_model.safetensors: 37.0 MB
 ```
 
-Partial holdout logs available while the final crisis seed was still running:
+Final holdout on seeds `7001,7002,7003`:
 
 ```text
 task_1_normal seed 7001: 0.7936, valid_strategy_rate 1.0000
@@ -968,9 +973,30 @@ task_2_heatwave seed 7003: 0.8206, valid_strategy_rate 1.0000
 
 task_3_crisis seed 7001: 0.7374, valid_strategy_rate 1.0000
 task_3_crisis seed 7002: 0.7354, valid_strategy_rate 1.0000
+task_3_crisis seed 7003: 0.7535, valid_strategy_rate 1.0000
 ```
 
-Interpretation from partial eval:
+Aggregate:
+
+```text
+average_score:       0.7880
+valid_strategy_rate: 1.0000
+LP ceiling capture:  95.71%
+
+task_1_normal:       0.7994
+task_2_heatwave:     0.8224
+task_3_crisis:       0.7421
+```
+
+Uploaded eval artifacts:
+
+```text
+sft_qwen25_15b_gridops_strategy_v7/evals/holdout/sft_qwen25_15b_gridops_strategy_v7_holdout_strategy.json
+sft_qwen25_15b_gridops_strategy_v7/evals/holdout/sft_qwen25_15b_gridops_strategy_v7_holdout_strategy.valid_samples.jsonl
+sft_qwen25_15b_gridops_strategy_v7/evals/holdout/sft_qwen25_15b_gridops_strategy_v7_holdout_strategy.invalid_examples.jsonl
+```
+
+Interpretation:
 
 - the strategy interface is solved: no invalid strategy JSON in observed logs;
 - normal and heatwave match the deterministic v7 strategy-controller almost
@@ -981,8 +1007,10 @@ Interpretation from partial eval:
 - even the softer crisis result is far above v5.1 model-only crisis
   `0.6484`, confirming the harness shift is doing real work.
 
-Promotion decision is pending the final uploaded holdout JSON. If the final
-average is close to deterministic v7, the 1.5B strategy selector becomes the
-preferred model-facing policy. If crisis remains below the deterministic
-controller by more than a small margin, deploy deterministic v7 and run a small
-crisis-weighted strategy repair.
+Promotion decision:
+
+- promote v7.1 as the best model-facing strategy selector;
+- keep deterministic v7 strategy-controller as the safest deployed fallback;
+- do not return to direct action-float SFT as the main path;
+- next improvement should be a small crisis-weighted strategy repair or a
+  DPO-style preference set over strategy choices, not a bigger action model.
